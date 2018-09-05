@@ -153,6 +153,7 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
   std::vector<std::vector<int>> xsMap;
   std::vector<std::vector<int>> ysMap;
 
+  auto count = 0;
   for (int x = 0; x < iparams_.width; x++) {
     for (int y = 0; y < iparams_.height; y++) {
       bool isVisited = visited[y * iparams_.width + x];
@@ -164,8 +165,14 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
         xsMap.push_back(xs);
         ysMap.push_back(ys);
       }
+
+      // if (c == c_ORANGE) {
+      //   count++;
+      // }
     }
   }
+
+  // std:cout << "Total orange count: " << count << std::endl;
 
   // Find biggest blob
   int largestCount = 0;
@@ -178,6 +185,9 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
     }
   }
 
+  std::cout << "number of blobs: " << xsMap.size() << std::endl;
+  // std::cout << "largestCount: " << largestCount << std::endl;
+
   if (largestCount <= BLOB_THRESHOLD) {
     return false;
   }
@@ -189,7 +199,7 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
   imageX = std::accumulate(xs.begin(), xs.end(), 0.0) / xs.size();
   imageY = std::accumulate(ys.begin(), ys.end(), 0.0) / ys.size();
 
-  std::cout >> 
+  std::cout << "Detected centroid: (" << imageX << ", " << imageY << ")" << std::endl;
 
   return true;
 }
@@ -198,16 +208,15 @@ void ImageProcessor::findBallDFS(int x, int y, bool* visited, std::vector<int>* 
   visited[y * iparams_.width + x] = true;
   xs->push_back(x);
   ys->push_back(y);
-  for (int xOffset = -1; xOffset <= 1; xOffset++) {
-    for (int yOffset = -1; yOffset <= 1; yOffset++) {
+  auto colors = getSegImg();
+  for (int xOffset = -5; xOffset <= 5; xOffset++) {
+    for (int yOffset = -5; yOffset <= 5; yOffset++) {
       int newX = x + xOffset;
       int newY = y + yOffset;
-      auto colors = getSegImg();
 
-      if (xOffset != 0 && yOffset != 0 && 
-          newX >= 0 && newX < iparams_.width && 
+      if (newX >= 0 && newX < iparams_.width && 
           newY >= 0 && newY < iparams_.height && 
-          visited[newY * iparams_.width + newX] == 0 && 
+          !visited[newY * iparams_.width + newX] && 
           colors[newY * iparams_.width + newX] == c_ORANGE
       ) {
         findBallDFS(newX, newY, visited, xs, ys);
@@ -238,7 +247,7 @@ std::vector<BallCandidate*> ImageProcessor::getBallCandidates() {
 BallCandidate* ImageProcessor::getBestBallCandidate() {
   return NULL;
 }
-
+ 
 void ImageProcessor::enableCalibration(bool value) {
   enableCalibration_ = value;
 }
