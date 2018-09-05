@@ -185,7 +185,7 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
     }
   }
 
-  std::cout << "number of blobs: " << xsMap.size() << std::endl;
+  // std::cout << "number of blobs: " << xsMap.size() << std::endl;
   // std::cout << "largestCount: " << largestCount << std::endl;
 
   if (largestCount <= BLOB_THRESHOLD) {
@@ -199,7 +199,7 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
   imageX = std::accumulate(xs.begin(), xs.end(), 0.0) / xs.size();
   imageY = std::accumulate(ys.begin(), ys.end(), 0.0) / ys.size();
 
-  std::cout << "Detected centroid: (" << imageX << ", " << imageY << ")" << std::endl;
+  // std::cout << "Detected centroid: (" << imageX << ", " << imageY << ")" << std::endl;
 
   return true;
 }

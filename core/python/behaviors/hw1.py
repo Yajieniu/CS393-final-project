@@ -1,70 +1,39 @@
-""" HW1 behavior."""
+"""hw1 behavior."""
 
 from __future__ import print_function
 from __future__ import division
 from __future__ import absolute_import
 
+import memory
+import pose
+import commands
+import cfgstiff
 from task import Task
-import core
+from state_machine import Node, C, T, StateMachine
 
-JOINT_NAMES = [
-  "HeadYaw",
-  "HeadPitch",
-  "LHipYawPitch",
-  "LHipRoll",
-  "LHipPitch",
-  "LKneePitch",
-  "LAnklePitch",
-  "LAnkleRoll",
-  "RHipYawPitch",
-  "RHipRoll",
-  "RHipPitch",
-  "RKneePitch",
-  "RAnklePitch",
-  "RAnkleRoll",
-  "LShoulderPitch",
-  "LShoulderRoll",
-  "LElbowYaw",
-  "LElbowRoll",
-  "RShoulderPitch",
-  "RShoulderRoll",
-  "RElbowYaw",
-  "RElbowRoll"
-]
+class Playing(StateMachine):
+    class Stand(Node):
+        def run(self):
+            commands.stand()
+            if self.getTime() > 5.0:
+                memory.speech.say("playing stand complete")
+                self.finish()
 
-SENSOR_NAMES = [
-  "gyroX",
-  "gyroY",
-  "gyroZ",
-  "accelX",
-  "accelY",
-  "accelZ",
-  "angleX",
-  "angleY",
-  "angleZ",
-  "battery",
-  "fsrLFL",
-  "fsrLFR",
-  "fsrLRL",
-  "fsrLRR",
-  "fsrRFL",
-  "fsrRFR",
-  "fsrRRL",
-  "fsrRRR",
-  "centerButton",
-  "bumperLL",
-  "bumperLR",
-  "bumperRL",
-  "bumperRR",
-  "headFront",
-  "headMiddle",
-  "headRear"
-]
+    class HeadTurn(Node):
+        def run(self):
+            commands.setHeadPanTilt(5.0, time=5.0)
 
-class Playing(Task):
-    def run(self):
-        for _ in range(100):
-            for i, name in enumerate(JOINT_NAMES):
-                print ("J[%10s]: %.5f" % (name, core.joint_values[i]))
-            for i, name in enumerate(SENSOR_NAMES):
-                print ("S[%10s]: %.5f" % (name, core.sensor_values[i]))
+
+    class Off(Node):
+        def run(self):
+            commands.setStiffness(cfgstiff.Zero)
+            if self.getTime() > 2.0:
+                memory.speech.say("turned off stiffness")
+                self.finish()
+
+    def setup(self):
+        stand = self.Stand()
+        headturn = self.HeadTurn()
+        sit = pose.Sit()
+        off = self.Off()
+        self.trans(stand, C, sit, C, headturn, C, off)
