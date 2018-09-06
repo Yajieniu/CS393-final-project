@@ -3,6 +3,7 @@
 #include <vision/BeaconDetector.h>
 #include <vision/Logging.h>
 #include <iostream>
+#define BLOB_THRESHOLD 50
 
 ImageProcessor::ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera) :
   vblocks_(vblocks), iparams_(iparams), camera_(camera), cmatrix_(iparams_, camera)
@@ -127,10 +128,104 @@ void ImageProcessor::processFrame(){
 }
 
 void ImageProcessor::detectBall() {
+  int imageX, imageY;
+  if(!findBall(imageX, imageY)) return; // function defined elsewhere that fills in imageX, imageY by reference
+  WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+
+  ball->imageCenterX = imageX;
+  ball->imageCenterY = imageY;
+
+  Position p = cmatrix_.getWorldPosition(imageX, imageY);
+  ball->visionBearing = cmatrix_.bearing(p);
+  ball->visionElevation = cmatrix_.elevation(p);
+  ball->visionDistance = cmatrix_.groundDistance(p);
+
+  ball->seen = true;
 }
 
-void ImageProcessor::findBall(int& imageX, int& imageY) {
-  imageX = imageY = 0;
+bool ImageProcessor::findBall(int& imageX, int& imageY) {
+
+  if (camera_ == Camera::BOTTOM) { return false; }
+
+  // Initialize the ID array
+  int size = iparams_.height * iparams_.width;
+  bool* visited = new bool[size];
+  memset(visited, false, size*sizeof(bool));
+  // Create map that maps blobID to pixel xs and ys
+  std::vector<std::vector<int>> xsMap;
+  std::vector<std::vector<int>> ysMap;
+
+  for (int x = 0; x < iparams_.width; x++) {
+    for (int y = 0; y < iparams_.height; y++) {
+      bool isVisited = visited[y * iparams_.width + x];
+      auto c = getSegImg()[y * iparams_.width + x];
+      if (!isVisited && c == c_ORANGE) {
+        std::vector<int> xs;
+        std::vector<int> ys;
+        findBallDFS(x, y, visited, &xs, &ys);
+        xsMap.push_back(xs);
+        ysMap.push_back(ys);
+      }
+
+    }
+  }
+
+  // Use of visited finished. delete
+  delete[] visited;
+
+
+  // Find biggest blob
+  int largestCount = 0;
+  int bestIdx = 0;
+  for (int i = 0; i < xsMap.size(); i++) {
+    int length = xsMap.at(i).size();
+    if (length > largestCount) {
+      bestIdx = i;
+      largestCount = length;
+    }
+  }
+
+  // std::cout << "number of blobs: " << xsMap.size() << std::endl;
+  // std::cout << "largestCount: " << largestCount << std::endl;
+
+  if (largestCount <= BLOB_THRESHOLD) {
+    // std::cout << "No ball detected" << std::endl;
+    WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+    ball->seen = false;
+    return false;
+  }
+
+  // Find centroid x and y
+  std::vector<int> xs = xsMap.at(bestIdx);
+  std::vector<int> ys = ysMap.at(bestIdx);
+  
+  imageX = std::accumulate(xs.begin(), xs.end(), 0.0) / xs.size();
+  imageY = std::accumulate(ys.begin(), ys.end(), 0.0) / ys.size();
+
+  // std::cout << "Detected centroid: (" << imageX << ", " << imageY << ")" << std::endl;
+
+  return true;
+}
+
+void ImageProcessor::findBallDFS(int x, int y, bool* visited, std::vector<int>* xs, std::vector<int>* ys) {
+  visited[y * iparams_.width + x] = true;
+  xs->push_back(x);
+  ys->push_back(y);
+  auto colors = getSegImg();
+  for (int xOffset = -5; xOffset <= 5; xOffset++) {
+    for (int yOffset = -5; yOffset <= 5; yOffset++) {
+      int newX = x + xOffset;
+      int newY = y + yOffset;
+
+      if (newX >= 0 && newX < iparams_.width && 
+          newY >= 0 && newY < iparams_.height && 
+          !visited[newY * iparams_.width + newX] && 
+          colors[newY * iparams_.width + newX] == c_ORANGE
+      ) {
+        findBallDFS(newX, newY, visited, xs, ys);
+      }
+    }
+  }
 }
 
 
@@ -155,7 +250,7 @@ std::vector<BallCandidate*> ImageProcessor::getBallCandidates() {
 BallCandidate* ImageProcessor::getBestBallCandidate() {
   return NULL;
 }
-
+ 
 void ImageProcessor::enableCalibration(bool value) {
   enableCalibration_ = value;
 }
