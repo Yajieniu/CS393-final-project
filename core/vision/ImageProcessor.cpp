@@ -147,7 +147,7 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
 
   // Initialize the ID array
   int size = iparams_.height * iparams_.width;
-  bool* visited = new bool[size]();
+  bool* visited = new bool[size];
   memset(visited, false, size*sizeof(bool));
   // Create map that maps blobID to pixel xs and ys
   std::vector<std::vector<int>> xsMap;
@@ -171,6 +171,9 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
       // }
     }
   }
+
+  // Use of visited finished. delete
+  delete[] visited;
 
   // std:cout << "Total orange count: " << count << std::endl;
 
@@ -199,7 +202,7 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
   imageX = std::accumulate(xs.begin(), xs.end(), 0.0) / xs.size();
   imageY = std::accumulate(ys.begin(), ys.end(), 0.0) / ys.size();
 
-  // std::cout << "Detected centroid: (" << imageX << ", " << imageY << ")" << std::endl;
+  std::cout << "Detected centroid: (" << imageX << ", " << imageY << ")" << std::endl;
 
   return true;
 }

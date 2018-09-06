@@ -21,8 +21,23 @@ class Playing(StateMachine):
 
     class HeadTurn(Node):
         def run(self):
-            commands.setHeadPanTilt(5.0, time=5.0)
+            commands.setHeadPan(1.0, 2.0)
+    
+    class HeadTurnBack(Node):
+        def run(self):
+            commands.setHeadPan(0, 2.0)
 
+    class ForwardWalk(Node):
+        def run(self):
+            commands.setWalkVelocity(0.5, 0, 0)
+
+    class TurnInPlace(Node):
+        def run(self):
+            commands.setWalkVelocity(0, 0, 0.5)
+
+    class CurveWalk(Node):
+        def run(self):
+            commands.setWalkVelocity(1, 0, 0.5)
 
     class Off(Node):
         def run(self):
@@ -33,7 +48,15 @@ class Playing(StateMachine):
 
     def setup(self):
         stand = self.Stand()
-        headturn = self.HeadTurn()
         sit = pose.Sit()
+        headturn = self.HeadTurn()
+        headturnback = self.HeadTurnBack()
+
+        forwardwalk = self.ForwardWalk()
+        turninplace = self.TurnInPlace()
+        curvewalk = self.CurveWalk()
+
         off = self.Off()
-        self.trans(stand, C, sit, C, headturn, C, off)
+        self.trans(stand, C, headturn, T(3.0), headturnback, T(3.0),
+          forwardwalk, T(5.0), turninplace, T(5.0), curvewalk, T(5.0),
+          sit, C, off)
