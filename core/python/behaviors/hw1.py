@@ -33,11 +33,11 @@ class Playing(StateMachine):
 
     class TurnInPlace(Node):
         def run(self):
-            commands.setWalkVelocity(0, 0, 0.5)
+            commands.setWalkVelocity(0, 0, 0.2)
 
     class CurveWalk(Node):
         def run(self):
-            commands.setWalkVelocity(1, 0, 0.5)
+            commands.setWalkVelocity(0.8, 0, 0.2)
 
     class Off(Node):
         def run(self):

@@ -145,6 +145,8 @@ void ImageProcessor::detectBall() {
 
 bool ImageProcessor::findBall(int& imageX, int& imageY) {
 
+  if (camera_ == Camera::BOTTOM) { return false; }
+
   // Initialize the ID array
   int size = iparams_.height * iparams_.width;
   bool* visited = new bool[size];
@@ -153,7 +155,6 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
   std::vector<std::vector<int>> xsMap;
   std::vector<std::vector<int>> ysMap;
 
-  auto count = 0;
   for (int x = 0; x < iparams_.width; x++) {
     for (int y = 0; y < iparams_.height; y++) {
       bool isVisited = visited[y * iparams_.width + x];
@@ -166,16 +167,12 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
         ysMap.push_back(ys);
       }
 
-      // if (c == c_ORANGE) {
-      //   count++;
-      // }
     }
   }
 
   // Use of visited finished. delete
   delete[] visited;
 
-  // std:cout << "Total orange count: " << count << std::endl;
 
   // Find biggest blob
   int largestCount = 0;
@@ -192,6 +189,9 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
   // std::cout << "largestCount: " << largestCount << std::endl;
 
   if (largestCount <= BLOB_THRESHOLD) {
+    // std::cout << "No ball detected" << std::endl;
+    WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+    ball->seen = false;
     return false;
   }
 
@@ -202,7 +202,7 @@ bool ImageProcessor::findBall(int& imageX, int& imageY) {
   imageX = std::accumulate(xs.begin(), xs.end(), 0.0) / xs.size();
   imageY = std::accumulate(ys.begin(), ys.end(), 0.0) / ys.size();
 
-  std::cout << "Detected centroid: (" << imageX << ", " << imageY << ")" << std::endl;
+  // std::cout << "Detected centroid: (" << imageX << ", " << imageY << ")" << std::endl;
 
   return true;
 }
