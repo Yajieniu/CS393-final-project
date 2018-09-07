@@ -42,7 +42,7 @@ class ImageProcessor {
     std::vector<BallCandidate*> getBallCandidates();
     BallCandidate* getBestBallCandidate();
     bool isImageLoaded();
-    void detectBall();
+    void detectBlob();
     bool findBall(int& imageX, int& imageY);
   private:
     int getTeamColor();
@@ -68,7 +68,8 @@ class ImageProcessor {
     int topFrameCounter_ = 0;
     int bottomFrameCounter_ = 0;
 
-    void findBallDFS(int, int, bool*, std::vector<int>*, std::vector<int>*);
+    void markBall(int, int);
+    void findBlobDFS(int, int, bool*, long long*, long long*, long*, unsigned char);
 };
 
 #endif
