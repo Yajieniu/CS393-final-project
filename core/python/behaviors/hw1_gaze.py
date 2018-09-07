@@ -20,12 +20,14 @@ DELAY = 0.6
 # Top camera range (0, 1278) x (0, 958)
 X_RANGE = 1278
 Y_RANGE = 958
-X_THETA = 40 * pi / 180
-Y_THETA = 30 * pi / 180
+X_THETA = 40 * core.DEG_T_RAD
+Y_THETA = 30
 
 x_diff = 0
 y_diff = 0
 # distance of center = 90. breadth = 100
+
+
 
 class Stand(Node):
         def run(self):
@@ -35,14 +37,19 @@ class Stand(Node):
                 self.finish()
 
 
+class On(Node):
+	def run(self):
+		commands.setStiffness()
+		self.finish()
+
 class GazeCenter(Node):
 	def run(self):
 		self.finish()
 
 class Gaze(Node):
 	def run(self):
-		commands.setHeadPanTilt(pan=x_diff, time=abs(x_diff)*20 + 0.8, isChange=True)
-		if self.getTime() > abs(x_diff)*20 + 1:
+		commands.setHeadPanTilt(pan=x_diff, tilt=y_diff, time=abs(x_diff)*2+abs(y_diff)/30+0.5, isChange=True)
+		if self.getTime() > abs(x_diff)*2+abs(y_diff)/30+0.8:
                 	self.finish()
 
 class Gazer(Node):
@@ -56,7 +63,7 @@ class Gazer(Node):
 			print ("Detected ball centroid: ", x, y)
 
 			x_diff = -((x - X_RANGE/2)/X_RANGE)*X_THETA
-			y_diff = -((y - Y_RANGE/2)/Y_RANGE)*Y_THETA
+			y_diff = y_diff - ((y - Y_RANGE/2)/Y_RANGE)*Y_THETA
 			# if abs(x_diff) + abs(x_diff) <= 2*CENTER_THRESHOLD:
 			# 	choice = "center"
 			# elif x_diff <= -CENTER_THRESHOLD:
@@ -73,8 +80,9 @@ class Gazer(Node):
 			print ("No ball detected")
 
 			x_diff = 0
-			y_diff = 0
-		
+			y_diff = -21
+	
+		print ("moving to", x_diff, y_diff)	
 		self.finish()
 
 
@@ -82,9 +90,9 @@ class Gazer(Node):
 class Playing(LoopingStateMachine):
 	def setup(self):
 		gazer = Gazer()
-		stand = Stand()
 		gaze = Gaze()
-		self.add_transition(stand, C, gazer)
+		on = On()
+		self.add_transition(on, C, gazer)
 		self.add_transition(gazer, C, gaze, C, gazer)
 
 		# self.add_transition(gazer, S('no_ball'), gazer)

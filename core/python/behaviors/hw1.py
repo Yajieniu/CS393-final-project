@@ -21,11 +21,11 @@ class Playing(StateMachine):
 
     class HeadTurn(Node):
         def run(self):
-            commands.setHeadPan(1.0, 2.0)
+            commands.setHeadPanTilt(1.0, 50, 2.0)
     
     class HeadTurnBack(Node):
         def run(self):
-            commands.setHeadPan(0, 2.0)
+            commands.setHeadPanTilt(0, -21, 2.0)
 
     class ForwardWalk(Node):
         def run(self):
