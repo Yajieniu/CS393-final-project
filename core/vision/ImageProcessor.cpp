@@ -151,7 +151,7 @@ void ImageProcessor::markBall(int imageX, int imageY) {
 }
 
 void ImageProcessor:: markGoal(int imageX, int imageY, int maxY) {
-  std::cout << "Detect Goal: " << imageX << ", " << imageY << std::endl;
+  std::cout << "             Detect Goal: " << imageX << ", " << imageY << std::endl;
 
   WorldObject* goal = &vblocks_.world_object->objects_[WO_OWN_GOAL];
 
@@ -163,9 +163,9 @@ void ImageProcessor:: markGoal(int imageX, int imageY, int maxY) {
   goal->visionElevation = cmatrix_.elevation(p);
   goal->visionDistance = cmatrix_.groundDistance(p);
 
-  std::cout << "goal bearing = " << goal->visionBearing << endl;
-  std::cout << "goal elevation = " << goal->visionElevation << endl;
-  std::cout << "goal distance = " << goal->visionDistance << endl;
+  // std::cout << "goal bearing = " << goal->visionBearing << endl;
+  // std::cout << "goal elevation = " << goal->visionElevation << endl;
+  // std::cout << "goal distance = " << goal->visionDistance << endl;
 
   goal->seen = true;
 

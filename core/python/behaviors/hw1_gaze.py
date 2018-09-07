@@ -24,7 +24,7 @@ X_THETA = 40 * core.DEG_T_RAD
 Y_THETA = 30
 
 x_diff = 0
-y_diff = 0
+y_diff = -21
 # distance of center = 90. breadth = 100
 
 
@@ -48,9 +48,18 @@ class GazeCenter(Node):
 
 class Gaze(Node):
 	def run(self):
-		commands.setHeadPanTilt(pan=x_diff, tilt=y_diff, time=abs(x_diff)*2+abs(y_diff)/30+0.5, isChange=True)
-		if self.getTime() > abs(x_diff)*2+abs(y_diff)/30+0.8:
-                	self.finish()
+		# if x_diff < -0.05:
+		# 	commands.setHeadPanTilt(-1.0, 50, 2.0)
+		# elif x_diff > 0.05:
+		# 	commands.setHeadPanTilt(1.0, 50, 2.0)
+		# 	# x_temp = 0.05
+		# else:
+		# 	x_temp = 0
+
+		commands.setHeadPanTilt(pan=x_diff, tilt=abs(x_diff)*20+abs(y_diff)/6+3, time=1, isChange=True) # abs(x_diff)*20+abs(y_diff)/6+3
+
+		if self.getTime() > abs(x_diff)*20+abs(y_diff)/6+3:
+			self.finish()
 
 class Gazer(Node):
 	def run(self):
