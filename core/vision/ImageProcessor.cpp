@@ -4,6 +4,7 @@
 #include <vision/Logging.h>
 #include <iostream>
 #define BLOB_THRESHOLD 50
+#define GOAL_THRESHOLD 500
 
 ImageProcessor::ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera) :
   vblocks_(vblocks), iparams_(iparams), camera_(camera), cmatrix_(iparams_, camera)
@@ -130,7 +131,7 @@ void ImageProcessor::processFrame(){
 
 void ImageProcessor::markBall(int imageX, int imageY) {
 
-  std::cout << "Detect Blob: " << imageX << ", " << imageY << std::endl;
+  std::cout << "Detect Ball: " << imageX << ", " << imageY << std::endl;
 
   WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 
@@ -142,7 +143,32 @@ void ImageProcessor::markBall(int imageX, int imageY) {
   ball->visionElevation = cmatrix_.elevation(p);
   ball->visionDistance = cmatrix_.groundDistance(p);
 
+  // std::cout << "Ball bearing = " << ball->visionBearing << endl;
+  // std::cout << "Ball elevation = " << ball->visionElevation << endl;
+  // std::cout << "Ball distance = " << ball->visionDistance << endl;
+
   ball->seen = true;
+}
+
+void ImageProcessor:: markGoal(int imageX, int imageY, int maxY) {
+  std::cout << "Detect Goal: " << imageX << ", " << imageY << std::endl;
+
+  WorldObject* goal = &vblocks_.world_object->objects_[WO_OWN_GOAL];
+
+  goal->imageCenterX = imageX;
+  goal->imageCenterY = maxY;
+
+  Position p = cmatrix_.getWorldPosition(imageX, maxY);
+  goal->visionBearing = cmatrix_.bearing(p);
+  goal->visionElevation = cmatrix_.elevation(p);
+  goal->visionDistance = cmatrix_.groundDistance(p);
+
+  std::cout << "goal bearing = " << goal->visionBearing << endl;
+  std::cout << "goal elevation = " << goal->visionElevation << endl;
+  std::cout << "goal distance = " << goal->visionDistance << endl;
+
+  goal->seen = true;
+
 }
 
 void ImageProcessor::detectBlob() {
@@ -158,8 +184,9 @@ void ImageProcessor::detectBlob() {
       auto c = getSegImg()[y * iparams_.width + x];
       long long totalX = 0;
       long long totalY = 0;
+      int maxY = 0;
       long count = 0;
-      findBlobDFS(x, y, visited, &totalX, &totalY, &count, c);
+      findBlobDFS(x, y, visited, &totalX, &totalY, &maxY, &count, c);
       int meanX = totalX / count;
       int meanY = totalY / count;
 
@@ -168,19 +195,21 @@ void ImageProcessor::detectBlob() {
         markBall(meanX, meanY);
       }
 
-      if (count > bestGoalCount && c == c_BLUE) {
-        // markGoal(meanX, meanY);
+      if (count > bestGoalCount && c == c_BLUE && count >= GOAL_THRESHOLD) {
+
+        markGoal(meanX, meanY, maxY);
       }
     }
   }
 }
 
 
-void ImageProcessor::findBlobDFS(int x, int y, bool* visited, long long* totalX, long long* totalY, long *count, unsigned char color) {
+void ImageProcessor::findBlobDFS(int x, int y, bool* visited, long long* totalX, long long* totalY, int* maxY, long *count, unsigned char color) {
   visited[y * iparams_.width + x] = true;
   *totalX += x;
   *totalY += y;
   *count += 1;
+  *maxY = MAX(*maxY, y);
 
   // xs->push_back(x);
   // ys->push_back(y);
@@ -195,7 +224,7 @@ void ImageProcessor::findBlobDFS(int x, int y, bool* visited, long long* totalX,
           !visited[newY * iparams_.width + newX] && 
           colors[newY * iparams_.width + newX] == color
       ) {
-        findBlobDFS(newX, newY, visited, totalX, totalY, count, color);
+        findBlobDFS(newX, newY, visited, totalX, totalY, maxY, count, color);
       }
     }
   }

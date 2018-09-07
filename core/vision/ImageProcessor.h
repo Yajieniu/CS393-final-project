@@ -69,7 +69,8 @@ class ImageProcessor {
     int bottomFrameCounter_ = 0;
 
     void markBall(int, int);
-    void findBlobDFS(int, int, bool*, long long*, long long*, long*, unsigned char);
+    void markGoal(int, int, int);
+    void findBlobDFS(int, int, bool*, long long*, long long*, int*, long*, unsigned char);
 };
 
 #endif
