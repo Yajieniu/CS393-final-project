@@ -127,6 +127,27 @@ void ImageProcessor::processFrame(){
   beacon_detector_->findBeacons();
 }
 
+
+void ImageProcessor::detectGoal() {
+  int imageX, imageY;
+  if(!findGoal(imageX, imageY)) return; // function defined elsewhere that fills in imageX, imageY by reference
+  WorldObject* goal = &vblocks_.world_object->objects_[WO_OWN_GOAL];
+
+  goal->imageCenterX = imageX;
+  goal->imageCenterY = imageY;
+
+  Position p = cmatrix_.getWorldPosition(imageX, imageY);
+  goal->visionDistance = cmatrix_.groundDistance(p);
+
+  goal->seen = true;
+}
+  
+
+bool ImageProcessor::findGoal(int& imageX, int& imageY) {
+  if (camera_ == Camera::TOP)  return;
+}
+
+
 void ImageProcessor::detectBall() {
   int imageX, imageY;
   if(!findBall(imageX, imageY)) return; // function defined elsewhere that fills in imageX, imageY by reference

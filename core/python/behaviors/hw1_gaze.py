@@ -27,6 +27,8 @@ x_diff = 0
 y_diff = 0
 # distance of center = 90. breadth = 100
 
+
+
 class Stand(Node):
         def run(self):
             commands.stand()
@@ -46,8 +48,8 @@ class GazeCenter(Node):
 
 class Gaze(Node):
 	def run(self):
-		commands.setHeadPanTilt(pan=x_diff, tilt=y_diff, time=abs(x_diff)*15 + 3, isChange=True)
-		if self.getTime() > abs(x_diff)*15 + 3:
+		commands.setHeadPanTilt(pan=x_diff, tilt=y_diff, time=abs(x_diff)*10+abs(y_diff)/6+0.5, isChange=True)
+		if self.getTime() > abs(x_diff)*10+abs(y_diff)/6+0.8:
                 	self.finish()
 
 class Gazer(Node):
@@ -61,7 +63,7 @@ class Gazer(Node):
 			print ("Detected ball centroid: ", x, y)
 
 			x_diff = -((x - X_RANGE/2)/X_RANGE)*X_THETA
-			y_diff = -21 - ((y - Y_RANGE/2)/Y_RANGE)*Y_THETA
+			y_diff = y_diff - ((y - Y_RANGE/2)/Y_RANGE)*Y_THETA
 			# if abs(x_diff) + abs(x_diff) <= 2*CENTER_THRESHOLD:
 			# 	choice = "center"
 			# elif x_diff <= -CENTER_THRESHOLD:
@@ -79,7 +81,8 @@ class Gazer(Node):
 
 			x_diff = 0
 			y_diff = -21
-		
+	
+		print ("moving to", x_diff, y_diff)	
 		self.finish()
 
 
