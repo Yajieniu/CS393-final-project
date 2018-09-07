@@ -48,8 +48,8 @@ class GazeCenter(Node):
 
 class Gaze(Node):
 	def run(self):
-		commands.setHeadPanTilt(pan=x_diff, tilt=y_diff, time=abs(x_diff)*10+abs(y_diff)/6+0.5, isChange=True)
-		if self.getTime() > abs(x_diff)*10+abs(y_diff)/6+0.8:
+		commands.setHeadPanTilt(pan=x_diff, tilt=y_diff, time=abs(x_diff)*2+abs(y_diff)/30+0.5, isChange=True)
+		if self.getTime() > abs(x_diff)*2+abs(y_diff)/30+0.8:
                 	self.finish()
 
 class Gazer(Node):

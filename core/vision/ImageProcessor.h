@@ -42,7 +42,9 @@ class ImageProcessor {
     std::vector<BallCandidate*> getBallCandidates();
     BallCandidate* getBestBallCandidate();
     bool isImageLoaded();
+    void detectGoal();
     void detectBall();
+    bool findGoal(int& imageX, int& imageY);
     bool findBall(int& imageX, int& imageY);
   private:
     int getTeamColor();

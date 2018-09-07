@@ -144,7 +144,9 @@ void ImageProcessor::detectGoal() {
   
 
 bool ImageProcessor::findGoal(int& imageX, int& imageY) {
-  if (camera_ == Camera::TOP)  return;
+  if (camera_ == Camera::TOP)  return true;
+
+  return false;
 }
 
 
@@ -233,7 +235,7 @@ void ImageProcessor::findBallDFS(int x, int y, bool* visited, std::vector<int>* 
   xs->push_back(x);
   ys->push_back(y);
   auto colors = getSegImg();
-  for (int xOffset = -5; xOffset <= 5; xOffset++) {
+  for (int xOffset = -5; xOffset <= 5; xOffset++) {   // xOffset starts from 0
     for (int yOffset = -5; yOffset <= 5; yOffset++) {
       int newX = x + xOffset;
       int newY = y + yOffset;
