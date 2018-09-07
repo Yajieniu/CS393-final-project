@@ -17,6 +17,14 @@ class BallDetector;
 class Classifier;
 class BeaconDetector;
 
+struct block_t {
+    block_t* parent;
+    short x;
+    short y;
+    short length;
+    unsigned char color;
+};
+
 /// @ingroup vision
 class ImageProcessor {
   public:
@@ -70,7 +78,9 @@ class ImageProcessor {
 
     void markBall(int, int);
     void markGoal(int, int, int);
-    void findBlobDFS(int, int, bool*, long long*, long long*, int*, long*, unsigned char);
+    void RLE(block_t* blocks);
+    block_t* findBlock();
+    void unionBlock();
 };
 
 #endif

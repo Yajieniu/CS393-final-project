@@ -5,6 +5,7 @@
 #include <iostream>
 #define BLOB_THRESHOLD 50
 #define GOAL_THRESHOLD 500
+#define STEP 4
 
 ImageProcessor::ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera) :
   vblocks_(vblocks), iparams_(iparams), camera_(camera), cmatrix_(iparams_, camera)
@@ -168,66 +169,71 @@ void ImageProcessor:: markGoal(int imageX, int imageY, int maxY) {
   // std::cout << "goal distance = " << goal->visionDistance << endl;
 
   goal->seen = true;
-
 }
 
 void ImageProcessor::detectBlob() {
 
-  int size = iparams_.height * iparams_.width;
-  bool* visited = new bool[size];
+  int size = iparams_.width/STEP * iparams_.height/STEP;
+  block_t* blocks = new block_t[size];
+  RLE(blocks);
 
-  long bestBallCount = 0;
-  long bestGoalCount = 0;
+  // Merge blocks
+  for (int y = 0; y < iparams_.height/STEP; y++) {
+    for (int x = 0; x < iparams_.width/STEP;) {
+      int blockIndex = y * iparams_.width/STEP + x;
+      auto block = blocks[blockIndex];
+      
+    }
+  }
 
-  for (int x = 0; x < iparams_.width; x+=2) {
-    for (int y = 0; y < iparams_.height; y+=2) {
-      auto c = getSegImg()[y * iparams_.width + x];
-      long long totalX = 0;
-      long long totalY = 0;
-      int maxY = 0;
-      long count = 0;
-      findBlobDFS(x, y, visited, &totalX, &totalY, &maxY, &count, c);
-      int meanX = totalX / count;
-      int meanY = totalY / count;
 
-      // If it is orange
-      if (count > bestBallCount && c == c_ORANGE && count >= BLOB_THRESHOLD) {
-        markBall(meanX, meanY);
-      }
+  delete[] blocks;
 
-      if (count > bestGoalCount && c == c_BLUE && count >= GOAL_THRESHOLD) {
 
-        markGoal(meanX, meanY, maxY);
+}
+
+
+void ImageProcessor::RLE(block_t* blocks) {
+  auto colors = getSegImg();
+  for (int y = 0; y < iparams_.height; y+=STEP) {
+    int length = 0;
+    auto color = colors[y * iparams_.width];
+    for (int x = STEP; x < iparams_.width; x+=STEP) {
+      int colorIndex = y * iparams_.width + x;
+      int blockIndex = y/STEP * iparams_.width/STEP + x/STEP;
+      auto currentColor = colors[colorIndex];
+      if (currentColor == color) {
+        length++;
+      } else {
+        auto block = blocks[blockIndex];
+        block.parent = &block;
+        block.x = x;
+        block.y = y;
+        block.length = length;
+        block.color = color;
+
+        length = 1;
+        color = currentColor;
       }
     }
   }
 }
 
-
-void ImageProcessor::findBlobDFS(int x, int y, bool* visited, long long* totalX, long long* totalY, int* maxY, long *count, unsigned char color) {
-  visited[y * iparams_.width + x] = true;
-  *totalX += x;
-  *totalY += y;
-  *count += 1;
-  *maxY = MAX(*maxY, y);
-
-  // xs->push_back(x);
-  // ys->push_back(y);
-  auto colors = getSegImg();
-  for (int xOffset = 0; xOffset <= 5; xOffset++) {
-    for (int yOffset = 0; yOffset <= 5; yOffset++) {
-      int newX = x + xOffset;
-      int newY = y + yOffset;
-
-      if (newX >= 0 && newX < iparams_.width && 
-          newY >= 0 && newY < iparams_.height && 
-          !visited[newY * iparams_.width + newX] && 
-          colors[newY * iparams_.width + newX] == color
-      ) {
-        findBlobDFS(newX, newY, visited, totalX, totalY, maxY, count, color);
-      }
-    }
+/******* Union Find ********/
+block_t* ImageProcessor::findBlock(block_t* block) {
+  block* parent = block->parent;
+  if (parent != block) {
+    return findBlock(parent);
   }
+
+  return parent;
+}
+
+void ImageProcessor::unionBlock(block_t* blockA, block_t* blockB) {
+  block* parentA = findBlock(blockA);
+  block* parentB = findBlock(blockB);
+
+  parentB->parent = parentA;
 }
 
 
