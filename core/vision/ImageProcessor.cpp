@@ -3,9 +3,10 @@
 #include <vision/BeaconDetector.h>
 #include <vision/Logging.h>
 #include <iostream>
-#define BLOB_THRESHOLD 50
-#define GOAL_THRESHOLD 500
+
 #define STEP 4
+#define BLOB_THRESHOLD 400 / STEP
+#define GOAL_THRESHOLD 1000 / STEP
 
 ImageProcessor::ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera) :
   vblocks_(vblocks), iparams_(iparams), camera_(camera), cmatrix_(iparams_, camera)
@@ -178,50 +179,99 @@ void ImageProcessor::detectBlob() {
   RLE(blocks);
 
   // Merge blocks
-  for (int y = 0; y < iparams_.height/STEP; y++) {
-    for (int x = 0; x < iparams_.width/STEP;) {
-      int blockIndex = y * iparams_.width/STEP + x;
-      auto block = blocks[blockIndex];
-      
-    }
+  for (int y = 1; y < iparams_.height/STEP; y++) {
+    block_t* topRow = &blocks[(y-1)*iparams_.width/STEP];
+    block_t* bottomRow = &blocks[y*iparams_.width/STEP];
+    mergeRow(topRow, bottomRow);
   }
 
+  // detect balls
+  for (int y = 0; y < iparams_.height/STEP; y++) {
+    for (int x = 0; x < iparams_.width/STEP;) {
+      int index = y * iparams_.width/STEP + x;
+      auto block = &blocks[index];
+      if (block->parent == block && block->count >= BLOB_THRESHOLD && block->color == c_ORANGE) {
+        markBall(block->meanX, block->meanY);
+      }
+      x += block->length;
+    }
+  }
 
   delete[] blocks;
 
 
 }
 
+void ImageProcessor::mergeRow(block_t *rowA, block_t* rowB) {
+  int indexA = 0;
+  int indexB = 0;
 
-void ImageProcessor::RLE(block_t* blocks) {
-  auto colors = getSegImg();
-  for (int y = 0; y < iparams_.height; y+=STEP) {
-    int length = 0;
-    auto color = colors[y * iparams_.width];
-    for (int x = STEP; x < iparams_.width; x+=STEP) {
-      int colorIndex = y * iparams_.width + x;
-      int blockIndex = y/STEP * iparams_.width/STEP + x/STEP;
-      auto currentColor = colors[colorIndex];
-      if (currentColor == color) {
-        length++;
-      } else {
-        auto block = blocks[blockIndex];
-        block.parent = &block;
-        block.x = x;
-        block.y = y;
-        block.length = length;
-        block.color = color;
+  while (indexA < iparams_.width / STEP || indexB < iparams_.width / STEP) {
+    auto blockA = &rowA[indexA];
+    auto blockB = &rowB[indexB];
+    
+    mergeBlock(blockA, blockB);
 
-        length = 1;
-        color = currentColor;
-      }
+    if (indexB >= iparams_.width / STEP || indexA + blockA->length <= indexB + blockB->length) {
+      indexA += blockA->length;
+    } else {
+      indexB += blockB->length;
     }
   }
 }
 
-/******* Union Find ********/
+void ImageProcessor::mergeBlock(block_t* blockA, block_t* blockB) {
+  if (blockA->color != blockB->color) { return; }
+
+  if (blockA->x + blockA->length > blockB->x && blockB->x + blockB->length > blockA->length) {
+    unionBlock(blockA, blockB);
+  }
+
+}
+
+void ImageProcessor::initBlock(block_t* blocks, int x, int y, int length, unsigned char color) {
+  // std::cout << x - length*STEP << " " << y << " " << length*STEP << std::endl; 
+  int blockIndex = y/STEP * iparams_.width/STEP + x/STEP;
+  auto block = &blocks[blockIndex-length];
+
+  block->parent = block;
+  block->x = x-length;
+  block->y = y;
+  block->length = length;
+  block->color = color;
+
+  block->meanX = x + length/2;
+  block->meanY = y;
+  block->count = length;
+
+}
+
+void ImageProcessor::RLE(block_t* blocks) {
+  auto colors = getSegImg();
+  for (int y = 0; y < iparams_.height; y+=STEP) {
+    int length = 1;
+    auto color = colors[y * iparams_.width];
+
+    int x;
+    for (x = STEP; x < iparams_.width; x+=STEP) {
+      int colorIndex = y * iparams_.width + x;
+      auto currentColor = colors[colorIndex];
+      if (currentColor != color) {
+        initBlock(blocks, x, y, length, color);
+        length = 1;
+        color = currentColor;
+      } else {
+        length++;
+      }
+    }
+
+    initBlock(blocks, x, y, length, color);
+
+  }
+}
+
 block_t* ImageProcessor::findBlock(block_t* block) {
-  block* parent = block->parent;
+  auto parent = block->parent;
   if (parent != block) {
     return findBlock(parent);
   }
@@ -230,8 +280,13 @@ block_t* ImageProcessor::findBlock(block_t* block) {
 }
 
 void ImageProcessor::unionBlock(block_t* blockA, block_t* blockB) {
-  block* parentA = findBlock(blockA);
-  block* parentB = findBlock(blockB);
+  auto parentA = findBlock(blockA);
+  auto parentB = findBlock(blockB);
+
+  int totalCount = parentA->count + parentB->count;
+  parentA->meanX = (parentA->meanX * parentA->count + parentB->meanX * parentB->count) / totalCount;
+  parentA->meanY = (parentA->meanY * parentA->count + parentB->meanY * parentB->count) / totalCount;
+  parentA->count += parentB->count;
 
   parentB->parent = parentA;
 }

@@ -52,7 +52,7 @@ class Gazer(Node):
             x = goal.imageCenterX
             y = goal.imageCenterY
             distance = goal.visionDistance
-            print ("Detected goal: ", x, y, distance)
+            # print ("Detected goal: ", x, y, distance)
 
             if x - 640 <= - X_THRESHOLD:
                 choice = "left"

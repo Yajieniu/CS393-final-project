@@ -22,6 +22,9 @@ struct block_t {
     short x;
     short y;
     short length;
+    float meanX;
+    float meanY;
+    int count;
     unsigned char color;
 };
 
@@ -78,9 +81,13 @@ class ImageProcessor {
 
     void markBall(int, int);
     void markGoal(int, int, int);
+
     void RLE(block_t* blocks);
-    block_t* findBlock();
-    void unionBlock();
+    void mergeRow(block_t*, block_t*);
+    void mergeBlock(block_t*, block_t*);
+    void initBlock(block_t*, int, int, int, unsigned char);
+    block_t* findBlock(block_t*);
+    void unionBlock(block_t*, block_t*);
 };
 
 #endif
