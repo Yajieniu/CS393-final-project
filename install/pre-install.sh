@@ -10,8 +10,8 @@ sudo apt-get install vim
 sudo apt-get install terminator
 
 # Install pip
-# sudo apt-get install python-pip
+sudo apt-get install python-pip
 
 # Install pexpect for use with install script
-pip install pexpect
+sudo pip install pexpect
 

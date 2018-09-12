@@ -8,7 +8,7 @@ if os.geteuid():  # check if already root
         PASSWORD = getpass.getpass(
             '[sudo] password for %s: ' % getpass.getuser())
         if verifyPassword(PASSWORD): break
-        print ('Sorry, try again.')
+        print 'Sorry, try again.'
 
 
 def runSysConfigCommand(command):
@@ -17,12 +17,12 @@ def runSysConfigCommand(command):
     while True:
         i = p.expect([r'\[sudo\] password.*', r'.*\[Y\/n\]', '.+\n', '.+', pexpect.EOF])
         if i == 0:
-            print (p.after)
+            print p.after
             p.sendline(PASSWORD)
         elif i == 1:
-            print (p.after)
+            print p.after
             p.sendline("Y")
-        if i == 2: print (p.after.strip())
+        if i == 2: print p.after.strip()
         if i == 3: 
             sys.stdout.write('\r' + p.after.strip())
             sys.stdout.flush()

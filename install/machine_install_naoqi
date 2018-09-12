@@ -48,7 +48,7 @@ setup_gcc_cross_compiler() {
 setup_qibuild() {
   # Set up the qibuild infrastructure for building with
   # Aldebaran's naoqi toolchain
-  pip install qibuild==3.8.2 --upgrade
+  sudo pip install qibuild==3.8.2 --upgrade
   qitoolchain create atom $NAO_HOME/naoqi/crosstoolchain/atom/toolchain.xml
   qibuild add-config atom -t atom
 }
