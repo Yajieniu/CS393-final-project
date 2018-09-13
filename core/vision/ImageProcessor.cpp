@@ -365,18 +365,16 @@ void ImageProcessor::RLE(block_t* blocks) {
   }
 }
 
-block_t* ImageProcessor::findBlock(block_t* block) {
-  auto parent = block->parent;
-  if (parent != block) {
-    return findBlock(parent);
+block_t* ImageProcessor::findBlockParent(block_t* block) {
+  if (block->parent != block) {
+    return block->parent = findBlockParent(block->parent);
   }
-
-  return parent;
+  return block->parent;
 }
 
 void ImageProcessor::unionBlock(block_t* blockA, block_t* blockB) {
-  auto parentA = findBlock(blockA);
-  auto parentB = findBlock(blockB);
+  auto parentA = findBlockParent(blockA);
+  auto parentB = findBlockParent(blockB);
 
   // std::cout << "Merging [" << blockB->x <<" " << blockB->y <<"] to [" << blockA->x << " " << blockA->y << "]!" << std::endl;
 

@@ -91,7 +91,7 @@ class ImageProcessor {
     void mergeRow(block_t*, block_t*);
     void mergeBlock(block_t*, block_t*);
     void initBlock(block_t*, int, int, int, unsigned char);
-    block_t* findBlock(block_t*);
+    block_t* findBlockParent(block_t*);
     void unionBlock(block_t*, block_t*);
 
     // False positive filter
