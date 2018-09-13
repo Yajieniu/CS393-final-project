@@ -17,13 +17,28 @@ class BallDetector;
 class Classifier;
 class BeaconDetector;
 
+struct block_t {
+    block_t* parent;
+    short length;
+    short x;
+    short y;
+    short minX;
+    short minY;
+    short maxX;
+    short maxY;
+    double meanX;
+    double meanY;
+    int count;
+    unsigned char color;
+};
+
 /// @ingroup vision
 class ImageProcessor {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW  
-    ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera);
-    ~ImageProcessor();
-    void processFrame();
+    ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera);  // how to use vblocks
+    ~ImageProcessor();  // what is this
+    void processFrame(); 
     void init(TextLogger*);
     void SetColorTable(unsigned char*);
     std::unique_ptr<BeaconDetector> beacon_detector_;
@@ -42,8 +57,9 @@ class ImageProcessor {
     std::vector<BallCandidate*> getBallCandidates();
     BallCandidate* getBestBallCandidate();
     bool isImageLoaded();
-    void detectBall();
-    void findBall(int& imageX, int& imageY);
+    void detectBlob();
+    bool findBall(int& imageX, int& imageY);
+    WorldObject* getBall();
   private:
     int getTeamColor();
     double getCurrentTime();
@@ -67,6 +83,21 @@ class ImageProcessor {
     //void saveImg(std::string filepath);
     int topFrameCounter_ = 0;
     int bottomFrameCounter_ = 0;
+
+    void markBall(int, int, int);
+    void markGoal(int, int);
+
+    void RLE(block_t* blocks);
+    void mergeRow(block_t*, block_t*);
+    void mergeBlock(block_t*, block_t*);
+    void initBlock(block_t*, int, int, int, unsigned char);
+    block_t* findBlock(block_t*);
+    void unionBlock(block_t*, block_t*);
+
+    // False positive filter
+    bool lookLikeBall(block_t*);
+    bool lookLikeGoal(block_t*);
+
 };
 
 #endif
