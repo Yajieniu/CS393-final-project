@@ -131,11 +131,11 @@ void ImageProcessor::processFrame(){
 }
 
 
-void ImageProcessor::markBall(int imageX, int imageY) {
+void ImageProcessor::markBall(int imageX, int imageY, int radius) {
 
   WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 
-  std::cout << "Ball " << imageX << " " << imageY << ( camera_ == Camera::TOP ) << " " << std::endl;
+  // std::cout << "Ball " << imageX << " " << imageY << " " << ( camera_ == Camera::TOP ) << std::endl;
 
 
   ball->imageCenterX = imageX;
@@ -148,10 +148,12 @@ void ImageProcessor::markBall(int imageX, int imageY) {
 
   ball->fromTopCamera = camera_ == Camera::TOP;
 
+  ball->radius = radius;
+
   // std::cout << "Ball bearing = " << ball->visionBearing << endl;
   // std::cout << "Ball elevation = " << ball->visionElevation << endl;
   // std::cout << "Ball distance = " << ball->visionDistance << endl;
-
+  getBall();
   ball->seen = true;
 }
 
@@ -162,6 +164,9 @@ void ImageProcessor:: markGoal(int imageX, int imageY) {
   goal->imageCenterX = imageX;
   goal->imageCenterY = imageY;
 
+  // goal->imageCenterX = 0;
+  // goal->imageCenterY = 0;
+
   Position p = cmatrix_.getWorldPosition(imageX, imageY);
   goal->visionBearing = cmatrix_.bearing(p);
   goal->visionElevation = cmatrix_.elevation(p);
@@ -170,7 +175,39 @@ void ImageProcessor:: markGoal(int imageX, int imageY) {
   goal->seen = true;
 }
 
+
+bool ImageProcessor::lookLikeBall(block_t* block) {
+  if (block->parent != block || block->color != c_ORANGE) {
+    return false;
+  }
+
+  // std::cout << block->x << " " << block->y << " " << static_cast<int> (block->color) << std::endl;
+
+  int width = block->maxX - block->minX;
+  int height = block->maxY - block->minY;
+
+  if (width >= 1.5 * height || height >= 1.5 * width) {
+    return false;
+  }
+
+
+
+  int radius = (width+height) / 4;
+  if (radius * radius >= block->count / 2.3) { return false; }
+  if (radius * radius <= block->count / 4.0) { return false; }
+
+  return true;
+}
+    
+bool ImageProcessor::lookLikeGoal(block_t* block) {
+
+  return true;
+}
+
+
 void ImageProcessor::detectBlob() {
+
+  if (camera_ == Camera::BOTTOM) { return; }
 
   int size = iparams_.width/STEP * iparams_.height/STEP;
   block_t* blocks = new block_t[size];
@@ -185,6 +222,7 @@ void ImageProcessor::detectBlob() {
 
   int largestBallSize = 0;
   int largestGoalSize = 0;
+  int ballRadius = 0;
   int ballX = 0;
   int ballY = 0;
   int goalX = 0;
@@ -195,15 +233,17 @@ void ImageProcessor::detectBlob() {
     for (int x = 0; x < iparams_.width/STEP;) {
       int index = y * iparams_.width/STEP + x;
       auto block = &blocks[index];
-      if (block->parent == block && block->color == c_ORANGE && block->count > largestBallSize) {
+      if (lookLikeBall(block) && block->count > largestBallSize) {
         // markBall(block->meanX, block->meanY);
         largestBallSize = block->count;
         ballX = block->meanX * iparams_.width;
         ballY = block->meanY * iparams_.height;
-        // std::cout << "Ball " << block->meanX << " " << block->meanY << " " << largestGoalSize << std::endl;
+        ballRadius = (block->maxX - block->minX + block->maxY - block->minY) / 4;
+
+        // std::cout << "Ball " << block->meanX << " " << block->meanY << " " << block->color <<" " << largestGoalSize << std::endl;
       }
 
-      if (block->parent == block && block->color == c_BLUE && block->count > largestGoalSize) {
+      if (lookLikeGoal(block) && block->count > largestGoalSize) {
         // markGoal(block->meanX, block->meanY);
         largestGoalSize = block->count;
         goalX = block->meanX * iparams_.width;
@@ -215,12 +255,12 @@ void ImageProcessor::detectBlob() {
   }
 
   if (largestBallSize > 0) {
-    markBall(ballX , ballY);
+    markBall(ballX , ballY, ballRadius);
     // std::cout << "Ball " << ballX << " " << ballY << " " << largestBallSize << std::endl;
   }
 
   if (largestGoalSize > 0) {
-    markBall(goalX, goalY);
+    markGoal(goalX, goalY);
     // std::cout << "Goal " << goalX << " " << goalY << " " << largestGoalSize << std::endl;
   }
 
@@ -266,6 +306,12 @@ void ImageProcessor::initBlock(block_t* blocks, int x, int y, int length, unsign
 
   block->x = x-length;
   block->y = y;
+
+  block->minX = block->x;
+  block->maxX = block->x + length;
+  block->minY = block->y;
+  block->maxY = block->y;
+
 
   block->meanX = (block->x + length/2.) / iparams_.width;
   block->meanY = y*1. / iparams_.height;
@@ -332,22 +378,26 @@ void ImageProcessor::unionBlock(block_t* blockA, block_t* blockB) {
   // If share same parent already, then 
   if (parentA == parentB) {
     return;
+    // parentB = blockB;
   }
 
   // Always merge to the top-left block
-  if (parentB->x < parentA->x || parentB->y < parentA->y) {
-    auto tmp = parentB;
-    parentB = parentA;
-    parentA = tmp;
-  }
+  // if (parentB->x < parentA->x || parentB->y < parentA->y) {
+  //   auto tmp = parentB;
+  //   parentB = parentA;
+  //   parentA = tmp;
+  // }
 
   long totalCount = parentA->count + parentB->count;
   double weightA = parentA->count*1. / totalCount;
   double weightB = parentB->count*1. / totalCount;
   parentA->meanX = parentA->meanX * weightA + parentB->meanX * weightB;
   parentA->meanY = parentA->meanY * weightA + parentB->meanY * weightB;
-  // parentA->meanX = MIN(parentA->meanX, parentB->meanX);
-  // parentA->meanY = MIN(parentA->meanY, parentB->meanY);
+
+  parentA->minX = MIN(parentA->minX, parentB->minX);
+  parentA->minY = MIN(parentA->minY, parentB->minY);
+  parentA->maxX = MAX(parentA->maxX, parentB->maxX);
+  parentA->maxY = MAX(parentA->maxY, parentB->maxY);
 
   parentA->count += parentB->count;
 
@@ -374,7 +424,14 @@ std::vector<BallCandidate*> ImageProcessor::getBallCandidates() {
 }
 
 BallCandidate* ImageProcessor::getBestBallCandidate() {
+  // auto ball = ;
   return NULL;
+}
+
+WorldObject* ImageProcessor::getBall() {
+  auto ball = &vblocks_.world_object->objects_[WO_BALL];
+  std::cout << ball->imageCenterX << " " << ball->imageCenterY << std::endl;
+  return &vblocks_.world_object->objects_[WO_BALL];
 }
  
 void ImageProcessor::enableCalibration(bool value) {

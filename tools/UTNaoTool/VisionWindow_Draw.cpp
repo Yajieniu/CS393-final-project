@@ -209,21 +209,22 @@ void VisionWindow::drawBall(ImageWidget* image) {
   if(IS_RUNNING_CORE) {
     ImageProcessor* processor = getImageProcessor(image);
 
-    BallCandidate* best = processor->getBestBallCandidate();
-    if(!best) return;
+    WorldObject* ball = processor->getBall();
+    if(!ball) return;
 
-    int r = best->radius;
+    int r = ball->radius;
     painter.drawEllipse(
-      (int)best->centerX - r - 1,
-      (int)best->centerY - r - 1, 2 * r + 2, 2 * r + 2);
+      (int)ball->imageCenterX - r - 1,
+      (int)ball->imageCenterY - r - 1, 2 * r + 2, 2 * r + 2);
   }
   else if (world_object_block_ != NULL) {
     WorldObject* ball = &world_object_block_->objects_[WO_BALL];
     if(!ball->seen) return;
     if( (ball->fromTopCamera && _widgetAssignments[image] == Camera::BOTTOM) ||
         (!ball->fromTopCamera && _widgetAssignments[image] == Camera::TOP) ) return;
-    // int radius = ball->radius;
-    int radius = 5;
+    int radius = ball->radius;
+
+    // std::cout << ball->imageCenterX << " " << ball->imageCentery << std::endl;
     painter.drawEllipse(ball->imageCenterX - radius, ball->imageCenterY - radius, radius * 2, radius * 2);
   }
 }

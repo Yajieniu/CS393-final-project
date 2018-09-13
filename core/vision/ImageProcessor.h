@@ -22,6 +22,10 @@ struct block_t {
     short length;
     short x;
     short y;
+    short minX;
+    short minY;
+    short maxX;
+    short maxY;
     double meanX;
     double meanY;
     int count;
@@ -55,6 +59,7 @@ class ImageProcessor {
     bool isImageLoaded();
     void detectBlob();
     bool findBall(int& imageX, int& imageY);
+    WorldObject* getBall();
   private:
     int getTeamColor();
     double getCurrentTime();
@@ -79,7 +84,7 @@ class ImageProcessor {
     int topFrameCounter_ = 0;
     int bottomFrameCounter_ = 0;
 
-    void markBall(int, int);
+    void markBall(int, int, int);
     void markGoal(int, int);
 
     void RLE(block_t* blocks);
@@ -88,6 +93,11 @@ class ImageProcessor {
     void initBlock(block_t*, int, int, int, unsigned char);
     block_t* findBlock(block_t*);
     void unionBlock(block_t*, block_t*);
+
+    // False positive filter
+    bool lookLikeBall(block_t*);
+    bool lookLikeGoal(block_t*);
+
 };
 
 #endif
