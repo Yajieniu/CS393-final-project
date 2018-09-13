@@ -19,11 +19,11 @@ class BeaconDetector;
 
 struct block_t {
     block_t* parent;
+    short length;
     short x;
     short y;
-    short length;
-    float meanX;
-    float meanY;
+    double meanX;
+    double meanY;
     int count;
     unsigned char color;
 };
@@ -32,9 +32,9 @@ struct block_t {
 class ImageProcessor {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW  
-    ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera);
-    ~ImageProcessor();
-    void processFrame();
+    ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera);  // how to use vblocks
+    ~ImageProcessor();  // what is this
+    void processFrame(); 
     void init(TextLogger*);
     void SetColorTable(unsigned char*);
     std::unique_ptr<BeaconDetector> beacon_detector_;
@@ -80,7 +80,7 @@ class ImageProcessor {
     int bottomFrameCounter_ = 0;
 
     void markBall(int, int);
-    void markGoal(int, int, int);
+    void markGoal(int, int);
 
     void RLE(block_t* blocks);
     void mergeRow(block_t*, block_t*);

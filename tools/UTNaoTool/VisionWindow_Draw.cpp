@@ -102,12 +102,12 @@ void VisionWindow::redrawImages(ImageWidget* rawImage, ImageWidget* segImage, Im
   // if overlay is on, then draw objects on the raw and seg image as well
   if (cbxOverlay->isChecked()) {
     drawBall(rawImage);
-    drawBallCands(rawImage);
-    drawBeacons(rawImage);
+    // drawBallCands(rawImage);
+    // drawBeacons(rawImage);
 
     drawBall(segImage);
-    drawBallCands(segImage);
-    drawBeacons(segImage);
+    // drawBallCands(segImage);
+    // drawBeacons(segImage);
   }
 
   drawBall(verticalBlobImage);
@@ -222,7 +222,8 @@ void VisionWindow::drawBall(ImageWidget* image) {
     if(!ball->seen) return;
     if( (ball->fromTopCamera && _widgetAssignments[image] == Camera::BOTTOM) ||
         (!ball->fromTopCamera && _widgetAssignments[image] == Camera::TOP) ) return;
-    int radius = ball->radius;
+    // int radius = ball->radius;
+    int radius = 5;
     painter.drawEllipse(ball->imageCenterX - radius, ball->imageCenterY - radius, radius * 2, radius * 2);
   }
 }

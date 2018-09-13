@@ -18,8 +18,8 @@ CENTER_THRESHOLD = 100
 DELAY = 0.6
 
 # Top camera range (0, 1278) x (0, 958)
-X_RANGE = 1280
-Y_RANGE = 800
+X_RANGE = 320
+Y_RANGE = 240
 X_THETA = 40 * core.DEG_T_RAD
 Y_THETA = 30
 

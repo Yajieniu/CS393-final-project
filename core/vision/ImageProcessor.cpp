@@ -4,9 +4,9 @@
 #include <vision/Logging.h>
 #include <iostream>
 
-#define STEP 4
-#define BLOB_THRESHOLD 400 / STEP
-#define GOAL_THRESHOLD 1000 / STEP
+#define STEP 1
+// #define BLOB_THRESHOLD 200/STEP
+// #define GOAL_THRESHOLD 1500 / STEP
 
 ImageProcessor::ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera) :
   vblocks_(vblocks), iparams_(iparams), camera_(camera), cmatrix_(iparams_, camera)
@@ -116,7 +116,7 @@ void ImageProcessor::setCalibration(const RobotCalibration& calibration){
 }
 
 void ImageProcessor::processFrame(){
-  if(camera_ == Camera::BOTTOM) return;
+  // if(camera_ == Camera::BOTTOM) return;
   tlog(30, "Process Frame camera %i", camera_);
   
   // Horizon calculation
@@ -133,9 +133,10 @@ void ImageProcessor::processFrame(){
 
 void ImageProcessor::markBall(int imageX, int imageY) {
 
-  std::cout << "Detect Ball: " << imageX << ", " << imageY << std::endl;
-
   WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+
+  std::cout << "Ball " << imageX << " " << imageY << ( camera_ == Camera::TOP ) << " " << std::endl;
+
 
   ball->imageCenterX = imageX;
   ball->imageCenterY = imageY;
@@ -145,6 +146,8 @@ void ImageProcessor::markBall(int imageX, int imageY) {
   ball->visionElevation = cmatrix_.elevation(p);
   ball->visionDistance = cmatrix_.groundDistance(p);
 
+  ball->fromTopCamera = camera_ == Camera::TOP;
+
   // std::cout << "Ball bearing = " << ball->visionBearing << endl;
   // std::cout << "Ball elevation = " << ball->visionElevation << endl;
   // std::cout << "Ball distance = " << ball->visionDistance << endl;
@@ -152,22 +155,17 @@ void ImageProcessor::markBall(int imageX, int imageY) {
   ball->seen = true;
 }
 
-void ImageProcessor:: markGoal(int imageX, int imageY, int maxY) {
-  std::cout << "             Detect Goal: " << imageX << ", " << imageY << std::endl;
+void ImageProcessor:: markGoal(int imageX, int imageY) {
 
   WorldObject* goal = &vblocks_.world_object->objects_[WO_OWN_GOAL];
 
   goal->imageCenterX = imageX;
-  goal->imageCenterY = maxY;
+  goal->imageCenterY = imageY;
 
-  Position p = cmatrix_.getWorldPosition(imageX, maxY);
+  Position p = cmatrix_.getWorldPosition(imageX, imageY);
   goal->visionBearing = cmatrix_.bearing(p);
   goal->visionElevation = cmatrix_.elevation(p);
   goal->visionDistance = cmatrix_.groundDistance(p);
-
-  // std::cout << "goal bearing = " << goal->visionBearing << endl;
-  // std::cout << "goal elevation = " << goal->visionElevation << endl;
-  // std::cout << "goal distance = " << goal->visionDistance << endl;
 
   goal->seen = true;
 }
@@ -185,16 +183,45 @@ void ImageProcessor::detectBlob() {
     mergeRow(topRow, bottomRow);
   }
 
-  // detect balls
+  int largestBallSize = 0;
+  int largestGoalSize = 0;
+  int ballX = 0;
+  int ballY = 0;
+  int goalX = 0;
+  int goalY = 0;
+
+  // detect objects
   for (int y = 0; y < iparams_.height/STEP; y++) {
     for (int x = 0; x < iparams_.width/STEP;) {
       int index = y * iparams_.width/STEP + x;
       auto block = &blocks[index];
-      if (block->parent == block && block->count >= BLOB_THRESHOLD && block->color == c_ORANGE) {
-        markBall(block->meanX, block->meanY);
+      if (block->parent == block && block->color == c_ORANGE && block->count > largestBallSize) {
+        // markBall(block->meanX, block->meanY);
+        largestBallSize = block->count;
+        ballX = block->meanX * iparams_.width;
+        ballY = block->meanY * iparams_.height;
+        // std::cout << "Ball " << block->meanX << " " << block->meanY << " " << largestGoalSize << std::endl;
+      }
+
+      if (block->parent == block && block->color == c_BLUE && block->count > largestGoalSize) {
+        // markGoal(block->meanX, block->meanY);
+        largestGoalSize = block->count;
+        goalX = block->meanX * iparams_.width;
+        goalY = block->meanY * iparams_.height;
+        // std::cout << "Goal " << block->meanX << " " << block->meanY << " " << largestGoalSize << std::endl;
       }
       x += block->length;
     }
+  }
+
+  if (largestBallSize > 0) {
+    markBall(ballX , ballY);
+    // std::cout << "Ball " << ballX << " " << ballY << " " << largestBallSize << std::endl;
+  }
+
+  if (largestGoalSize > 0) {
+    markBall(goalX, goalY);
+    // std::cout << "Goal " << goalX << " " << goalY << " " << largestGoalSize << std::endl;
   }
 
   delete[] blocks;
@@ -226,24 +253,36 @@ void ImageProcessor::mergeBlock(block_t* blockA, block_t* blockB) {
   if (blockA->x + blockA->length > blockB->x && blockB->x + blockB->length > blockA->length) {
     unionBlock(blockA, blockB);
   }
-
 }
 
 void ImageProcessor::initBlock(block_t* blocks, int x, int y, int length, unsigned char color) {
-  // std::cout << x - length*STEP << " " << y << " " << length*STEP << std::endl; 
   int blockIndex = y/STEP * iparams_.width/STEP + x/STEP;
   auto block = &blocks[blockIndex-length];
 
   block->parent = block;
-  block->x = x-length;
-  block->y = y;
+
   block->length = length;
   block->color = color;
 
-  block->meanX = x + length/2;
-  block->meanY = y;
+  block->x = x-length;
+  block->y = y;
+
+  block->meanX = (block->x + length/2.) / iparams_.width;
+  block->meanY = y*1. / iparams_.height;
   block->count = length;
 
+  // DEBUG
+  // if (color == c_BLUE) {
+  //   std::cout << "Blue " << x << ", " << y << " " << length << std::endl;
+  // }
+
+  // if (color == c_ORANGE) {
+  //   std::cout << "Orange " << x << ", " << y << " " << length << std::endl;
+  // }
+
+  // if (color == c_FIELD_GREEN) {
+  //   std::cout << "Green " << x << ", " << y << " " << length << std::endl;
+  // }
 }
 
 void ImageProcessor::RLE(block_t* blocks) {
@@ -283,9 +322,33 @@ void ImageProcessor::unionBlock(block_t* blockA, block_t* blockB) {
   auto parentA = findBlock(blockA);
   auto parentB = findBlock(blockB);
 
-  int totalCount = parentA->count + parentB->count;
-  parentA->meanX = (parentA->meanX * parentA->count + parentB->meanX * parentB->count) / totalCount;
-  parentA->meanY = (parentA->meanY * parentA->count + parentB->meanY * parentB->count) / totalCount;
+  // std::cout << "Merging [" << blockB->x <<" " << blockB->y <<"] to [" << blockA->x << " " << blockA->y << "]!" << std::endl;
+
+  // if (parentA == parentB) {
+  //   // std::cout << parentA->x << " " << parentA->y << std::endl;
+  //   std::cout << "Error!" << std::endl;
+  // }
+
+  // If share same parent already, then 
+  if (parentA == parentB) {
+    return;
+  }
+
+  // Always merge to the top-left block
+  if (parentB->x < parentA->x || parentB->y < parentA->y) {
+    auto tmp = parentB;
+    parentB = parentA;
+    parentA = tmp;
+  }
+
+  long totalCount = parentA->count + parentB->count;
+  double weightA = parentA->count*1. / totalCount;
+  double weightB = parentB->count*1. / totalCount;
+  parentA->meanX = parentA->meanX * weightA + parentB->meanX * weightB;
+  parentA->meanY = parentA->meanY * weightA + parentB->meanY * weightB;
+  // parentA->meanX = MIN(parentA->meanX, parentB->meanX);
+  // parentA->meanY = MIN(parentA->meanY, parentB->meanY);
+
   parentA->count += parentB->count;
 
   parentB->parent = parentA;
