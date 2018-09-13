@@ -135,7 +135,7 @@ void ImageProcessor::markBall(int imageX, int imageY, int radius) {
 
   WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 
-  // std::cout << "Ball " << imageX << " " << imageY << " " << ( camera_ == Camera::TOP ) << std::endl;
+  std::cout << "Ball " << imageX << " " << imageY << " " << radius << std::endl;
 
 
   ball->imageCenterX = imageX;
@@ -203,8 +203,12 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
 
 
   int radius = (width+height) / 4;
+  // int C = (240. - height) / (13. - radius);
+
+  if (radius <= 2 || radius >= 15) { return false; }
   if (radius * radius >= block->count / 2.8) { return false; }
   if (radius * radius <= block->count / 3.4) { return false; }
+
 
   return true;
 }
@@ -283,13 +287,13 @@ void ImageProcessor::mergeRow(block_t *rowA, block_t* rowB) {
   int indexA = 0;
   int indexB = 0;
 
-  while (indexA < iparams_.width / STEP || indexB < iparams_.width / STEP) {
+  while (indexA < iparams_.width / STEP && indexB < iparams_.width / STEP) {
     auto blockA = &rowA[indexA];
     auto blockB = &rowB[indexB];
     
     mergeBlock(blockA, blockB);
 
-    if (indexB >= iparams_.width / STEP || indexA + blockA->length <= indexB + blockB->length) {
+    if (indexA + blockA->length <= indexB + blockB->length) {
       indexA += blockA->length;
     } else {
       indexB += blockB->length;
