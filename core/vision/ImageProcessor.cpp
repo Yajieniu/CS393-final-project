@@ -181,9 +181,19 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
     return false;
   }
 
-  // std::cout << block->x << " " << block->y << " " << static_cast<int> (block->color) << std::endl;
+  // int centerX = block->meanX;
+  // int centerY = block->meanY;
+  // int radius = (block->maxY - block->minY + block->maxX - block->minX) / 4;
 
-  int width = block->maxX - block->minX;
+  // int step = 30;
+  // int count = 0;
+  // for (int i = 0; i < 360; i+=step) {
+  //   int x = centerX + cos(step);
+  //   int y = centerY + sin()
+  // }
+
+  // // std::cout << block->x << " " << block->y << " " << static_cast<int> (block->color) << std::endl;
+  int width =  block->maxX - block->minX;
   int height = block->maxY - block->minY;
 
   if (width >= 1.5 * height || height >= 1.5 * width) {
@@ -193,8 +203,8 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
 
 
   int radius = (width+height) / 4;
-  if (radius * radius >= block->count / 2.3) { return false; }
-  if (radius * radius <= block->count / 4.0) { return false; }
+  if (radius * radius >= block->count / 2.8) { return false; }
+  if (radius * radius <= block->count / 3.4) { return false; }
 
   return true;
 }
@@ -430,7 +440,7 @@ BallCandidate* ImageProcessor::getBestBallCandidate() {
 
 WorldObject* ImageProcessor::getBall() {
   auto ball = &vblocks_.world_object->objects_[WO_BALL];
-  std::cout << ball->imageCenterX << " " << ball->imageCenterY << std::endl;
+  // std::cout << ball->imageCenterX << " " << ball->imageCenterY << std::endl;
   return &vblocks_.world_object->objects_[WO_BALL];
 }
  
