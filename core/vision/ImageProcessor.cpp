@@ -13,7 +13,7 @@ ImageProcessor::ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams
 {
   enableCalibration_ = false;
   color_segmenter_ = std::make_unique<Classifier>(vblocks_, vparams_, iparams_, camera_);
-  beacon_detector_ = std::make_unique<BeaconDetector>(DETECTOR_PASS_ARGS);
+  // beacon_detector_ = std::make_unique<BeaconDetector>(DETECTOR_PASS_ARGS);
   calibration_ = std::make_unique<RobotCalibration>();
 }
 
@@ -24,7 +24,7 @@ void ImageProcessor::init(TextLogger* tl){
   textlogger = tl;
   vparams_.init();
   color_segmenter_->init(tl);
-  beacon_detector_->init(tl);
+  // beacon_detector_->init(tl);
 }
 
 unsigned char* ImageProcessor::getImg() {
@@ -127,7 +127,7 @@ void ImageProcessor::processFrame(){
   tlog(30, "Classifying Image: %i", camera_);
   if(!color_segmenter_->classifyImage(color_table_)) return;
   detectBlob();
-  beacon_detector_->findBeacons();
+  // beacon_detector_->findBeacons();
 }
 
 
@@ -273,35 +273,52 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
   unsigned char c1 = beacon_colors[beacon_name].first;
   unsigned char c2 = beacon_colors[beacon_name].second;
   int type = beacon_types[beacon_name];
+  short x, y;
+  int index;
 
   if (block->color != c1) {
     return false;
-  } else {
-    short x = block->meanX * iparams_.width;
-    short y = block->meanY * iparams_.height;
-    y = 2*block->minY - y;
-
-    int index = y * iparams_.width/STEP + x;
-    auto block1 = &blocks[index];
-    if (block1->color != c2) {
-      return false;
-    } else {
-      short x = block1->meanX * iparams_.width;
-      short y = block1->meanY * iparams_.height;
-      y = 2*block1->minY - y;
-
-      int index = y * iparams_.width/STEP + x;
-      auto block2 = &blocks[index];
-      if (block2->color != c_WHITE) {
-        return false;
-      }
-
-      count = block->count + block1->count + block2->count;
-      meanX = (block->meanX + block1->meanX)/2;
-      meanY = (block->meanY + block1->meanY)/2;
-    }
-
   }
+
+  x = block->meanX * iparams_.width/STEP;
+  y = block->meanY * iparams_.height/STEP;
+  y = block->maxY + (block->maxY - y);
+
+  if ( y >= iparams_.height/STEP || x >= iparams_.width/STEP || y < 0 || x < 0) {
+    return false;
+  }
+
+  index = y * iparams_.width/STEP + x;
+
+  auto block1 = &blocks[index];
+
+  block1 = findBlockParent(block1);
+
+  if (block1->color != c2) {
+    return false;
+  }
+
+  x = block1->meanX * iparams_.width;
+  y = block1->meanY * iparams_.height;
+  y = block->maxY + (block->maxY - y);
+
+  if ( y >= iparams_.height/STEP || x >= iparams_.width/STEP || y < 0 || x < 0) {
+    return false;
+  }
+
+  index = y * iparams_.width/STEP + x;
+  auto block2 = &blocks[index];
+  block2 = findBlockParent(block2);
+  if (block2->color != c_WHITE) {
+    return false;
+  }
+
+  count = block->count + block1->count + block2->count;
+  meanX = (block->meanX + block1->meanX)/2;
+  meanY = (block->meanY + block1->meanY)/2;
+
+
+  std::cout << "Beacon " << COLOR_NAME(c1) << COLOR_NAME(c2) << " " << meanX * iparams_.width << " " << meanY * iparams_.height << std::endl;
 
   return true;
 
@@ -313,7 +330,7 @@ void ImageProcessor::detectBlob() {
   if (camera_ == Camera::BOTTOM) { return; }
 
   int size = iparams_.width/STEP * iparams_.height/STEP;
-  block_t* blocks = new block_t[size];
+  block_t *blocks = new block_t[size];
   RLE(blocks);
 
   // Merge blocks
@@ -337,7 +354,7 @@ void ImageProcessor::detectBlob() {
 
   // beacon
   const int n_beacons = 6;
-  WorldObjectType beacons[n_beacons] = {WO_BEACON_BLUE_YELLOW,
+  WorldObjectType beacon_name[n_beacons] = {WO_BEACON_BLUE_YELLOW,
                                         WO_BEACON_YELLOW_BLUE,
                                         WO_BEACON_BLUE_PINK,
                                         WO_BEACON_PINK_BLUE,
@@ -368,7 +385,7 @@ void ImageProcessor::detectBlob() {
 
       for (int i_beacon = 0; i_beacon < n_beacons; ++i_beacon) {
         int count; double meanX, meanY;
-        if (lookLikeBeacon(blocks, block, beacons[i_beacon], count, meanX, meanY) 
+        if (lookLikeBeacon(blocks, block, beacon_name[i_beacon], count, meanX, meanY) 
             && block->count > largestBeaconSize[i_beacon]) {
           largestBeaconSize[i_beacon] = count;
           beaconX[i_beacon] = meanX * iparams_.width;
@@ -392,13 +409,11 @@ void ImageProcessor::detectBlob() {
 
   for (int i_beacon = 0; i_beacon < n_beacons; ++i_beacon) {
     if (largestBeaconSize[i_beacon] > 0) {
-      markBeacon(beacons[i_beacon], beaconX[i_beacon], beaconY[i_beacon]);
+      markBeacon(beacon_name[i_beacon], beaconX[i_beacon], beaconY[i_beacon]);
     }
   }
 
   delete[] blocks;
-
-
 }
 
 void ImageProcessor::mergeRow(block_t *rowA, block_t* rowB) {
@@ -450,7 +465,7 @@ void ImageProcessor::initBlock(block_t* blocks, int x, int y, int length, unsign
   block->count = length;
 
   for (int i = blockIndex-length+1; i < blockIndex; ++i) {
-    blocks[i] = *block;
+    blocks[i].parent = block;
   }
 
   // DEBUG
