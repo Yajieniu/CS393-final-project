@@ -141,7 +141,7 @@ void ImageProcessor::markBall(int imageX, int imageY, int radius) {
   ball->imageCenterX = imageX;
   ball->imageCenterY = imageY;
 
-  Position p = cmatrix_.getWorldPosition(imageX, imageY);
+  Position p = cmatrix_.getWorldPosition(imageX, imageY, 255);
   ball->visionBearing = cmatrix_.bearing(p);
   ball->visionElevation = cmatrix_.elevation(p);
   ball->visionDistance = cmatrix_.groundDistance(p);
@@ -249,7 +249,6 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
   if (radius * radius >= block->count / 2.7) { return false; }
   if (radius * radius <= block->count / 3.5) { return false; }
 
-
   return true;
 }
     
@@ -266,7 +265,6 @@ bool ImageProcessor::lookLikeGoal(block_t* block) {
 
 
   if (block->count <= 1000) { return false; }
-
 
   return true;
 }
@@ -415,14 +413,11 @@ void ImageProcessor::detectBlob() {
   }
 
   // some variables to help detect objects
-  // ball
   int largestBallSize = 0;
+  int largestGoalSize = 0;
   int ballRadius = 0;
   int ballX = 0;
   int ballY = 0;
-
-  // goal
-  int largestGoalSize = 0;
   int goalX = 0;
   int goalY = 0;
 
