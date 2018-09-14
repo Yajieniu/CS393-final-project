@@ -84,6 +84,10 @@ DECLARE_INTERNAL_SCHEMA(struct JointCommandBlock : public MemoryBlock {
       stiffness_[HeadPitch] = stiff;
     }
 
+    float getHeadTilt() {
+      return angles_[HeadPitch];
+    }
+
     void setAllStiffness(float target, float time) {
       send_stiffness_ = true;
       stiffness_time_ = time;

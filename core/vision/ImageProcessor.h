@@ -96,7 +96,9 @@ class ImageProcessor {
 
     // False positive filter
     bool lookLikeBall(block_t*);
-    bool lookLikeGoal(block_t*);
+    bool lookLikeGoal(block_t*, block_t* blocks);
+    bool OneSixthRowCheck(block_t* block, block_t* blocks, double height, double width);
+    float TiltAngleTest(block_t* block);
 
 };
 

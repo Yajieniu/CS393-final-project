@@ -1,8 +1,12 @@
+#include <iostream>
+#include <math.h>
 #include <vision/ImageProcessor.h>
 #include <vision/Classifier.h>
 #include <vision/BeaconDetector.h>
 #include <vision/Logging.h>
-#include <iostream>
+#include <memory/JointCommandBlock.h>
+#include <common/RobotInfo.h>
+#define _USE_NATH_DEFINES
 
 #define STEP 1
 // #define BLOB_THRESHOLD 200/STEP
@@ -163,9 +167,6 @@ void ImageProcessor:: markGoal(int imageX, int imageY) {
   goal->imageCenterX = imageX;
   goal->imageCenterY = imageY;
 
-  // goal->imageCenterX = 0;
-  // goal->imageCenterY = 0;
-
   Position p = cmatrix_.getWorldPosition(imageX, imageY, 255);
   goal->visionBearing = cmatrix_.bearing(p);
   goal->visionElevation = cmatrix_.elevation(p);
@@ -214,7 +215,7 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
   return true;
 }
     
-bool ImageProcessor::lookLikeGoal(block_t* block) {
+bool ImageProcessor::lookLikeGoal(block_t* block, block_t* blocks) {
 
   if (block->parent != block || block->color != c_BLUE) {
     return false;
@@ -222,13 +223,64 @@ bool ImageProcessor::lookLikeGoal(block_t* block) {
 
   double width = block->maxX - block->minX;
   double height = block->maxY - block->minY;
+
+  // Size checks.
   if (width / height >= 2.5) { return false; }
-
-
   if (block->count <= 100) { return false; }
+  if (height < 24) { return false; }
 
+  return OneSixthRowCheck(block, blocks, height, width);
+}
 
+  /* Perform the first one-six row length check. */
+bool ImageProcessor::OneSixthRowCheck(block_t* block, block_t* blocks, 
+                                      double height, double width) {
+  int checkPoint = (int) floor(block->minY + (height / 6.0));
+  assert(checkPoint < block->maxY && checkPoint > block->minY);
+  block_t* SixthRow = &blocks[checkPoint*iparams_.width/STEP];
+
+  int index = 0;
+  int detected = 0;
+
+  while (index < iparams_.width / STEP) {
+    auto lineSegment = &SixthRow[index];
+
+    if (lineSegment->color == c_BLUE &&
+        lineSegment->minX >= block->minX &&
+        lineSegment->maxX <= block->maxX) {
+
+      detected += 1;
+      assert(detected == 1);
+      if (lineSegment->length < width / 2) {
+        return false;
+      } 
+    }
+  }
+ 
+  assert(detected == 1);
   return true;
+}
+
+float ImageProcessor::TiltAngleTest(block_t* block) {
+  int ImgCenterY = (int) iparams_.height/STEP;
+  int BboxCentroidY = block->meanY;
+  int ImageResolution = (int) iparams_.width/STEP * iparams_.height/STEP;
+
+  // Arbitary focal length of the camera
+  // Referred from core/motion/rswalk2014/perception/vision/CameraDefs.hpp
+  float CameraFocalLength = 1;
+  float FocalPixConstant = ImageResolution * CameraFocalLength;
+  struct JointCommandBlock jointBlock = JointCommandBlock();
+  float RoboCamTilt = jointBlock.getHeadTilt();
+
+  float arctan = atan2((double) ImgCenterY - BboxCentroidY, (double) FocalPixConstant);
+  float compensated = arctan + RoboCamTilt;
+
+  std::cout << "ImgCenterY " << ImgCenterY << " BboxCentroidY " << BboxCentroidY;
+  std::cout << "ImageResolution " << ImageResolution << " FocalPixConstant " << FocalPixConstant;
+  std::cout << "RoboCamTilt " << RoboCamTilt << " " << "arctan " << arctan;
+
+  return compensated * 180.0 / M_PI;
 }
 
 
@@ -270,7 +322,7 @@ void ImageProcessor::detectBlob() {
         // std::cout << "Ball " << block->meanX << " " << block->meanY << " " << block->color <<" " << largestGoalSize << std::endl;
       }
 
-      if (lookLikeGoal(block) && block->count > largestGoalSize) {
+      if (lookLikeGoal(block, blocks) && block->count > largestGoalSize) {
         // markGoal(block->meanX, block->meanY);
         largestGoalSize = block->count;
         goalX = block->meanX * iparams_.width;

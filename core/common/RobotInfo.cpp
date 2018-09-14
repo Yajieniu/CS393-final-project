@@ -12,7 +12,7 @@ const char* getSensorString(Sensor s) {
 	{
 	case gyroX: return "InertialSensor/GyrX";
 	case gyroY: return "InertialSensor/GyrY";
-  case gyroZ: return "InertialSensor/GyrZ";
+	case gyroZ: return "InertialSensor/GyrZ";
 	case accelX: return "InertialSensor/AccX";
 	case accelY: return "InertialSensor/AccY";
 	case accelZ: return "InertialSensor/AccZ";
