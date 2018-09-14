@@ -245,20 +245,27 @@ void VisionWindow::drawGoal(ImageWidget* image) {
   if(not goal.seen) return;
   if(goal.fromTopCamera and _widgetAssignments[image] == Camera::BOTTOM) return;
   if(not goal.fromTopCamera and _widgetAssignments[image] == Camera::TOP) return;
-  std::cout << "Drawing goal" << std::endl;
+  // std::cout << goal.imageCenterX << " " << goal.imageCenterY << std::endl;
   QPen pen(segCol[c_BLUE]);
 
-  int width = cmatrix.getCameraWidthByDistance(goal.visionDistance, 110);
-  int height = cmatrix.getCameraHeightByDistance(goal.visionDistance, 100);
+  int width = cmatrix.getCameraWidthByDistance(goal.visionDistance, 850);
+  int height = cmatrix.getCameraHeightByDistance(goal.visionDistance, 500);
+
+  // int width = 50;
+  // int height = 25;
+
+  std::cout << width << " " << height << " and " << goal.imageCenterX << " " << goal.imageCenterY << " " << goal.fromTopCamera << std::endl;
+
   int x1 = goal.imageCenterX - width / 2;
   
   // Draw top
-  int ty1 = goal.imageCenterY - height;
+  int ty1 = goal.imageCenterY - height / 2;
   QPainterPath path;
   path.addRoundedRect(QRect(x1, ty1, width, height), 5, 5);
-  painter.setPen(pen);
+  // painter.setPen(pen);
   painter.fillPath(path, QBrush(segCol[c_BLUE]));
-
+  // painter.setPen(QPen(QColor(0, 255, 127), 3));
+  // painter.drawEllipse(x1, ty1, 10, 10);
 }
 
 void VisionWindow::drawBallCands(ImageWidget* image) {

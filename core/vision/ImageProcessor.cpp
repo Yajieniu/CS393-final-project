@@ -135,7 +135,7 @@ void ImageProcessor::markBall(int imageX, int imageY, int radius) {
 
   WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
 
-  std::cout << "Ball " << imageX << " " << imageY << " " << radius << std::endl;
+  // std::cout << "Ball " << imageX << " " << imageY << " " << radius << std::endl;
 
 
   ball->imageCenterX = imageX;
@@ -153,13 +153,12 @@ void ImageProcessor::markBall(int imageX, int imageY, int radius) {
   // std::cout << "Ball bearing = " << ball->visionBearing << endl;
   // std::cout << "Ball elevation = " << ball->visionElevation << endl;
   // std::cout << "Ball distance = " << ball->visionDistance << endl;
-  getBall();
   ball->seen = true;
 }
 
 void ImageProcessor:: markGoal(int imageX, int imageY) {
 
-  WorldObject* goal = &vblocks_.world_object->objects_[WO_OWN_GOAL];
+  WorldObject* goal = &vblocks_.world_object->objects_[WO_UNKNOWN_GOAL];
 
   goal->imageCenterX = imageX;
   goal->imageCenterY = imageY;
@@ -167,10 +166,11 @@ void ImageProcessor:: markGoal(int imageX, int imageY) {
   // goal->imageCenterX = 0;
   // goal->imageCenterY = 0;
 
-  Position p = cmatrix_.getWorldPosition(imageX, imageY);
+  Position p = cmatrix_.getWorldPosition(imageX, imageY, 255);
   goal->visionBearing = cmatrix_.bearing(p);
   goal->visionElevation = cmatrix_.elevation(p);
   goal->visionDistance = cmatrix_.groundDistance(p);
+  goal->fromTopCamera = camera_ == Camera::TOP;
 
   goal->seen = true;
 }
@@ -201,7 +201,8 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
   }
 
 
-
+  // could be more accurate, constant can be changed, need to consider the y value of 
+  // ball in the view, taking tile value into consideration. 
   int radius = (width+height) / 4;
   // int C = (240. - height) / (13. - radius);
 
@@ -214,6 +215,18 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
 }
     
 bool ImageProcessor::lookLikeGoal(block_t* block) {
+
+  if (block->parent != block || block->color != c_BLUE) {
+    return false;
+  }
+
+  double width = block->maxX - block->minX;
+  double height = block->maxY - block->minY;
+  if (width / height >= 2.5) { return false; }
+
+
+  if (block->count <= 100) { return false; }
+
 
   return true;
 }
@@ -262,7 +275,7 @@ void ImageProcessor::detectBlob() {
         largestGoalSize = block->count;
         goalX = block->meanX * iparams_.width;
         goalY = block->meanY * iparams_.height;
-        // std::cout << "Goal " << block->meanX << " " << block->meanY << " " << largestGoalSize << std::endl;
+        std::cout << "Goal " << block->meanX * iparams_.width << " " << block->meanY * iparams_.height << " " << largestGoalSize << std::endl;
       }
       x += block->length;
     }
