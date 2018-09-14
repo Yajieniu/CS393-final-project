@@ -178,12 +178,12 @@ void ImageProcessor:: markGoal(int imageX, int imageY) {
 void ImageProcessor:: markBeacon(WorldObjectType beacon_name, int beaconX, int beaconY) {
 
   static map<WorldObjectType,int> heights = {
-    { WO_BEACON_BLUE_YELLOW, 350 },
-    { WO_BEACON_YELLOW_BLUE, 350 },
-    { WO_BEACON_BLUE_PINK, 250 },
-    { WO_BEACON_PINK_BLUE, 250 },
-    { WO_BEACON_PINK_YELLOW, 250 },
-    { WO_BEACON_YELLOW_PINK, 250 }
+    { WO_BEACON_BLUE_YELLOW, 300 },
+    { WO_BEACON_YELLOW_BLUE, 300 },
+    { WO_BEACON_BLUE_PINK, 200 },
+    { WO_BEACON_PINK_BLUE, 200 },
+    { WO_BEACON_PINK_YELLOW, 200 },
+    { WO_BEACON_YELLOW_PINK, 200 }
   };
 
   WorldObject* beacon = &vblocks_.world_object->objects_[beacon_name];
@@ -242,7 +242,9 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
   int radius = (width+height) / 4;
   // int C = (240. - height) / (13. - radius);
 
-  if (radius >= 15) { return false; }
+  if (camera_ == Camera::TOP && radius >= 15) { return false; }
+  // if (camera_ == Camera::BOTTOM && radius >= 100) { return false; }
+
   if (radius * radius >= block->count / 2.7) { return false; }
   if (radius * radius <= block->count / 3.5) { return false; }
 
@@ -261,7 +263,7 @@ bool ImageProcessor::lookLikeGoal(block_t* block) {
   if (width / height >= 2.5 || width / height <= 1.5) { return false; }
 
 
-  if (block->count <= 500) { return false; }
+  if (block->count <= 1000) { return false; }
 
 
   return true;
@@ -357,6 +359,11 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
 // bool ImageProcessor::lookLikeOccudedBeacon(block_t* blocks, block_t* block, 
 //   WorldObjectType beacon_name, int& count, double& meanX, double& meanY) {
 
+//   int dummyCount;
+//   if (!generalBlobFilter(block) || lookLikeBeacon()) {
+//     return false;
+//   }
+
 //   return false;
 // }
 
@@ -365,7 +372,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
 
 void ImageProcessor::detectBlob() {
 
-  // if (camera_ == Camera::BOTTOM) { return; }
+  if (camera_ == Camera::BOTTOM) { return; }
 
   int size = iparams_.width/STEP * iparams_.height/STEP;
   block_t *blocks = new block_t[size];
@@ -439,7 +446,7 @@ void ImageProcessor::detectBlob() {
 
   if (largestBallSize > 0) {
     markBall(ballX , ballY, ballRadius);
-    // std::cout << "Ball " << ballX << " " << ballY << " " << largestBallSize << std::endl;
+    std::cout << "Ball " << ballX << " " << ballY << " " << largestBallSize << std::endl;
   }
 
   if (largestGoalSize > 0) {
