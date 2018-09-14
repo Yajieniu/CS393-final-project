@@ -77,7 +77,7 @@ void VisionWindow::updateBigImage() {
     if (cbxOverlay->isChecked()) {
       drawGoal(bigImage);
       drawBall(bigImage);
-      drawBallCands(bigImage);
+      // drawBallCands(bigImage);
       drawBeacons(bigImage);
     }
   }
@@ -105,12 +105,12 @@ void VisionWindow::redrawImages(ImageWidget* rawImage, ImageWidget* segImage, Im
     drawGoal(rawImage);
     drawBall(rawImage);
     // drawBallCands(rawImage);
-    // drawBeacons(rawImage);
+    drawBeacons(rawImage);
 
     drawGoal(segImage);
     drawBall(segImage);
     // drawBallCands(segImage);
-    // drawBeacons(segImage);
+    drawBeacons(segImage);
   }
 
   drawBall(verticalBlobImage);
@@ -214,6 +214,9 @@ void VisionWindow::drawBall(ImageWidget* image) {
 
     WorldObject* ball = processor->getBall();
     if(!ball) return;
+    if(!ball->seen) return;
+    if( (ball->fromTopCamera && _widgetAssignments[image] == Camera::BOTTOM) ||
+        (!ball->fromTopCamera && _widgetAssignments[image] == Camera::TOP) ) return;
 
     int r = ball->radius;
     painter.drawEllipse(
@@ -254,7 +257,7 @@ void VisionWindow::drawGoal(ImageWidget* image) {
   // int width = 50;
   // int height = 25;
 
-  std::cout << width << " " << height << " and " << goal.imageCenterX << " " << goal.imageCenterY << " " << goal.fromTopCamera << std::endl;
+  // std::cout << width << " " << height << " and " << goal.imageCenterX << " " << goal.imageCenterY << " " << goal.fromTopCamera << std::endl;
 
   int x1 = goal.imageCenterX - width / 2;
   
