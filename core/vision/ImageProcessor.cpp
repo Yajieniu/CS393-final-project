@@ -245,14 +245,14 @@ bool ImageProcessor::lookLikeGoal(block_t* block) {
   return true;
 }
 
-bool ImageProcessor::lookLikeBeacon(block_t* block, 
-  WorldObjectType beacon_name, int& count, int& meanX, int& meanY) {
+bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block, 
+  WorldObjectType beacon_name, int& count, double& meanX, double& meanY) {
   
   if (!generalBlobFilter(block)) {
     return false;
   }
 
-  static map<WorldObjectType, pair<Color,Color> > beacon_colors = {
+  static map<WorldObjectType, pair<unsigned char,unsigned char> > beacon_colors = {
     { WO_BEACON_BLUE_YELLOW, {c_BLUE, c_YELLOW} },
     { WO_BEACON_YELLOW_BLUE, {c_YELLOW, c_BLUE} },
     { WO_BEACON_BLUE_PINK, {c_BLUE, c_PINK} },
@@ -270,15 +270,38 @@ bool ImageProcessor::lookLikeBeacon(block_t* block,
     { WO_BEACON_YELLOW_PINK, 1 }
   };
 
-  c1 = beacon_colors[beacon_name].first;
-  c2 = beacon_colors[beacon_name].second;
-  type = beacon_types[beacon_name];
+  unsigned char c1 = beacon_colors[beacon_name].first;
+  unsigned char c2 = beacon_colors[beacon_name].second;
+  int type = beacon_types[beacon_name];
 
   if (block->color != c1) {
     return false;
+  } else {
+    short x = block->meanX * iparams_.width;
+    short y = block->meanY * iparams_.height;
+    y = 2*block->minY - y;
+
+    int index = y * iparams_.width/STEP + x;
+    auto block1 = &blocks[index];
+    if (block1->color != c2) {
+      return false;
+    } else {
+      short x = block1->meanX * iparams_.width;
+      short y = block1->meanY * iparams_.height;
+      y = 2*block1->minY - y;
+
+      int index = y * iparams_.width/STEP + x;
+      auto block2 = &blocks[index];
+      if (block2->color != c_WHITE) {
+        return false;
+      }
+
+      count = block->count + block1->count + block2->count;
+      meanX = (block->meanX + block1->meanX)/2;
+      meanY = (block->meanY + block1->meanY)/2;
+    }
+
   }
-
-
 
   return true;
 
@@ -345,7 +368,7 @@ void ImageProcessor::detectBlob() {
 
       for (int i_beacon = 0; i_beacon < n_beacons; ++i_beacon) {
         int count; double meanX, meanY;
-        if (lookLikeBeacon(block, beacons[i_beacon], &count, &meanX, &meanY) 
+        if (lookLikeBeacon(blocks, block, beacons[i_beacon], count, meanX, meanY) 
             && block->count > largestBeaconSize[i_beacon]) {
           largestBeaconSize[i_beacon] = count;
           beaconX[i_beacon] = meanX * iparams_.width;
@@ -427,7 +450,7 @@ void ImageProcessor::initBlock(block_t* blocks, int x, int y, int length, unsign
   block->count = length;
 
   for (int i = blockIndex-length+1; i < blockIndex; ++i) {
-    blocks[i] = block;
+    blocks[i] = *block;
   }
 
   // DEBUG
