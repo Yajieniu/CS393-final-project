@@ -363,5 +363,10 @@ void VisionWindow::drawBeacons(ImageWidget* image) {
     bpath.addRoundedRect(QRect(x1, by1, width, height), 5, 5);
     painter.setPen(bpen);
     painter.fillPath(bpath, QBrush(beacon.second[1]));
+
+    // Draw occulded indicator
+    if (object.occluded) {
+      painter.drawText(x1, ty1, QString::fromStdString("occluded"));
+    }
   }
 }

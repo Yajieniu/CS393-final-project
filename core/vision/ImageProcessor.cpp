@@ -175,7 +175,7 @@ void ImageProcessor:: markGoal(int imageX, int imageY) {
   goal->seen = true;
 }
 
-void ImageProcessor:: markBeacon(WorldObjectType beacon_name, int beaconX, int beaconY) {
+void ImageProcessor:: markBeacon(WorldObjectType beacon_name, int beaconX, int beaconY, bool occluded) {
 
   static map<WorldObjectType,int> heights = {
     { WO_BEACON_BLUE_YELLOW, 300 },
@@ -196,6 +196,7 @@ void ImageProcessor:: markBeacon(WorldObjectType beacon_name, int beaconX, int b
   beacon->visionElevation = cmatrix_.elevation(p);
   beacon->visionDistance = cmatrix_.groundDistance(p);
   beacon->fromTopCamera = camera_ == Camera::TOP;
+  beacon->occluded = occluded;
 
   beacon->seen = true;
 }
@@ -269,8 +270,9 @@ bool ImageProcessor::lookLikeGoal(block_t* block) {
   return true;
 }
 
+
 bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block, 
-  WorldObjectType beacon_name, int& count, double& meanX, double& meanY) {
+  WorldObjectType beacon_name, int& count, bool& occluded, double& meanX, double& meanY) {
   
   if (!generalBlobFilter(block)) {
     return false;
@@ -294,7 +296,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
     { WO_BEACON_YELLOW_PINK, 1 }
   };
 
-  static const int nPoints = 3; // Do a point checking on beacons
+  static const int nPoints = 3; // Do a 9-point checking on beacons
   static float xOffsets[nPoints] = {-1./2, 0., 1./2}, yOffsets[nPoints] = {1./2, 1., 3./2};
 
   unsigned char colorTop = beacon_colors[beacon_name].first;
@@ -311,7 +313,9 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
 
   x = block->meanX * iparams_.width/STEP;
   y = block->meanY * iparams_.height/STEP;
-  points_ok = 0;
+  
+
+  int pointsOKTop = 0;
 
   for (int i = 0; i < nPoints; i++) {
     for (int j = 0; j < nPoints; j++) {
@@ -322,15 +326,15 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
       index = y_temp * iparams_.width/STEP + x_temp;
       blockMed = &blocks[index];
       blockMed = findBlockParent(blockMed);
-      if (generalBlobFilter(blockMed) && blockMed->color == colorBottom) points_ok++;
+      if (generalBlobFilter(blockMed) && blockMed->color == colorBottom) pointsOKTop++;
     }
   }
 
-  if (points_ok < 5) return false;
+  if (pointsOKTop < 3) return false;
 
   x = blockMed->meanX * iparams_.width/STEP;
   y = blockMed->meanY * iparams_.height/STEP;
-  points_ok = 0;
+  int pointsOKBottom = 0;
 
   for (int i = 0; i < nPoints; ++i) {
     for (int j = 0; j < nPoints; ++j) {
@@ -341,33 +345,21 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
       index = y_temp * iparams_.width/STEP + x_temp;
       blockBottom = &blocks[index];
       blockBottom = findBlockParent(blockBottom);
-      if (generalBlobFilter(blockBottom) && blockBottom->color == c_WHITE) points_ok++;
+      if (generalBlobFilter(blockBottom) && blockBottom->color == c_WHITE) pointsOKBottom++;
     }
   }
 
-  if (points_ok < 5) return false;
+  if (pointsOKBottom < 3) return false;
 
   count = block->count + blockMed->count + blockBottom->count;
   meanX = (block->meanX + blockMed->meanX)/2;
   meanY = (block->meanY + blockMed->meanY)/2;
 
+  occluded = (pointsOKTop <= 5 && pointsOKBottom <= 5);
+
   return true;
 
 }
-
-
-// bool ImageProcessor::lookLikeOccudedBeacon(block_t* blocks, block_t* block, 
-//   WorldObjectType beacon_name, int& count, double& meanX, double& meanY) {
-
-//   int dummyCount;
-//   if (!generalBlobFilter(block) || lookLikeBeacon()) {
-//     return false;
-//   }
-
-//   return false;
-// }
-
-
 
 
 void ImageProcessor::detectBlob() {
@@ -406,6 +398,7 @@ void ImageProcessor::detectBlob() {
                                         WO_BEACON_PINK_YELLOW,
                                         WO_BEACON_YELLOW_PINK};
   int largestBeaconSize[n_beacons] = {0,0,0,0,0,0};
+  bool beaconOcculuded[n_beacons] = {false,false,false,false,false,false};
   int beaconX[n_beacons] = {0,0,0,0,0,0};
   int beaconY[n_beacons] = {0,0,0,0,0,0};
 
@@ -431,12 +424,13 @@ void ImageProcessor::detectBlob() {
       }
 
       for (int i_beacon = 0; i_beacon < n_beacons; ++i_beacon) {
-        int count; double meanX, meanY;
-        if (lookLikeBeacon(blocks, block, beacon_name[i_beacon], count, meanX, meanY) 
+        int count; double meanX, meanY; bool occluded;
+        if (lookLikeBeacon(blocks, block, beacon_name[i_beacon], count, occluded, meanX, meanY) 
             && block->count > largestBeaconSize[i_beacon]) {
           largestBeaconSize[i_beacon] = count;
           beaconX[i_beacon] = meanX * iparams_.width;
           beaconY[i_beacon] = meanY * iparams_.height;
+          beaconOcculuded[i_beacon] = occluded;
         }
       }
 
@@ -446,7 +440,7 @@ void ImageProcessor::detectBlob() {
 
   if (largestBallSize > 0) {
     markBall(ballX , ballY, ballRadius);
-    std::cout << "Ball " << ballX << " " << ballY << " " << largestBallSize << std::endl;
+    // std::cout << "Ball " << ballX << " " << ballY << " " << largestBallSize << std::endl;
   }
 
   if (largestGoalSize > 0) {
@@ -456,7 +450,7 @@ void ImageProcessor::detectBlob() {
 
   for (int i_beacon = 0; i_beacon < n_beacons; ++i_beacon) {
     if (largestBeaconSize[i_beacon] > 0) {
-      markBeacon(beacon_name[i_beacon], beaconX[i_beacon], beaconY[i_beacon]);
+      markBeacon(beacon_name[i_beacon], beaconX[i_beacon], beaconY[i_beacon], beaconOcculuded[i_beacon]);
       // std::cout << "WO_BEACON_YELLOW_PINK " << i_beacon << " " << beaconX[i_beacon] << " " << beaconY[i_beacon]<< std::endl;
     }
   }

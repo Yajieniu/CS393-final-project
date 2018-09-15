@@ -86,7 +86,7 @@ class ImageProcessor {
 
     void markBall(int, int, int);
     void markGoal(int, int);
-    void markBeacon(WorldObjectType, int, int);
+    void markBeacon(WorldObjectType, int, int, bool);
 
     void RLE(block_t* blocks);
     void mergeRow(block_t*, block_t*);
@@ -99,7 +99,7 @@ class ImageProcessor {
     bool generalBlobFilter(block_t*);
     bool lookLikeBall(block_t*);
     bool lookLikeGoal(block_t*);
-    bool lookLikeBeacon(block_t*, block_t*, WorldObjectType, int&, double&, double&);
+    bool lookLikeBeacon(block_t*, block_t*, WorldObjectType, int&, bool&, double&, double&);
 
 };
 
