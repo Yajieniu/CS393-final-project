@@ -243,7 +243,7 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
   int radius = (width+height) / 4;
   // int C = (240. - height) / (13. - radius);
 
-  if (camera_ == Camera::TOP && radius >= 15) { return false; }
+  if (radius <= 1.5 || radius >= 15 ) { return false; }
   // if (camera_ == Camera::BOTTOM && radius >= 100) { return false; }
 
   if (radius * radius >= block->count / 2.7) { return false; }
@@ -261,7 +261,8 @@ bool ImageProcessor::lookLikeGoal(block_t* block) {
 
   double width = block->maxX - block->minX;
   double height = block->maxY - block->minY;
-  if (width / height >= 2.5 || width / height <= 1.5) { return false; }
+  if (width / height >= 2 || width / height <= 1.5) { return false; }
+  if (block->count / (width * height) <= 0.75) return false;
 
 
   if (block->count <= 1000) { return false; }
@@ -330,7 +331,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
     }
   }
 
-  if (pointsOKTop < 3) return false;
+  if (pointsOKTop < 4) return false;
 
   x = blockMed->meanX * iparams_.width/STEP;
   y = blockMed->meanY * iparams_.height/STEP;
@@ -349,13 +350,49 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
     }
   }
 
-  if (pointsOKBottom < 3) return false;
+  if (pointsOKBottom < 4) return false;
 
   count = block->count + blockMed->count + blockBottom->count;
   meanX = (block->meanX + blockMed->meanX)/2;
   meanY = (block->meanY + blockMed->meanY)/2;
 
-  occluded = (pointsOKTop <= 5 && pointsOKBottom <= 5);
+  // occluded = (pointsOKTop <= 5 && pointsOKBottom <= 5);
+
+  // Compute blob aspect ratio
+  double topWidth = block->maxX - block->minX; 
+  double topHeight = block->maxY - block->minY;
+  double medWidth = blockMed->maxX - blockMed->minX; 
+  double medHeight = blockMed->maxY - blockMed->minY;
+  double bottomWidth = blockBottom->maxX - blockBottom->minX; 
+  double bottomHeight = blockBottom->maxY - blockBottom->minY;
+
+  double topAspectRatio = topWidth / topHeight;
+  double medAspectRatio = medWidth / medHeight;
+  double bottomAspectRatio = bottomWidth / bottomHeight;
+  
+  double topAreaRatio = block->count / (topWidth * topHeight);
+  double medAreaRatio = blockMed->count / (medWidth * medHeight);
+  double bottomAreaRatio = blockBottom->count / (bottomWidth * bottomHeight);
+
+  // std::cout << "Aspect: " << topAspectRatio << " " << medAspectRatio << " " << bottomAspectRatio << std::endl;
+  // std::cout << "Area: " << topAreaRatio << " " << medAreaRatio << " " << bottomAreaRatio << std::endl;
+
+  // std::cout << occluded << std::endl;
+
+  if (blockBottom->count > 4 * block->count || 
+    blockBottom->count > 4 * blockMed->count ||
+    block->count > 4 * blockMed->count ||
+    blockMed->count > 4 * block->count) {
+    return false;
+  }
+
+  if ((topAspectRatio <= 0.7 && medAspectRatio <= 0.7) || 
+      topAreaRatio <= 0.5 || medAreaRatio <= 0.5) {
+    
+    occluded = true;
+  }
+
+  // std::cout << occluded << std::endl;
 
   return true;
 
@@ -403,6 +440,7 @@ void ImageProcessor::detectBlob() {
   int beaconY[n_beacons] = {0,0,0,0,0,0};
 
 
+
   // detect objects
   for (int y = 0; y < iparams_.height/STEP; y++) {
     for (int x = 0; x < iparams_.width/STEP;) {
@@ -424,7 +462,7 @@ void ImageProcessor::detectBlob() {
       }
 
       for (int i_beacon = 0; i_beacon < n_beacons; ++i_beacon) {
-        int count; double meanX, meanY; bool occluded;
+        int count; double meanX, meanY; bool occluded = false;
         if (lookLikeBeacon(blocks, block, beacon_name[i_beacon], count, occluded, meanX, meanY) 
             && block->count > largestBeaconSize[i_beacon]) {
           largestBeaconSize[i_beacon] = count;

@@ -366,7 +366,8 @@ void VisionWindow::drawBeacons(ImageWidget* image) {
 
     // Draw occulded indicator
     if (object.occluded) {
-      painter.drawText(x1, ty1, QString::fromStdString("occluded"));
+      painter.setPen(QPen(QColor(255, 0, 255), 3));
+      painter.drawText(x1, ty1, QString::fromStdString("OC"));
     }
   }
 }

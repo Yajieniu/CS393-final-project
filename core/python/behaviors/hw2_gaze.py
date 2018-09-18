@@ -14,7 +14,7 @@ from task import Task
 from state_machine import Node, S, C, T, LoopingStateMachine
 import UTdebug
 
-DELAY = 0.4
+DELAY = 0.2
 
 # Top camera range (0, 1278) x (0, 958)
 X_RANGE = 320
@@ -26,7 +26,7 @@ x_diff = 0
 y_diff = 0
 
 def clip_x(x_diff):
-	x_diff = min(x_diff, 160)
+	x_diff = min(x_diff, 50)
 	return x_diff
 
 
