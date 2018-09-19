@@ -304,6 +304,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
     int index;
     short x, y, x_temp, y_temp;
     block_t *blockTop;
+    short pointsOKTop = 0;
 
     x = block->meanX * iparams_.width/STEP;
     y = block->meanY * iparams_.height/STEP;
@@ -323,14 +324,20 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
           double topW = blockTop->maxX - blockTop->minX;
           double blockH = block->maxY - block->minY;
           double blockW = block->maxX - block->minX;
-          if ( 1.0*blockTop->count / (topH*topW) > 0.7 &&
+          if ( 1.0*blockTop->count / (topH*topW) > 0.6 &&
+            blockTop->count < 3*block->count && block->count < 3*blockTop->count &&
             (blockTop->color == c_BLUE || blockTop->color == c_PINK ||
              blockTop->color == c_YELLOW || blockTop->color == c_ORANGE)) {
-            cout << "top problem\n";
+            pointsOKTop++;
+            // cout << "top problem\n";
             return false;
           }
         }
       }
+
+      // if (pointsOKTop > 4)
+      //   return false;
+
     }
   }
 
@@ -355,7 +362,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
   y = block->meanY * iparams_.height/STEP;
   
 
-  int pointsOKTop = 0;
+  int pointsOKMed = 0;
 
   for (int i = 0; i < nPoints; i++) {
     for (int j = 0; j < nPoints; j++) {
@@ -366,11 +373,11 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
       index = y_temp * iparams_.width/STEP + x_temp;
       blockMed = &blocks[index];
       blockMed = findBlockParent(blockMed);
-      if (generalBlobFilter(blockMed) && blockMed->color == colorBottom) pointsOKTop++;
+      if (generalBlobFilter(blockMed) && blockMed->color == colorBottom) pointsOKMed++;
     }
   }
 
-  if (pointsOKTop < 4) return false;
+  if (pointsOKMed < 4) return false;
 
   x = blockMed->meanX * iparams_.width/STEP;
   y = blockMed->meanY * iparams_.height/STEP;
@@ -395,7 +402,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
   meanX = (block->meanX + blockMed->meanX)/2;
   meanY = (block->meanY + blockMed->meanY)/2;
 
-  // occluded = (pointsOKTop <= 5 && pointsOKBottom <= 5);
+  // occluded = (pointsOKMed <= 5 && pointsOKBottom <= 5);
 
   // Compute blob aspect ratio
   double topWidth = block->maxX - block->minX; 
