@@ -8,6 +8,11 @@
 // #define BLOB_THRESHOLD 200/STEP
 // #define GOAL_THRESHOLD 1500 / STEP
 
+auto static absolute(auto x) {
+  if (x > 0) return x;
+  else return -x;
+}
+
 ImageProcessor::ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera) :
   vblocks_(vblocks), iparams_(iparams), camera_(camera), cmatrix_(iparams_, camera)
 {
@@ -299,10 +304,10 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
   };
 
   static const int nPoints = 7; // Do a 9-point checking on beacons
-  static float offsets[nPoints] = {-3./5, -2./5, -1./5, 0., 1./5, 2./5, 3./5};
+  static float offsets[nPoints] = {-3./7, -2./7, -1./7, 0., 1./7, 2./7, 3./7};
+  // static float offsets[nPoints] = {-3./7, -2./7, -1./7, 0., 1./7, 2./7, 3./7};
 
-  unsigned char color = beacon_colors[beacon_name].first;
-  if (block->color != color) {
+  if (block->color != beacon_colors[beacon_name].first) {
     return false;
   }
 
@@ -317,8 +322,8 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
 
     for (int i = 0; i < nPoints; i++) {
       for (int j = 0; j < nPoints; j++) {
-        x_temp = x + offsets[i]*(block->maxX/STEP - x);
-        y_temp = block->maxY/STEP + offsets[j]*(block->maxY/STEP - y);
+        x_temp = x - offsets[i]*(block->maxX/STEP - block->minX/STEP)/2;
+        y_temp = y - (1+offsets[j]/2)*(block->maxY/STEP - block->maxX/STEP);
 
         if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
 
@@ -335,8 +340,10 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
             topH/blockH < 2.1 && topH/blockH > 0.4 &&
             topW/blockW < 2.1 && topW/blockW > 0.4 &&
             (blockTop->color == c_BLUE || blockTop->color == c_PINK ||
-             blockTop->color == c_YELLOW || blockTop->color == c_ORANGE))
+             blockTop->color == c_YELLOW || blockTop->color == c_ORANGE)) {
+            cout << "top problem\n";
             return false;
+          }
         }
       }
     }
@@ -351,6 +358,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
   short pointsOK[2] = {0,0};
 
   for (int i_blocks = 0; i_blocks < 2; ++i_blocks) {
+    // blockBottom[i_blocks] = NULL;
     if (i_blocks == 0) blockTemp1 = block;
     else blockTemp1 = blockBottom[0];
 
@@ -362,8 +370,8 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
 
     for (int i = 0; i < nPoints; i++) {
       for (int j = 0; j < nPoints; j++) {
-        x_temp = x + offsets[i]*(blockTemp1->maxX/STEP - x);
-        y_temp = blockTemp1->maxY/STEP + offsets[j]*(blockTemp1->maxY/STEP - y);
+        x_temp = x + offsets[i]*(blockTemp1->maxX/STEP - blockTemp1->minX/STEP)/2;
+        y_temp = y + (1+offsets[j]/2)*(blockTemp1->maxY/STEP - blockTemp1->maxX/STEP);
         if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
 
         index = y_temp * iparams_.width/STEP + x_temp;
@@ -371,15 +379,17 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
         blockTemp2 = findBlockParent(blockTemp2);
         if (generalBlobFilter(blockTemp2) && blockTemp2->color == colorBottom[i_blocks]) {
           pointsOK[i_blocks]++;
-          if (blockBottom[i_blocks] == NULL || 
-            abs(blockBottom[i_blocks]->count - countRatio[i_blocks] * blockTemp1->count) > 
-            abs(blockTemp2->count - countRatio[i_blocks] * blockTemp1->count))
+          // if (blockBottom[i_blocks] == NULL)// || 
+            // abs(blockBottom[i_blocks]->count - countRatio[i_blocks] * blockTemp1->count) > 
+            // abs(blockTemp2->count - countRatio[i_blocks] * blockTemp1->count))
             blockBottom[i_blocks] = blockTemp2;
         }
       }
     }
 
-    if (pointsOK[i_blocks] < nPoints*nPoints/2) return false;
+    cout << i_blocks << " ### " << pointsOK[i_blocks] << endl;
+    if (pointsOK[i_blocks] < nPoints*nPoints/4) return false;
+    // if (blockBottom[i_blocks] == NULL) return false;
 
   }
 
@@ -387,7 +397,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
   meanX = (block->meanX + blockBottom[0]->meanX)/2;
   meanY = (block->meanY + blockBottom[0]->meanY)/2;
 
-  occluded = (pointsOK[0] <= 3*nPoints*nPoints/4 && pointsOK[1] <= 3*nPoints*nPoints/4);
+  occluded = (pointsOK[0] <= nPoints*nPoints*(3/5) || pointsOK[1] <= nPoints*nPoints*(3/5));
 
   // Compute blob aspect ratio
   double topWidth = block->maxX - block->minX; 
@@ -405,12 +415,12 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
   double medAreaRatio = blockBottom[0]->count / (medWidth * medHeight);
   double bottomAreaRatio = blockBottom[1]->count / (bottomWidth * bottomHeight);
 
-  if (blockBottom[1]->count > 4 * countRatio[1] * block->count || 
-    blockBottom[1]->count > 4 * countRatio[1] * blockBottom[0]->count ||
-    block->count > 4 * blockBottom[0]->count ||
-    blockBottom[0]->count > 4 * block->count) {
-    return false;
-  }
+  // if (blockBottom[1]->count > 4 * countRatio[1] * block->count || 
+  //   blockBottom[1]->count > 4 * countRatio[1] * blockBottom[0]->count ||
+  //   block->count > 4 * blockBottom[0]->count ||
+  //   blockBottom[0]->count > 4 * block->count) {
+  //   return false;
+  // }
 
   if (topAspectRatio < 0.7 || medAspectRatio < 0.7 || 
     bottomAspectRatio < 0.7/countRatio[1] || 
@@ -504,7 +514,7 @@ void ImageProcessor::detectBlob() {
   }
 
   if (largestGoalSize > 0) {
-    markGoal(goalX, goalY);
+    // markGoal(goalX, goalY);
     // std::cout << "Goal " << goalX << " " << goalY << " " << largestGoalSize << std::endl;
   }
 
