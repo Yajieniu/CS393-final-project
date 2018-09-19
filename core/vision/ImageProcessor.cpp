@@ -199,6 +199,11 @@ void ImageProcessor:: markBeacon(WorldObjectType beacon_name, int beaconX, int b
   beacon->occluded = occluded;
 
   beacon->seen = true;
+
+  if (beacon_name == WO_BEACON_BLUE_YELLOW) {
+    std::cout << beacon->visionDistance << std::endl;
+  }
+
 }
 
 bool ImageProcessor::generalBlobFilter(block_t* block) {
@@ -233,7 +238,11 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
   int width =  block->maxX - block->minX;
   int height = block->maxY - block->minY;
 
-  if (width >= 1.5 * height || height >= 1.5 * width) {
+  std::cout << "xy: " << block->meanX * iparams_.width << " " << block->meanY * iparams_.height;
+
+  std::cout << " W and H: " << width << " " << height << std::endl;
+
+  if (width >= 1.3 * height || height >= 1.3 * width) {
     return false;
   }
 
@@ -243,11 +252,15 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
   int radius = (width+height) / 4;
   // int C = (240. - height) / (13. - radius);
 
-  if (radius <= 1.5 || radius >= 15 ) { return false; }
+  std::cout << " radius: " << radius;
+
+  if (radius <= 3 || radius >= 15) { return false; }
   // if (camera_ == Camera::BOTTOM && radius >= 100) { return false; }
 
-  if (radius * radius >= block->count / 2.7) { return false; }
-  if (radius * radius <= block->count / 3.5) { return false; }
+  std::cout << " density: " << block->count*1. / radius / radius << std::endl;
+
+  if (radius * radius >= block->count / 2.9) { return false; }
+  if (radius * radius <= block->count / 3.9) { return false; }
 
   return true;
 }
