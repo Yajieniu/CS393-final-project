@@ -324,7 +324,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
           double topW = blockTop->maxX - blockTop->minX;
           double blockH = block->maxY - block->minY;
           double blockW = block->maxX - block->minX;
-          if ( 1.0*blockTop->count / (topH*topW) > 0.6 &&
+          if ( 1.0*blockTop->count / (topH*topW) > 0.7 &&
             blockTop->count < 3*block->count && block->count < 3*blockTop->count &&
             (blockTop->color == c_BLUE || blockTop->color == c_PINK ||
              blockTop->color == c_YELLOW || blockTop->color == c_ORANGE)) {
