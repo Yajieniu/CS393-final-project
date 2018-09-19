@@ -26,7 +26,9 @@ WorldObject::WorldObject() {
   imageCenterY=0;
   fieldLineIndex = -1;
   fromTopCamera = false;
-  occluded = false;
+
+  occluded = false; // Used for beacon detection
+
 }
 
 WorldObject::WorldObject(WorldObjectType type) : WorldObject() {

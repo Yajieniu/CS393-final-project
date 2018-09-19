@@ -156,7 +156,7 @@ void ImageProcessor::markBall(int imageX, int imageY, int radius) {
   ball->seen = true;
 }
 
-void ImageProcessor:: markGoal(int imageX, int imageY) {
+void ImageProcessor:: markGoal(int imageX, int imageY, int width, int height) {
 
   WorldObject* goal = &vblocks_.world_object->objects_[WO_UNKNOWN_GOAL];
 
@@ -166,11 +166,13 @@ void ImageProcessor:: markGoal(int imageX, int imageY) {
   // goal->imageCenterX = 0;
   // goal->imageCenterY = 0;
 
-  Position p = cmatrix_.getWorldPosition(imageX, imageY, 300);
+  Position p = cmatrix_.getWorldPosition(imageX, imageY, 255);
   goal->visionBearing = cmatrix_.bearing(p);
   goal->visionElevation = cmatrix_.elevation(p);
   goal->visionDistance = cmatrix_.groundDistance(p);
   goal->fromTopCamera = camera_ == Camera::TOP;
+  goal->imageWidth = width;
+  goal->imageHeight = height;
 
   goal->seen = true;
 }
@@ -199,6 +201,11 @@ void ImageProcessor:: markBeacon(WorldObjectType beacon_name, int beaconX, int b
   beacon->occluded = occluded;
 
   beacon->seen = true;
+
+  if (beacon_name == WO_BEACON_BLUE_YELLOW) {
+    std::cout << beacon->visionDistance << std::endl;
+  }
+
 }
 
 bool ImageProcessor::generalBlobFilter(block_t* block) {
@@ -233,7 +240,11 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
   int width =  block->maxX - block->minX;
   int height = block->maxY - block->minY;
 
-  if (width >= 1.5 * height || height >= 1.5 * width) {
+  // std::cout << "xy: " << block->meanX * iparams_.width << " " << block->meanY * iparams_.height;
+
+  // std::cout << " W and H: " << width << " " << height << std::endl;
+
+  if (width >= 1.3 * height || height >= 1.3 * width) {
     return false;
   }
 
@@ -243,11 +254,15 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
   int radius = (width+height) / 4;
   // int C = (240. - height) / (13. - radius);
 
-  if (radius <= 1.5 || radius >= 15 ) { return false; }
+  // std::cout << " radius: " << radius;
+
+  if (radius <= 3 || radius >= 15) { return false; }
   // if (camera_ == Camera::BOTTOM && radius >= 100) { return false; }
 
-  if (radius * radius >= block->count / 2.7) { return false; }
-  if (radius * radius <= block->count / 3.5) { return false; }
+  // std::cout << " density: " << block->count*1. / radius / radius << std::endl;
+
+  if (radius * radius >= block->count / 2.9) { return false; }
+  if (radius * radius <= block->count / 3.9) { return false; }
 
   return true;
 }
@@ -260,8 +275,12 @@ bool ImageProcessor::lookLikeGoal(block_t* block) {
 
   double width = block->maxX - block->minX;
   double height = block->maxY - block->minY;
+  // std::cout << " xy " << block->meanX * iparams_.width << " " << block->meanY * iparams_.height;
+  // std::cout << " w/h: " << width / height;
+  // std::cout << " area: : " << block->count / (width * height) << std::endl;
+  // std::cout << " count: " << block->count << std::endl;
   if (width / height >= 2 || width / height <= 1.5) { return false; }
-  if (block->count / (width * height) <= 0.75) return false;
+  if (block->count / (width * height) <= 0.7) return false;
 
 
   if (block->count <= 1000) { return false; }
@@ -396,13 +415,13 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
     }
   }
 
-  if (pointsOKBottom < 10) return false;
+  if (pointsOKBottom < nPoints*nPoints/5) return false;
 
   count = block->count + blockMed->count + blockBottom->count;
   meanX = (block->meanX + blockMed->meanX)/2;
   meanY = (block->meanY + blockMed->meanY)/2;
 
-  occluded = (pointsOKMed <= 15 && pointsOKBottom <= 15);
+  occluded = (pointsOKMed <= nPoints*nPoints/3 && pointsOKBottom <= nPoints*nPoints/3);
 
   // Compute blob aspect ratio
   double topWidth = block->maxX - block->minX; 
@@ -465,6 +484,8 @@ void ImageProcessor::detectBlob() {
   int ballY = 0;
   int goalX = 0;
   int goalY = 0;
+  int goalWidth = 0;
+  int goalHeight = 0;
 
   // beacon
   const int n_beacons = 6;
@@ -497,6 +518,8 @@ void ImageProcessor::detectBlob() {
         largestGoalSize = block->count;
         goalX = block->meanX * iparams_.width;
         goalY = block->meanY * iparams_.height;
+        goalWidth = block->maxX - block->minX;
+        goalHeight = block->maxY - block->minY;
         // std::cout << "Goal " << block->meanX * iparams_.width << " " << block->meanY * iparams_.height << " " << largestGoalSize << std::endl;
 
       }
@@ -522,7 +545,7 @@ void ImageProcessor::detectBlob() {
   }
 
   if (largestGoalSize > 0) {
-    markGoal(goalX, goalY);
+    markGoal(goalX, goalY, goalWidth, goalHeight);
     // std::cout << "Goal " << goalX << " " << goalY << " " << largestGoalSize << std::endl;
   }
 

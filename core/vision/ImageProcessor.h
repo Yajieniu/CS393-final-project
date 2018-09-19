@@ -85,7 +85,7 @@ class ImageProcessor {
     int bottomFrameCounter_ = 0;
 
     void markBall(int, int, int);
-    void markGoal(int, int);
+    void markGoal(int, int, int, int);
     void markBeacon(WorldObjectType, int, int, bool);
 
     void RLE(block_t* blocks);
