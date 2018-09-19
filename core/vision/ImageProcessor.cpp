@@ -238,9 +238,9 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
   int width =  block->maxX - block->minX;
   int height = block->maxY - block->minY;
 
-  std::cout << "xy: " << block->meanX * iparams_.width << " " << block->meanY * iparams_.height;
+  // std::cout << "xy: " << block->meanX * iparams_.width << " " << block->meanY * iparams_.height;
 
-  std::cout << " W and H: " << width << " " << height << std::endl;
+  // std::cout << " W and H: " << width << " " << height << std::endl;
 
   if (width >= 1.3 * height || height >= 1.3 * width) {
     return false;
@@ -257,7 +257,7 @@ bool ImageProcessor::lookLikeBall(block_t* block) {
   if (radius <= 3 || radius >= 15) { return false; }
   // if (camera_ == Camera::BOTTOM && radius >= 100) { return false; }
 
-  std::cout << " density: " << block->count*1. / radius / radius << std::endl;
+  // std::cout << " density: " << block->count*1. / radius / radius << std::endl;
 
   if (radius * radius >= block->count / 2.9) { return false; }
   if (radius * radius <= block->count / 3.9) { return false; }
