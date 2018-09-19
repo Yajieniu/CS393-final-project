@@ -296,8 +296,8 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
   };
 
 
-  static const int nPoints = 3; // Do a 9-point checking on beacons
-  static float xOffsets[nPoints] = {-1./2, 0., 1./2}, yOffsets[nPoints] = {1./2, 1., 3./2};
+  static const int nPoints = 7; // Do a 49-point checking on beacons
+  static float offsets[nPoints] = {-3./6, -2./6, -1./6, 0., 1./6, 2./6, 3./6};
 
     // Checking that top is not a beacon
   { 
@@ -311,8 +311,8 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
 
     for (int i = 0; i < nPoints; i++) {
       for (int j = 0; j < nPoints; j++) {
-        x_temp = x - xOffsets[i]*(block->maxX/STEP - x);
-        y_temp = block->minY/STEP - yOffsets[j]*(block->maxY/STEP - y);
+        x_temp = x - offsets[i]*(block->maxX/STEP - x);
+        y_temp = block->minY/STEP - (1+offsets[j])*(block->maxY/STEP - y);
 
         if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
 
@@ -366,8 +366,8 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
 
   for (int i = 0; i < nPoints; i++) {
     for (int j = 0; j < nPoints; j++) {
-      x_temp = x + xOffsets[i]*(block->maxX/STEP - x);
-      y_temp = block->maxY/STEP + yOffsets[j]*(block->maxY/STEP - y);
+      x_temp = x + offsets[i]*(block->maxX/STEP - x);
+      y_temp = block->maxY/STEP + (1+offsets[j])*(block->maxY/STEP - y);
       if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
 
       index = y_temp * iparams_.width/STEP + x_temp;
@@ -377,7 +377,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
     }
   }
 
-  if (pointsOKMed < 4) return false;
+  if (pointsOKMed < 10) return false;
 
   x = blockMed->meanX * iparams_.width/STEP;
   y = blockMed->meanY * iparams_.height/STEP;
@@ -385,8 +385,8 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
 
   for (int i = 0; i < nPoints; ++i) {
     for (int j = 0; j < nPoints; ++j) {
-      x_temp = x + xOffsets[i]*(blockMed->maxX/STEP - x);
-      y_temp = blockMed->maxY/STEP + yOffsets[j]*(blockMed->maxY/STEP - y);
+      x_temp = x + offsets[i]*(blockMed->maxX/STEP - x);
+      y_temp = blockMed->maxY/STEP + (1+offsets[j])*(blockMed->maxY/STEP - y);
       if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
 
       index = y_temp * iparams_.width/STEP + x_temp;
@@ -396,13 +396,13 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
     }
   }
 
-  if (pointsOKBottom < 4) return false;
+  if (pointsOKBottom < 10) return false;
 
   count = block->count + blockMed->count + blockBottom->count;
   meanX = (block->meanX + blockMed->meanX)/2;
   meanY = (block->meanY + blockMed->meanY)/2;
 
-  // occluded = (pointsOKMed <= 5 && pointsOKBottom <= 5);
+  occluded = (pointsOKMed <= 15 && pointsOKBottom <= 15);
 
   // Compute blob aspect ratio
   double topWidth = block->maxX - block->minX; 
