@@ -199,16 +199,19 @@ void ImageProcessor:: markBeacon(WorldObjectType beacon_name, int beaconX, int b
   beacon->occluded = occluded;
 
   beacon->seen = true;
+
+  tlog(30, "saw %s at (%i,%i) with calculated distance %2.4f", 
+    getName(beacon_name), beacon->imageCenterX, beacon->imageCenterY, beacon->visionDistance);
+
 }
 
 bool ImageProcessor::generalBlobFilter(block_t* block) {
-  if (block->parent != block) {
-    return false;
-  }
+  if (block->parent != block) return false;
 
-  // int width = block->maxX - block->minX;
-  // int height = block->maxY - block->minY;
-  if (block->maxX - block->minX <= 4 || block->maxY - block->minY <= 4 || block->count <= 15) { return false; }
+  int width = block->maxX - block->minX;
+  int height = block->maxY - block->minY;
+  if (width <= 4 || height <= 4 || block->count <= 15) return false;
+  if (block->count * 1.0 / (width * height) < 0.2) return false;
 
   return true;
 }
@@ -286,7 +289,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
     { WO_BEACON_YELLOW_PINK, {c_YELLOW, c_PINK} }
   };
 
-  static map<WorldObjectType,int> beacon_types = {
+  static map<WorldObjectType,float> beacon_types = {
     { WO_BEACON_BLUE_YELLOW, 2 },
     { WO_BEACON_YELLOW_BLUE, 2 },
     { WO_BEACON_BLUE_PINK, 1 },
@@ -295,102 +298,126 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
     { WO_BEACON_YELLOW_PINK, 1 }
   };
 
-  static const int nPoints = 3; // Do a 9-point checking on beacons
-  static float xOffsets[nPoints] = {-1./2, 0., 1./2}, yOffsets[nPoints] = {1./2, 1., 3./2};
+  static const int nPoints = 7; // Do a 9-point checking on beacons
+  static float offsets[nPoints] = {-3./5, -2./5, -1./5, 0., 1./5, 2./5, 3./5};
 
-  unsigned char colorTop = beacon_colors[beacon_name].first;
-  unsigned char colorBottom = beacon_colors[beacon_name].second;
-  int type = beacon_types[beacon_name];
-  short x, y, x_temp, y_temp, points_ok;
-  int index;
-
-  if (block->color != colorTop) {
+  unsigned char color = beacon_colors[beacon_name].first;
+  if (block->color != color) {
     return false;
   }
 
-  block_t *blockMed = NULL, *blockBottom = NULL;
+  // Checking that top is not a beacon
+  { 
+    int index;
+    short x, y, x_temp, y_temp;
+    block_t *blockTop;
 
-  x = block->meanX * iparams_.width/STEP;
-  y = block->meanY * iparams_.height/STEP;
-  
+    x = block->meanX * iparams_.width/STEP;
+    y = block->meanY * iparams_.height/STEP;
 
-  int pointsOKTop = 0;
+    for (int i = 0; i < nPoints; i++) {
+      for (int j = 0; j < nPoints; j++) {
+        x_temp = x + offsets[i]*(block->maxX/STEP - x);
+        y_temp = block->maxY/STEP + offsets[j]*(block->maxY/STEP - y);
 
-  for (int i = 0; i < nPoints; i++) {
-    for (int j = 0; j < nPoints; j++) {
-      x_temp = x + xOffsets[i]*(block->maxX/STEP - x);
-      y_temp = block->maxY/STEP + yOffsets[j]*(block->maxY/STEP - y);
-      if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
+        if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
 
-      index = y_temp * iparams_.width/STEP + x_temp;
-      blockMed = &blocks[index];
-      blockMed = findBlockParent(blockMed);
-      if (generalBlobFilter(blockMed) && blockMed->color == colorBottom) pointsOKTop++;
+        index = y_temp * iparams_.width/STEP + x_temp;
+        blockTop = &blocks[index];
+        blockTop = findBlockParent(blockTop);
+        if (generalBlobFilter(blockTop)) {
+          double topH = blockTop->maxY - blockTop->minY;
+          double topW = blockTop->maxX - blockTop->minX;
+          double blockH = block->maxY - block->minY;
+          double blockW = block->maxX - block->minX;
+          if ( 1.0*blockTop->count/block->count < 2.1 && 
+            1.0*blockTop->count/block->count > 0.4 &&
+            topH/blockH < 2.1 && topH/blockH > 0.4 &&
+            topW/blockW < 2.1 && topW/blockW > 0.4 &&
+            (blockTop->color == c_BLUE || blockTop->color == c_PINK ||
+             blockTop->color == c_YELLOW || blockTop->color == c_ORANGE))
+            return false;
+        }
+      }
     }
   }
 
-  if (pointsOKTop < 4) return false;
+  // Checking the bottom two block color and size
+  unsigned char colorBottom[2] = {beacon_colors[beacon_name].second, c_WHITE};
+  float countRatio[2] = {1, beacon_types[beacon_name]};
+  block_t *blockBottom[2] = {NULL, NULL};  
 
-  x = blockMed->meanX * iparams_.width/STEP;
-  y = blockMed->meanY * iparams_.height/STEP;
-  int pointsOKBottom = 0;
+  block_t *blockTemp1, *blockTemp2;
+  short pointsOK[2] = {0,0};
 
-  for (int i = 0; i < nPoints; ++i) {
-    for (int j = 0; j < nPoints; ++j) {
-      x_temp = x + xOffsets[i]*(blockMed->maxX/STEP - x);
-      y_temp = blockMed->maxY/STEP + yOffsets[j]*(blockMed->maxY/STEP - y);
-      if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
+  for (int i_blocks = 0; i_blocks < 2; ++i_blocks) {
+    if (i_blocks == 0) blockTemp1 = block;
+    else blockTemp1 = blockBottom[0];
 
-      index = y_temp * iparams_.width/STEP + x_temp;
-      blockBottom = &blocks[index];
-      blockBottom = findBlockParent(blockBottom);
-      if (generalBlobFilter(blockBottom) && blockBottom->color == c_WHITE) pointsOKBottom++;
+    int index;
+    short x, y, x_temp, y_temp;
+    
+    x = blockTemp1->meanX * iparams_.width/STEP;
+    y = blockTemp1->meanY * iparams_.height/STEP;
+
+    for (int i = 0; i < nPoints; i++) {
+      for (int j = 0; j < nPoints; j++) {
+        x_temp = x + offsets[i]*(blockTemp1->maxX/STEP - x);
+        y_temp = blockTemp1->maxY/STEP + offsets[j]*(blockTemp1->maxY/STEP - y);
+        if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
+
+        index = y_temp * iparams_.width/STEP + x_temp;
+        blockTemp2 = &blocks[index];
+        blockTemp2 = findBlockParent(blockTemp2);
+        if (generalBlobFilter(blockTemp2) && blockTemp2->color == colorBottom[i_blocks]) {
+          pointsOK[i_blocks]++;
+          if (blockBottom[i_blocks] == NULL || 
+            abs(blockBottom[i_blocks]->count - countRatio[i_blocks] * blockTemp1->count) > 
+            abs(blockTemp2->count - countRatio[i_blocks] * blockTemp1->count))
+            blockBottom[i_blocks] = blockTemp2;
+        }
+      }
     }
+
+    if (pointsOK[i_blocks] < nPoints*nPoints/2) return false;
+
   }
 
-  if (pointsOKBottom < 4) return false;
+  count = block->count + blockBottom[0]->count + blockBottom[1]->count;
+  meanX = (block->meanX + blockBottom[0]->meanX)/2;
+  meanY = (block->meanY + blockBottom[0]->meanY)/2;
 
-  count = block->count + blockMed->count + blockBottom->count;
-  meanX = (block->meanX + blockMed->meanX)/2;
-  meanY = (block->meanY + blockMed->meanY)/2;
-
-  // occluded = (pointsOKTop <= 5 && pointsOKBottom <= 5);
+  occluded = (pointsOK[0] <= 3*nPoints*nPoints/4 && pointsOK[1] <= 3*nPoints*nPoints/4);
 
   // Compute blob aspect ratio
   double topWidth = block->maxX - block->minX; 
   double topHeight = block->maxY - block->minY;
-  double medWidth = blockMed->maxX - blockMed->minX; 
-  double medHeight = blockMed->maxY - blockMed->minY;
-  double bottomWidth = blockBottom->maxX - blockBottom->minX; 
-  double bottomHeight = blockBottom->maxY - blockBottom->minY;
+  double medWidth = blockBottom[0]->maxX - blockBottom[0]->minX; 
+  double medHeight = blockBottom[0]->maxY - blockBottom[0]->minY;
+  double bottomWidth = blockBottom[1]->maxX - blockBottom[1]->minX; 
+  double bottomHeight = blockBottom[1]->maxY - blockBottom[1]->minY;
 
   double topAspectRatio = topWidth / topHeight;
   double medAspectRatio = medWidth / medHeight;
   double bottomAspectRatio = bottomWidth / bottomHeight;
   
   double topAreaRatio = block->count / (topWidth * topHeight);
-  double medAreaRatio = blockMed->count / (medWidth * medHeight);
-  double bottomAreaRatio = blockBottom->count / (bottomWidth * bottomHeight);
+  double medAreaRatio = blockBottom[0]->count / (medWidth * medHeight);
+  double bottomAreaRatio = blockBottom[1]->count / (bottomWidth * bottomHeight);
 
-  // std::cout << "Aspect: " << topAspectRatio << " " << medAspectRatio << " " << bottomAspectRatio << std::endl;
-  // std::cout << "Area: " << topAreaRatio << " " << medAreaRatio << " " << bottomAreaRatio << std::endl;
-
-  // std::cout << occluded << std::endl;
-
-  if (blockBottom->count > 4 * block->count || 
-    blockBottom->count > 4 * blockMed->count ||
-    block->count > 4 * blockMed->count ||
-    blockMed->count > 4 * block->count) {
+  if (blockBottom[1]->count > 4 * countRatio[1] * block->count || 
+    blockBottom[1]->count > 4 * countRatio[1] * blockBottom[0]->count ||
+    block->count > 4 * blockBottom[0]->count ||
+    blockBottom[0]->count > 4 * block->count) {
     return false;
   }
 
-  if ((topAspectRatio <= 0.7 && medAspectRatio <= 0.7) || 
-      topAreaRatio <= 0.5 || medAreaRatio <= 0.5) {
+  if (topAspectRatio < 0.7 || medAspectRatio < 0.7 || 
+    bottomAspectRatio < 0.7/countRatio[1] || 
+    topAreaRatio < 0.5 || medAreaRatio < 0.5) {
     
     occluded = true;
   }
-
-  // std::cout << occluded << std::endl;
 
   return true;
 
