@@ -14,8 +14,27 @@ from task import Task
 from state_machine import Node, S, C, T, LoopingStateMachine
 import UTdebug
 
+class Controller(object):
+    def __init__(self, p, i, d):
+        self.Kp = p
+        self.Ki = i
+        self.kD = d
+
+        self.last_error = 0.
+        self.pterm = 0.
+        self.iterm = 0.
+        self.dterm = 0.
+
+    def update(self, error):
+        self.pterm = error
+        self.iterm += error
+        self.dterm = (error - self.last_error) / DELAY
+
+        return self.pterm * self.Kp + self.iterm * self.Ki + self.dterm * self.Kd
+
+
 CENTER_THRESHOLD = 100
-DELAY = 0.6
+DELAY = 0.05
 
 # Top camera range (0, 1278) x (0, 958)
 X_RANGE = 320
@@ -25,14 +44,16 @@ Y_THETA = 30
 
 x_diff = 0
 y_diff = 0
+
+
 # distance of center = 90. breadth = 100
 
 class Stand(Node):
-        def run(self):
-            commands.stand()
-            if self.getTime() > 3.0:
-                # memory.speech.say("playing stand complete")
-                self.finish()
+    def run(self):
+        commands.stand()
+        if self.getTime() > 3.0:
+            # memory.speech.say("playing stand complete")
+            self.finish()
 
 
 class On(Node):
@@ -47,10 +68,14 @@ class GazeCenter(Node):
 class Gaze(Node):
     def run(self):
         commands.setHeadPanTilt(pan=x_diff, tilt=y_diff, time=0.5, isChange=True)
-        if self.getTime() > 0.5:
-            self.finish()
+        # if self.getTime() > DELAY:
+        #     self.finish()
 
 class Gazer(Node):
+    def __init__(self, p=1.0, i=0.0, d=0.0):
+        super(Gazer, self).__init__()
+        self.controller = Controller(p, i, d)
+
     def run(self):
         global x_diff
         global y_diff
@@ -60,7 +85,8 @@ class Gazer(Node):
             y = ball.imageCenterY
             print ("Detected ball centroid: ", x, y)
 
-            x_diff = -((x - X_RANGE/2)/X_RANGE)*X_THETA
+            x_error = -((x - X_RANGE/2)/X_RANGE)*X_THETA
+            x_diff = controller.update(x_error)
             y_diff = -21 - ((y - Y_RANGE/2)/Y_RANGE)*Y_THETA
 
 
@@ -81,7 +107,7 @@ class Playing(LoopingStateMachine):
         gaze = Gaze()
         on = On()
         self.add_transition(on, C, gazer)
-        self.add_transition(gazer, C, gaze, C, gazer)
+        self.add_transition(gazer, C, gaze, T(DELAY), gazer)
 
         # self.add_transition(gazer, S('no_ball'), gazer)
         # stand = Stand()
