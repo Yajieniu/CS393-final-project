@@ -295,8 +295,49 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
     { WO_BEACON_YELLOW_PINK, 1 }
   };
 
+
   static const int nPoints = 3; // Do a 9-point checking on beacons
   static float xOffsets[nPoints] = {-1./2, 0., 1./2}, yOffsets[nPoints] = {1./2, 1., 3./2};
+
+    // Checking that top is not a beacon
+  { 
+    int index;
+    short x, y, x_temp, y_temp;
+    block_t *blockTop;
+
+    x = block->meanX * iparams_.width/STEP;
+    y = block->meanY * iparams_.height/STEP;
+
+    for (int i = 0; i < nPoints; i++) {
+      for (int j = 0; j < nPoints; j++) {
+        x_temp = x - xOffsets[i]*(block->maxX/STEP - x);
+        y_temp = block->minY/STEP - yOffsets[j]*(block->maxY/STEP - y);
+
+        if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
+
+        index = y_temp * iparams_.width/STEP + x_temp;
+        blockTop = &blocks[index];
+        blockTop = findBlockParent(blockTop);
+        if (generalBlobFilter(blockTop)) {
+          double topH = blockTop->maxY - blockTop->minY;
+          double topW = blockTop->maxX - blockTop->minX;
+          double blockH = block->maxY - block->minY;
+          double blockW = block->maxX - block->minX;
+          if ( 1.0*blockTop->count / (topH*topW) > 0.7 &&
+            (blockTop->color == c_BLUE || blockTop->color == c_PINK ||
+             blockTop->color == c_YELLOW || blockTop->color == c_ORANGE)) {
+            cout << "top problem\n";
+            return false;
+          }
+        }
+      }
+    }
+  }
+
+  // 1.0*blockTop->count/block->count < 2.1 && 
+  //           1.0*blockTop->count/block->count > 0.4 &&
+  //           topH/blockH < 2.1 && topH/blockH > 0.4 &&
+  //           topW/blockW < 2.1 && topW/blockW > 0.4 &&
 
   unsigned char colorTop = beacon_colors[beacon_name].first;
   unsigned char colorBottom = beacon_colors[beacon_name].second;
@@ -377,10 +418,7 @@ bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block,
 
   // std::cout << occluded << std::endl;
 
-  if (blockBottom->count > 4 * block->count || 
-    blockBottom->count > 4 * blockMed->count ||
-    block->count > 4 * blockMed->count ||
-    blockMed->count > 4 * block->count) {
+  if (block->count > 4 * blockMed->count || blockMed->count > 4 * block->count) {
     return false;
   }
 
