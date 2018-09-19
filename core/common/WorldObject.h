@@ -412,6 +412,10 @@ DECLARE_INTERNAL_SCHEMA(class WorldObject {
     SCHEMA_FIELD(bool fromTopCamera); ///< True if observed from top cam, false if from bottom
 
     SCHEMA_FIELD(bool occluded); ///< This is only used for detecting occluded beacons
+
+    SCHEMA_FIELD(int imageWidth);
+    SCHEMA_FIELD(int imageHeight);
+
 });
 
 typedef std::vector<WorldObject> ObjectSet;
