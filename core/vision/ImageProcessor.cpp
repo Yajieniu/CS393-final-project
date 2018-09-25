@@ -341,8 +341,8 @@ void ImageProcessor::detectGoal() {
     goal->visionDistance = cmatrix_.groundDistance(p);
     goal->fromTopCamera = (camera_ == Camera::TOP);
 
-    cout << "Goal pan: " << goal->visionBearing << "   Goal tilt: " << goal->visionElevation << endl;
-    cout << "Goal distance: " << goal->visionDistance << endl << endl;
+    // cout << "Goal pan: " << goal->visionBearing << "   Goal tilt: " << goal->visionElevation << endl;
+    // cout << "Goal distance: " << goal->visionDistance << endl << endl;
     goal->seen = true;
 }
 
