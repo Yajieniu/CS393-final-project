@@ -6,15 +6,19 @@ ImageParams::ImageParams() { }
 
 ImageParams::ImageParams(Camera::Type camera) {
   if(camera == Camera::TOP) {
+    // width = 1280;
+    // height = 960;
+    // defaultHorizontalStepScale = 3;
+    // defaultVerticalStepScale = 2;
     width = 320;
     height = 240;
-    defaultHorizontalStepScale = 3;
-    defaultVerticalStepScale = 2;
+    defaultHorizontalStepScale = 2;
+    defaultVerticalStepScale = 1;
   }
   else {
     width = 320;        // 320
     height = 240;       // 240
-    defaultHorizontalStepScale = 1;         // 0
+    defaultHorizontalStepScale = 2;         // 0
     defaultVerticalStepScale = 1;           // 0
   }
 

@@ -9,7 +9,6 @@
 #define IS_RUNNING_CORE (core_ && core_->vision_ && ((UTMainWnd*)parent_)->runCoreRadio->isChecked())
 
 void VisionWindow::redrawImages() {
-
   if(!enableDraw_) return;
 
   if (((UTMainWnd*)parent_)->streamRadio->isChecked()) {
@@ -243,11 +242,11 @@ void VisionWindow::drawGoal(ImageWidget* image) {
   if(not goal.seen) return;
   if(goal.fromTopCamera and _widgetAssignments[image] == Camera::BOTTOM) return;
   if(not goal.fromTopCamera and _widgetAssignments[image] == Camera::TOP) return;
-  std::cout << "Drawing goal" << std::endl;
+
   QPen pen(segCol[c_BLUE]);
 
-  int width = cmatrix.getCameraWidthByDistance(goal.visionDistance, 110);
-  int height = cmatrix.getCameraHeightByDistance(goal.visionDistance, 100);
+  int width = cmatrix.getCameraWidthByDistance(goal.visionDistance, 1000);
+  int height = cmatrix.getCameraHeightByDistance(goal.visionDistance, 500);
   int x1 = goal.imageCenterX - width / 2;
   
   // Draw top
@@ -351,5 +350,13 @@ void VisionWindow::drawBeacons(ImageWidget* image) {
     bpath.addRoundedRect(QRect(x1, by1, width, height), 5, 5);
     painter.setPen(bpen);
     painter.fillPath(bpath, QBrush(beacon.second[1]));
+
+    // Draw pointer if occluded
+    if(object.occluded) {
+      painter.setPen(QPen(Qt::red));
+      painter.setFont(QFont("Helvetica", 8));
+      painter.drawText(QPointF(object.imageCenterX - width, object.imageCenterY + 1.5 * height), "Occluded");
+    }
+
   }
 }
