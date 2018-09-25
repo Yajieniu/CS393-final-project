@@ -1,4 +1,4 @@
-"""hw1 behavior."""
+"""hw2 behavior."""
 
 from __future__ import print_function
 from __future__ import division

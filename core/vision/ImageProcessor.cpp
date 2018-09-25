@@ -307,9 +307,9 @@ void ImageProcessor::detectBall() {
     ball->visionElevation = cmatrix_.elevation(p);
     ball->visionDistance = cmatrix_.groundDistance(p);
 
-    cout << "Ball detected at: " << ballc->centerX << "," << ballc->centerY << endl;
-    cout << "Ball pan: " << ball->visionBearing << "   Ball tilt: " << ball->visionElevation << endl;
-    cout << "Ball distance: " << ball->visionDistance << endl << endl;
+    // cout << "Ball detected at: " << ballc->centerX << "," << ballc->centerY << endl;
+    // cout << "Ball pan: " << ball->visionBearing << "   Ball tilt: " << ball->visionElevation << endl;
+    // cout << "Ball distance: " << ball->visionDistance << endl << endl;
 
     ball->seen = true;
 
