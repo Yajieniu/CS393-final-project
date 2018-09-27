@@ -23,7 +23,7 @@ class Playing(StateMachine):
             if self.getFrames() <= 3:
                 memory.walk_request.noWalk()
                 memory.kick_request.setFwdKick()
-            if self.getFrames() > 10 and not memory.kick_request.kick_running_:
+            if self.getFrames() > 100 and not memory.kick_request.kick_running_:
                 self.finish()
 
     class Walk(Node):
@@ -38,5 +38,6 @@ class Playing(StateMachine):
                 self.finish()
 
     def setup(self):
+        commands.setStiffness(cfgstiff.One)
         self.trans(self.Stand(), C, self.Kick(), C, self.Stand(),
                    C, pose.Sit(), C, self.Off())
