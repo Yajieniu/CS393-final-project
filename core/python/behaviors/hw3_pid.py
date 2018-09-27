@@ -14,12 +14,12 @@ from task import Task
 from state_machine import Node, S, C, T, LoopingStateMachine
 import UTdebug
 
-DELAY = 0.05
+DELAY = 0.1
 DIST_THRESHOLD = 240
 VX_MIN = 0.01
 VX_MAX = 1
 VY_MIN = 0.01
-VTHETA_MIN = 0.02
+VTHETA_MIN = 0.
 VTHETA_MAX = 0.25
 DISCOUNT_FACTOR = 0.1
 
@@ -103,21 +103,23 @@ class FindBall(Node):
         goal_x = goal.visionDistance
 
         if not ball.seen:
-            # print ("\n\n\n\t\tball not detected or too close \n\n\n")
+            print ('\n\n\n\nBall not seen.\n\n\n\n')
             vx = DISCOUNT_FACTOR*vx
             vy = DISCOUNT_FACTOR*vy
             vtheta = DISCOUNT_FACTOR*vtheta
         elif ball.fromTopCamera or ball_x > DIST_THRESHOLD:
-            vx = self.controller(min( (ball_x - DIST_THRESHOLD)/10, VX_MAX))
+            print ('\n\n\n\nBall seen far away.\n\n\n\n')
+            vx = self.controller(min( (ball_x - DIST_THRESHOLD)/100, VX_MAX))
             vtheta = min ( (abs(ball_theta) > VTHETA_MIN)*abs(ball_theta), VTHETA_MAX
                 ) * (ball_theta/abs(ball_theta))
         else:
             vx = 0
             if goal.seen:
+                print ('\n\n\n\nGoal visible.\n\n\n\n')
                 vy = ball_theta
                 vtheta = ball_theta-goal_theta
             else:
-                # walk around
+                print ('\n\n\n\nGoal NOT visible.\n\n\n\n')
                 vy = 0.5
                 vtheta = -0.5*vy
 
