@@ -10,7 +10,7 @@
 #include <memory/KickRequestBlock.h>
 
 #define JOINT_EPSILON (3.f * DEG_T_RAD)
-#define DEBUG false
+#define DEBUG false 
 
 KickModule::KickModule() : state_(Finished), sequence_(NULL) { }
 
@@ -31,6 +31,7 @@ void KickModule::initSpecificModule() {
 
 void KickModule::start() {
   printf("Starting kick sequence\n");
+  initStiffness();
   state_ = Initial;
   cache_.kick_request->kick_running_ = true;
   keyframe_ = 0;
@@ -84,7 +85,16 @@ void KickModule::processFrame() {
   }
 }
 
+
+void KickModule::initStiffness() {
+  for (int i=0; i < NUM_JOINTS; i++)
+    cache_.joint_command->stiffness_[i] = 1.0;
+  cache_.joint_command->send_stiffness_ = true;
+  cache_.joint_command->stiffness_time_ = 10;
+}
+
 void KickModule::performKick() {
+  initStiffness();
   if(DEBUG) printf("performKick, state: %s, keyframe: %i, frames: %i\n", getName(state_), keyframe_, frames_);
   if(state_ == Finished) return;
   if(sequence_ == NULL) return;
@@ -116,6 +126,7 @@ void KickModule::performKick() {
     moveBetweenKeyframes(keyframe, next, frames_);
   }
   frames_++;
+  std::cout << frames_ << std::endl;
 }
 
 bool KickModule::reachedKeyframe(const Keyframe& keyframe) {
