@@ -410,6 +410,9 @@ DECLARE_INTERNAL_SCHEMA(class WorldObject {
     SCHEMA_FIELD(bool ballMoved); ///< This is only used by the keeper during penalty kicks.
 
     SCHEMA_FIELD(bool fromTopCamera); ///< True if observed from top cam, false if from bottom
+
+    // NEW Occluded beacon parameter
+    SCHEMA_FIELD(bool occluded);
 });
 
 typedef std::vector<WorldObject> ObjectSet;

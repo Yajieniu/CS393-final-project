@@ -59,55 +59,17 @@ class Stand(Node):
 class On(Node):
     def run(self):
         commands.setStiffness()
-        self.finish()
-
-class GazeCenter(Node):
-    def run(self):
-        self.finish()
-
-class Gaze(Node):
-    def run(self):
-        commands.setHeadPanTilt(pan=x_diff, tilt=y_diff, time=0.5, isChange=True)
-        # if self.getTime() > DELAY:
-        #     self.finish()
-
-class Gazer(Node):
-    def __init__(self, p=1.0, i=0.0, d=0.0):
-        super(Gazer, self).__init__()
-        self.controller = Controller(p, i, d)
-
-    def run(self):
-        global x_diff
-        global y_diff
-        ball = mem_objects.world_objects[core.WO_BALL]
-        if ball.seen:
-            x = ball.imageCenterX
-            y = ball.imageCenterY
-            print ("Detected ball centroid: ", x, y)
-
-            x_error = -((x - X_RANGE/2)/X_RANGE)*X_THETA
-            x_diff = controller.update(x_error)
-            y_diff = -21 - ((y - Y_RANGE/2)/Y_RANGE)*Y_THETA
-
-
-        else:
-            choice = "no_ball"
-            print ("No ball detected")
-
-            x_diff = 0
-            # y_diff = -21
-        
-        self.finish()
+        commands.setHeadPanTilt(pan=0, tilt=-23, time=0.5)
+        # self.finish()
 
 
 
 class Playing(LoopingStateMachine):
     def setup(self):
-        gazer = Gazer()
-        gaze = Gaze()
+        # gazer = Gazer()
+        # gaze = Gaze()
         on = On()
-        self.add_transition(on, C, gazer)
-        self.add_transition(gazer, C, gaze, T(DELAY), gazer)
+        self.add_transition(on, T(0.5), on)
 
         # self.add_transition(gazer, S('no_ball'), gazer)
         # stand = Stand()

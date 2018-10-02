@@ -81,6 +81,9 @@ public:
   }
 
   void setFwdKick(Kick::Leg leg=Kick::RIGHT, float desired_distance=1000.0f) {
+    std::cout << "\n hello 4444444444444444\n" << std::endl;
+    std::cout
+
     set(Kick::STRAIGHT,leg,0.0,desired_distance);
   }
 

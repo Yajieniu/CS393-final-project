@@ -1,4 +1,4 @@
-"""hw1 behavior."""
+"""hw2 behavior."""
 
 from __future__ import print_function
 from __future__ import division
@@ -15,22 +15,35 @@ from state_machine import Node, S, C, T, LoopingStateMachine
 import UTdebug
 
 class Controller(object):
-    def __init__(self, p, i, d):
+    def __init__(self, p, i, d, T=30):
         self.Kp = p
         self.Ki = i
-        self.kD = d
+        self.Kd = d
 
         self.last_error = 0.
         self.pterm = 0.
         self.iterm = 0.
         self.dterm = 0.
+        self.i = 0
+
+        self.T = T
 
     def update(self, error):
         self.pterm = error
         self.iterm += error
         self.dterm = (error - self.last_error) / DELAY
+        self.i += 1
+        if self.i >= self.T:
+            self.clear()
 
         return self.pterm * self.Kp + self.iterm * self.Ki + self.dterm * self.Kd
+
+    def clear(self):
+        self.pterm = 0.0
+        self.iterm = 0.0
+        self.dterm = 0.0
+        self.last_error = 0.0
+        self.i = 0
 
 
 CENTER_THRESHOLD = 100
@@ -72,7 +85,7 @@ class Gaze(Node):
         #     self.finish()
 
 class Gazer(Node):
-    def __init__(self, p=1.0, i=0.0, d=0.0):
+    def __init__(self, p=1.2, i=0.0, d=0.0):
         super(Gazer, self).__init__()
         self.controller = Controller(p, i, d)
 
@@ -86,7 +99,7 @@ class Gazer(Node):
             print ("Detected ball centroid: ", x, y)
 
             x_error = -((x - X_RANGE/2)/X_RANGE)*X_THETA
-            x_diff = controller.update(x_error)
+            x_diff = self.controller.update(x_error)
             y_diff = -21 - ((y - Y_RANGE/2)/Y_RANGE)*Y_THETA
 
 

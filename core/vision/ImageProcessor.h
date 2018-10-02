@@ -12,33 +12,58 @@
 #include <vision/structures/BallCandidate.h>
 #include <math/Pose3D.h>
 #include <vision/structures/VisionParams.h>
+#include <unordered_map>
+#include <vector>
 
 class BallDetector;
 class Classifier;
 class BeaconDetector;
 
-struct block_t {
-    block_t* parent;
-    short length;
-    short x;
-    short y;
-    short minX;
-    short minY;
-    short maxX;
-    short maxY;
-    double meanX;
-    double meanY;
-    int count;
-    unsigned char color;
+struct RLE {
+    int lcol;
+    int rcol;
+    int parent;
+    int curr;
+    int npixels;
+    int color;
+    int rank;
+	int xi;
+	int xf;
+	int yi;
+	int yf;
+	int xsum;
+	int ysum;
+
+    RLE(int y, int l, int r, int idx, int c, int ystep) {
+        lcol = l;
+        rcol = r;
+        parent = idx;
+        curr = idx;
+        npixels = (r - l + 1) * ystep;
+        color = c;
+        rank = 1;
+		xi = l; xf = r;
+		yi = y; yf = y + ystep - 1;
+		xsum = ((r + l) / 2) * (r - l + 1) * ystep;
+		ysum = y * (r - l + 1) * ystep;
+    }
 };
+
+struct RLECompare {
+	bool operator()(RLE* a, RLE* b) {
+		return a->npixels > b->npixels;
+	}
+};
+
+Blob makeBlob(RLE* r);
 
 /// @ingroup vision
 class ImageProcessor {
   public:
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW  
-    ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera);  // how to use vblocks
-    ~ImageProcessor();  // what is this
-    void processFrame(); 
+    ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera);
+    ~ImageProcessor();
+    void processFrame();
     void init(TextLogger*);
     void SetColorTable(unsigned char*);
     std::unique_ptr<BeaconDetector> beacon_detector_;
@@ -57,9 +82,15 @@ class ImageProcessor {
     std::vector<BallCandidate*> getBallCandidates();
     BallCandidate* getBestBallCandidate();
     bool isImageLoaded();
-    void detectBlob();
-    bool findBall(int& imageX, int& imageY);
-    WorldObject* getBall();
+    int getParent(int idx); 
+    void mergeBlobs(int idx1, int idx2); 
+	vector<RLE*> getRLERow(int y, int width, int &start_idx); 
+	void mergeEncodings(vector<RLE*> &prev_encoding, vector<RLE*> &encoding); 
+	void calculateBlobs();
+    void detectBall();
+    void findBall(int& imageX, int& imageY);
+    void detectGoal();
+    void findGoal(int& imageX, int& imageY);
   private:
     int getTeamColor();
     double getCurrentTime();
@@ -83,24 +114,13 @@ class ImageProcessor {
     //void saveImg(std::string filepath);
     int topFrameCounter_ = 0;
     int bottomFrameCounter_ = 0;
+    
+    // blob store
+    unordered_map<int, RLE*> rle_ptr;
+    vector<Blob> detected_blobs;
 
-    void markBall(int, int, int);
-    void markGoal(int, int);
-    void markBeacon(WorldObjectType, int, int);
-
-    void RLE(block_t* blocks);
-    void mergeRow(block_t*, block_t*);
-    void mergeBlock(block_t*, block_t*);
-    void initBlock(block_t*, int, int, int, unsigned char);
-    block_t* findBlockParent(block_t*);
-    void unionBlock(block_t*, block_t*);
-
-    // False positive filter
-    bool generalBlobFilter(block_t*);
-    bool lookLikeBall(block_t*);
-    bool lookLikeGoal(block_t*);
-    bool lookLikeBeacon(block_t*, block_t*, WorldObjectType, int&, double&, double&);
-
+    // Ball detection
+    vector<BallCandidate*> ball_candidates;
 };
 
 #endif

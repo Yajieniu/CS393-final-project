@@ -3,17 +3,167 @@
 #include <vision/BeaconDetector.h>
 #include <vision/Logging.h>
 #include <iostream>
+#include <cmath>
 
-#define STEP 1
-// #define BLOB_THRESHOLD 200/STEP
-// #define GOAL_THRESHOLD 1500 / STEP
+vector<RLE*> ImageProcessor::getRLERow(int y, int width, int &start_idx) {
+    // handle NULL case
+    int xstep = 1 << iparams_.defaultHorizontalStepScale;
+    int ystep = 1 << iparams_.defaultVerticalStepScale;
+    auto prev_color = getSegImg()[y * width];
+    auto prev_idx = 0;
+    vector<RLE*> encoding;
+    for(int x = 0; x < width; x += xstep) {
+        auto c = getSegImg()[y * width + x];
+        if(c == prev_color)
+            continue;
+        else {
+            encoding.push_back(new RLE(y, prev_idx, x - 1, start_idx, prev_color, ystep));
+            start_idx++;
+            prev_color = c;
+            prev_idx = x;
+        }
+    }
+    encoding.push_back(new RLE(y, prev_idx, width - 1, start_idx, prev_color, ystep));
+    start_idx++;
+
+    return encoding;
+}
+
+int ImageProcessor::getParent(int idx) {
+    if(rle_ptr.find(idx) == rle_ptr.end())
+        return -1;
+    if(rle_ptr[idx]->parent == rle_ptr[idx]->curr)
+        return rle_ptr[idx]->parent;
+    // Path compression
+    int p = getParent(rle_ptr[idx]->parent);
+    rle_ptr[idx]->parent = p;
+    return p;
+}
+
+void ImageProcessor::mergeBlobs(int idx1, int idx2) {
+    int p1 = getParent(idx1);
+    int p2 = getParent(idx2);
+    if(p1 == -1 || p2 == -1) {
+        std::cout << "Unknown RLE" << endl;
+        return;
+    }
+    if(p1 == p2)
+        return;
+    // Union by rank
+    int r1 = rle_ptr[p1]->rank;
+    int r2 = rle_ptr[p2]->rank;
+    if(r1 > r2) {
+        rle_ptr[p2]->parent = p1;
+        rle_ptr[p1]->npixels += rle_ptr[p2]->npixels;
+        rle_ptr[p1]->xi = min(rle_ptr[p1]->xi, rle_ptr[p2]->xi);
+        rle_ptr[p1]->xf = max(rle_ptr[p1]->xf, rle_ptr[p2]->xf);
+        rle_ptr[p1]->yi = min(rle_ptr[p1]->yi, rle_ptr[p2]->yi);
+        rle_ptr[p1]->yf = max(rle_ptr[p1]->yf, rle_ptr[p2]->yf);
+        rle_ptr[p1]->xsum += rle_ptr[p2]->xsum;
+        rle_ptr[p1]->ysum += rle_ptr[p2]->ysum;
+    }
+    else if(r2 > r1) {
+        rle_ptr[p1]->parent = p2;
+        rle_ptr[p2]->npixels += rle_ptr[p1]->npixels;
+        rle_ptr[p2]->xi = min(rle_ptr[p1]->xi, rle_ptr[p2]->xi);
+        rle_ptr[p2]->xf = max(rle_ptr[p1]->xf, rle_ptr[p2]->xf);
+        rle_ptr[p2]->yi = min(rle_ptr[p1]->yi, rle_ptr[p2]->yi);
+        rle_ptr[p2]->yf = max(rle_ptr[p1]->yf, rle_ptr[p2]->yf);
+        rle_ptr[p2]->xsum += rle_ptr[p1]->xsum;
+        rle_ptr[p2]->ysum += rle_ptr[p1]->ysum;
+    }
+    else {
+        rle_ptr[p2]->parent = p1;
+        rle_ptr[p1]->rank++;
+        rle_ptr[p1]->npixels += rle_ptr[p2]->npixels;
+        rle_ptr[p1]->xi = min(rle_ptr[p1]->xi, rle_ptr[p2]->xi);
+        rle_ptr[p1]->xf = max(rle_ptr[p1]->xf, rle_ptr[p2]->xf);
+        rle_ptr[p1]->yi = min(rle_ptr[p1]->yi, rle_ptr[p2]->yi);
+        rle_ptr[p1]->yf = max(rle_ptr[p1]->yf, rle_ptr[p2]->yf);
+        rle_ptr[p1]->xsum += rle_ptr[p2]->xsum;
+        rle_ptr[p1]->ysum += rle_ptr[p2]->ysum;
+    }
+}
+
+void ImageProcessor::mergeEncodings(vector<RLE*> &prev_encoding, vector<RLE*> &encoding) {
+    if(prev_encoding.size() == 0 || encoding.size() == 0)
+        return;
+    int i = 0, j = 0;
+    while(i < prev_encoding.size() && j < encoding.size()) {
+        if(prev_encoding[i]->rcol < encoding[j]->lcol) {
+            i++;
+        }
+        else if(prev_encoding[i]->lcol > encoding[j]->rcol) {
+            j++;
+        }
+        else {
+            // overlap detected, if colors match then merge blobs
+            if(prev_encoding[i]->color == encoding[j]->color) {
+                mergeBlobs(prev_encoding[i]->curr, encoding[j]->curr);
+            }
+            // progress pointers
+            if(prev_encoding[i]->rcol >= encoding[j]->rcol) {
+                j++;
+            }
+            else {
+                i++;
+            }
+        }
+    }
+}
+
+Blob makeBlob(RLE* r) {
+    Blob b;
+    b.xi = r->xi;
+    b.xf = r->xf;
+    b.yi = r->yi;
+    b.yf = r->yf;
+    b.dx = r->xf - r->xi + 1;
+    b.dy = r->yf - r->yi + 1;
+    b.color = static_cast<Color>(r->color);
+    b.lpCount = r->npixels;
+    b.avgX = r->xsum / r->npixels;
+    b.avgY = r->ysum / r->npixels;
+    
+    return b;
+}
+
+void ImageProcessor::calculateBlobs() {
+    // handle NULL case
+    int height = iparams_.height;
+    int width = iparams_.width;
+    int ystep = 1 << iparams_.defaultVerticalStepScale;
+    int loc_idx = 0;
+    rle_ptr.clear();
+    vector<RLE*> prev_encoding;
+
+    for(int y = 0; y < height; y += ystep) {
+        auto encoding = getRLERow(y, width, loc_idx);
+        // initialising the hash table with RLE pointers
+        for(int i = 0; i < encoding.size(); ++i) {
+            assert(rle_ptr.find(encoding[i]->curr) == rle_ptr.end());
+            rle_ptr[encoding[i]->curr] = encoding[i];
+        }
+        mergeEncodings(prev_encoding, encoding);
+        prev_encoding = encoding;
+    }
+    // setting the detected blobs in the vector
+    detected_blobs.clear();
+    for(auto it = rle_ptr.begin(); it != rle_ptr.end(); ++it) {
+        RLE* b = it->second;
+        if(b->parent == b->curr) {
+            detected_blobs.push_back(makeBlob(b));
+        }
+        delete(b);
+    }
+}
 
 ImageProcessor::ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams, Camera::Type camera) :
   vblocks_(vblocks), iparams_(iparams), camera_(camera), cmatrix_(iparams_, camera)
 {
   enableCalibration_ = false;
   color_segmenter_ = std::make_unique<Classifier>(vblocks_, vparams_, iparams_, camera_);
-  // beacon_detector_ = std::make_unique<BeaconDetector>(DETECTOR_PASS_ARGS);
+  beacon_detector_ = std::make_unique<BeaconDetector>(DETECTOR_PASS_ARGS);
   calibration_ = std::make_unique<RobotCalibration>();
 }
 
@@ -24,7 +174,7 @@ void ImageProcessor::init(TextLogger* tl){
   textlogger = tl;
   vparams_.init();
   color_segmenter_->init(tl);
-  // beacon_detector_->init(tl);
+  beacon_detector_->init(tl);
 }
 
 unsigned char* ImageProcessor::getImg() {
@@ -116,9 +266,10 @@ void ImageProcessor::setCalibration(const RobotCalibration& calibration){
 }
 
 void ImageProcessor::processFrame(){
-  // if(camera_ == Camera::BOTTOM) return;
+  // if(vblocks_.robot_state->WO_SELF == WO_TEAM_COACH && camera_ == Camera::BOTTOM) return;
+
   tlog(30, "Process Frame camera %i", camera_);
-  
+
   // Horizon calculation
   tlog(30, "Calculating horizon line");
   updateTransform();
@@ -126,481 +277,105 @@ void ImageProcessor::processFrame(){
   vblocks_.robot_vision->horizon = horizon;
   tlog(30, "Classifying Image: %i", camera_);
   if(!color_segmenter_->classifyImage(color_table_)) return;
-  detectBlob();
-  // beacon_detector_->findBeacons();
+  calculateBlobs();
+  detectBall();
+  if(camera_ == Camera::BOTTOM) return;
+
+  detectGoal();
+  beacon_detector_->findBeacons(detected_blobs);
 }
 
+void ImageProcessor::detectBall() {
+    WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
+    if(ball->seen)
+        return;
 
-void ImageProcessor::markBall(int imageX, int imageY, int radius) {
+    BallCandidate* ballc = getBestBallCandidate();
 
-  WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
-
-  // std::cout << "Ball " << imageX << " " << imageY << " " << radius << std::endl;
-
-
-  ball->imageCenterX = imageX;
-  ball->imageCenterY = imageY;
-
-  Position p = cmatrix_.getWorldPosition(imageX, imageY);
-  ball->visionBearing = cmatrix_.bearing(p);
-  ball->visionElevation = cmatrix_.elevation(p);
-  ball->visionDistance = cmatrix_.groundDistance(p);
-
-  ball->fromTopCamera = camera_ == Camera::TOP;
-
-  ball->radius = radius;
-
-  // std::cout << "Ball bearing = " << ball->visionBearing << endl;
-  // std::cout << "Ball elevation = " << ball->visionElevation << endl;
-  // std::cout << "Ball distance = " << ball->visionDistance << endl;
-  ball->seen = true;
-}
-
-void ImageProcessor:: markGoal(int imageX, int imageY) {
-
-  WorldObject* goal = &vblocks_.world_object->objects_[WO_UNKNOWN_GOAL];
-
-  goal->imageCenterX = imageX;
-  goal->imageCenterY = imageY;
-
-  // goal->imageCenterX = 0;
-  // goal->imageCenterY = 0;
-
-  Position p = cmatrix_.getWorldPosition(imageX, imageY, 300);
-  goal->visionBearing = cmatrix_.bearing(p);
-  goal->visionElevation = cmatrix_.elevation(p);
-  goal->visionDistance = cmatrix_.groundDistance(p);
-  goal->fromTopCamera = camera_ == Camera::TOP;
-
-  goal->seen = true;
-}
-
-void ImageProcessor:: markBeacon(WorldObjectType beacon_name, int beaconX, int beaconY) {
-
-  static map<WorldObjectType,int> heights = {
-    { WO_BEACON_BLUE_YELLOW, 300 },
-    { WO_BEACON_YELLOW_BLUE, 300 },
-    { WO_BEACON_BLUE_PINK, 200 },
-    { WO_BEACON_PINK_BLUE, 200 },
-    { WO_BEACON_PINK_YELLOW, 200 },
-    { WO_BEACON_YELLOW_PINK, 200 }
-  };
-
-  WorldObject* beacon = &vblocks_.world_object->objects_[beacon_name];
-
-  beacon->imageCenterX = beaconX;
-  beacon->imageCenterY = beaconY;
-
-  Position p = cmatrix_.getWorldPosition(beaconX, beaconY, heights[beacon_name]);
-  beacon->visionBearing = cmatrix_.bearing(p);
-  beacon->visionElevation = cmatrix_.elevation(p);
-  beacon->visionDistance = cmatrix_.groundDistance(p);
-  beacon->fromTopCamera = camera_ == Camera::TOP;
-
-  beacon->seen = true;
-}
-
-bool ImageProcessor::generalBlobFilter(block_t* block) {
-  if (block->parent != block) {
-    return false;
-  }
-
-  // int width = block->maxX - block->minX;
-  // int height = block->maxY - block->minY;
-  if (block->maxX - block->minX <= 4 || block->maxY - block->minY <= 4 || block->count <= 15) { return false; }
-
-  return true;
-}
-
-bool ImageProcessor::lookLikeBall(block_t* block) {
-  if (!generalBlobFilter(block) || block->color != c_ORANGE) {
-    return false;
-  }
-
-  // int centerX = block->meanX;
-  // int centerY = block->meanY;
-  // int radius = (block->maxY - block->minY + block->maxX - block->minX) / 4;
-
-  // int step = 30;
-  // int count = 0;
-  // for (int i = 0; i < 360; i+=step) {
-  //   int x = centerX + cos(step);
-  //   int y = centerY + sin()
-  // }
-
-  // // std::cout << block->x << " " << block->y << " " << static_cast<int> (block->color) << std::endl;
-  int width =  block->maxX - block->minX;
-  int height = block->maxY - block->minY;
-
-  if (width >= 1.5 * height || height >= 1.5 * width) {
-    return false;
-  }
-
-
-  // could be more accurate, constant can be changed, need to consider the y value of 
-  // ball in the view, taking tile value into consideration. 
-  int radius = (width+height) / 4;
-  // int C = (240. - height) / (13. - radius);
-
-  if (camera_ == Camera::TOP && radius >= 15) { return false; }
-  // if (camera_ == Camera::BOTTOM && radius >= 100) { return false; }
-
-  if (radius * radius >= block->count / 2.7) { return false; }
-  if (radius * radius <= block->count / 3.5) { return false; }
-
-
-  return true;
-}
-    
-bool ImageProcessor::lookLikeGoal(block_t* block) {
-
-  if (!generalBlobFilter(block) || block->color != c_BLUE) {
-    return false;
-  }
-
-  double width = block->maxX - block->minX;
-  double height = block->maxY - block->minY;
-  if (width / height >= 2.5 || width / height <= 1.5) { return false; }
-
-
-  if (block->count <= 1000) { return false; }
-
-
-  return true;
-}
-
-bool ImageProcessor::lookLikeBeacon(block_t* blocks, block_t* block, 
-  WorldObjectType beacon_name, int& count, double& meanX, double& meanY) {
-  
-  if (!generalBlobFilter(block)) {
-    return false;
-  }
-
-  static map<WorldObjectType, pair<unsigned char,unsigned char> > beacon_colors = {
-    { WO_BEACON_BLUE_YELLOW, {c_BLUE, c_YELLOW} },
-    { WO_BEACON_YELLOW_BLUE, {c_YELLOW, c_BLUE} },
-    { WO_BEACON_BLUE_PINK, {c_BLUE, c_PINK} },
-    { WO_BEACON_PINK_BLUE, {c_PINK, c_BLUE} },
-    { WO_BEACON_PINK_YELLOW, {c_PINK, c_YELLOW} },
-    { WO_BEACON_YELLOW_PINK, {c_YELLOW, c_PINK} }
-  };
-
-  static map<WorldObjectType,int> beacon_types = {
-    { WO_BEACON_BLUE_YELLOW, 2 },
-    { WO_BEACON_YELLOW_BLUE, 2 },
-    { WO_BEACON_BLUE_PINK, 1 },
-    { WO_BEACON_PINK_BLUE, 1 },
-    { WO_BEACON_PINK_YELLOW, 1 },
-    { WO_BEACON_YELLOW_PINK, 1 }
-  };
-
-  static const int nPoints = 3; // Do a point checking on beacons
-  static float xOffsets[nPoints] = {-1./2, 0., 1./2}, yOffsets[nPoints] = {1./2, 1., 3./2};
-
-  unsigned char colorTop = beacon_colors[beacon_name].first;
-  unsigned char colorBottom = beacon_colors[beacon_name].second;
-  int type = beacon_types[beacon_name];
-  short x, y, x_temp, y_temp, points_ok;
-  int index;
-
-  if (block->color != colorTop) {
-    return false;
-  }
-
-  block_t *blockMed = NULL, *blockBottom = NULL;
-
-  x = block->meanX * iparams_.width/STEP;
-  y = block->meanY * iparams_.height/STEP;
-  points_ok = 0;
-
-  for (int i = 0; i < nPoints; i++) {
-    for (int j = 0; j < nPoints; j++) {
-      x_temp = x + xOffsets[i]*(block->maxX/STEP - x);
-      y_temp = block->maxY/STEP + yOffsets[j]*(block->maxY/STEP - y);
-      if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
-
-      index = y_temp * iparams_.width/STEP + x_temp;
-      blockMed = &blocks[index];
-      blockMed = findBlockParent(blockMed);
-      if (generalBlobFilter(blockMed) && blockMed->color == colorBottom) points_ok++;
+    if(ballc == NULL){
+        // cout << "Ball not detected" << endl;
+        ball->seen = false;
+        return;
     }
-  }
 
-  if (points_ok < 5) return false;
+    ball->imageCenterX = ballc->centerX;
+    ball->imageCenterY = ballc->centerY;
+    ball->radius = ballc->radius;
 
-  x = blockMed->meanX * iparams_.width/STEP;
-  y = blockMed->meanY * iparams_.height/STEP;
-  points_ok = 0;
+    Position p = cmatrix_.getWorldPosition(ballc->centerX, ballc->centerY);
+    ball->visionBearing = cmatrix_.bearing(p);
+    ball->visionElevation = cmatrix_.elevation(p);
+    ball->visionDistance = cmatrix_.groundDistance(p);
 
-  for (int i = 0; i < nPoints; ++i) {
-    for (int j = 0; j < nPoints; ++j) {
-      x_temp = x + xOffsets[i]*(blockMed->maxX/STEP - x);
-      y_temp = blockMed->maxY/STEP + yOffsets[j]*(blockMed->maxY/STEP - y);
-      if ( y_temp >= iparams_.height/STEP || x_temp >= iparams_.width/STEP || y_temp < 0 || x_temp < 0) continue;
+    // cout << "Ball detected at: " << ballc->centerX << "," << ballc->centerY << endl;
+    // cout << "Ball pan: " << ball->visionBearing << "   Ball tilt: " << ball->visionElevation << endl;
+    // cout << "Ball distance: " << ball->visionDistance << endl << endl;
 
-      index = y_temp * iparams_.width/STEP + x_temp;
-      blockBottom = &blocks[index];
-      blockBottom = findBlockParent(blockBottom);
-      if (generalBlobFilter(blockBottom) && blockBottom->color == c_WHITE) points_ok++;
+    ball->seen = true;
+
+    if(camera_ == Camera::BOTTOM)
+        ball->fromTopCamera = false;
+    else
+        ball->fromTopCamera = true;
+}
+
+void ImageProcessor::findBall(int& imageX, int& imageY) {
+}
+
+void ImageProcessor::detectGoal() {
+    int imageX = -1, imageY = -1;
+    findGoal(imageX, imageY);
+
+    WorldObject* goal = &vblocks_.world_object->objects_[WO_UNKNOWN_GOAL];
+    if(imageX == -1 && imageY == -1){
+        goal->seen = false;
+        return;
     }
-  }
 
-  if (points_ok < 5) return false;
+    goal->imageCenterX = imageX;
+    goal->imageCenterY = imageY;
 
-  count = block->count + blockMed->count + blockBottom->count;
-  meanX = (block->meanX + blockMed->meanX)/2;
-  meanY = (block->meanY + blockMed->meanY)/2;
+    Position p = cmatrix_.getWorldPosition(imageX, imageY);
+    goal->visionBearing = cmatrix_.bearing(p);
+    goal->visionElevation = cmatrix_.elevation(p);
+    goal->visionDistance = cmatrix_.groundDistance(p);
+    goal->fromTopCamera = (camera_ == Camera::TOP);
 
-  return true;
-
+    // cout << "Goal pan: " << goal->visionBearing << "   Goal tilt: " << goal->visionElevation << endl;
+    // cout << "Goal distance: " << goal->visionDistance << endl << endl;
+    goal->seen = true;
 }
 
 
-// bool ImageProcessor::lookLikeOccudedBeacon(block_t* blocks, block_t* block, 
-//   WorldObjectType beacon_name, int& count, double& meanX, double& meanY) {
-
-//   int dummyCount;
-//   if (!generalBlobFilter(block) || lookLikeBeacon()) {
-//     return false;
-//   }
-
-//   return false;
-// }
-
-
-
-
-void ImageProcessor::detectBlob() {
-
-  if (camera_ == Camera::BOTTOM) { return; }
-
-  int size = iparams_.width/STEP * iparams_.height/STEP;
-  block_t *blocks = new block_t[size];
-  RLE(blocks);
-
-  // Merge blocks
-  for (int y = 1; y < iparams_.height/STEP; y++) {
-    block_t* topRow = &blocks[(y-1)*iparams_.width/STEP];
-    block_t* bottomRow = &blocks[y*iparams_.width/STEP];
-    mergeRow(topRow, bottomRow);
-  }
-
-  // some variables to help detect objects
-  // ball
-  int largestBallSize = 0;
-  int ballRadius = 0;
-  int ballX = 0;
-  int ballY = 0;
-
-  // goal
-  int largestGoalSize = 0;
-  int goalX = 0;
-  int goalY = 0;
-
-  // beacon
-  const int n_beacons = 6;
-  WorldObjectType beacon_name[n_beacons] = {WO_BEACON_BLUE_YELLOW,
-                                        WO_BEACON_YELLOW_BLUE,
-                                        WO_BEACON_BLUE_PINK,
-                                        WO_BEACON_PINK_BLUE,
-                                        WO_BEACON_PINK_YELLOW,
-                                        WO_BEACON_YELLOW_PINK};
-  int largestBeaconSize[n_beacons] = {0,0,0,0,0,0};
-  int beaconX[n_beacons] = {0,0,0,0,0,0};
-  int beaconY[n_beacons] = {0,0,0,0,0,0};
-
-
-  // detect objects
-  for (int y = 0; y < iparams_.height/STEP; y++) {
-    for (int x = 0; x < iparams_.width/STEP;) {
-      int index = y * iparams_.width/STEP + x;
-      auto block = &blocks[index];
-      if (lookLikeBall(block) && block->count > largestBallSize) {
-        largestBallSize = block->count;
-        ballX = block->meanX * iparams_.width;
-        ballY = block->meanY * iparams_.height;
-        ballRadius = (block->maxX - block->minX + block->maxY - block->minY) / 4;
-      }
-
-      if (lookLikeGoal(block) && block->count > largestGoalSize) {
-        largestGoalSize = block->count;
-        goalX = block->meanX * iparams_.width;
-        goalY = block->meanY * iparams_.height;
-        // std::cout << "Goal " << block->meanX * iparams_.width << " " << block->meanY * iparams_.height << " " << largestGoalSize << std::endl;
-
-      }
-
-      for (int i_beacon = 0; i_beacon < n_beacons; ++i_beacon) {
-        int count; double meanX, meanY;
-        if (lookLikeBeacon(blocks, block, beacon_name[i_beacon], count, meanX, meanY) 
-            && block->count > largestBeaconSize[i_beacon]) {
-          largestBeaconSize[i_beacon] = count;
-          beaconX[i_beacon] = meanX * iparams_.width;
-          beaconY[i_beacon] = meanY * iparams_.height;
+void ImageProcessor::findGoal(int& imageX, int& imageY) {
+    if(getSegImg() == NULL){
+        imageX = -1;
+        imageY = -1;
+        // cout << "Goal not detected" << endl;
+        return;
+    }
+    auto blueBlobs = filterBlobs(detected_blobs, c_BLUE, 2000);
+    sort(blueBlobs.begin(), blueBlobs.end(), BlobCompare);
+    if(blueBlobs.size() > 0) {
+        // cout << "Goal detected at: " << blueBlobs[0].avgX << "\t" << blueBlobs[0].yf << endl;
+        double rectArea = (blueBlobs[0].dx) * (blueBlobs[0].dy);
+        double density = (blueBlobs[0].lpCount / rectArea);
+        if (density > 0.7) {
+            imageX = blueBlobs[0].avgX;
+            imageY = blueBlobs[0].yf;
         }
-      }
-
-      x += block->length;
+        else {
+            // cout << "Skipping " << blueBlobs[0].avgX << " " << blueBlobs[0].yf << " " << density << endl;
+            imageX = -1;
+            imageY = -1;
+        }
     }
-  }
-
-  if (largestBallSize > 0) {
-    markBall(ballX , ballY, ballRadius);
-    std::cout << "Ball " << ballX << " " << ballY << " " << largestBallSize << std::endl;
-  }
-
-  if (largestGoalSize > 0) {
-    markGoal(goalX, goalY);
-    // std::cout << "Goal " << goalX << " " << goalY << " " << largestGoalSize << std::endl;
-  }
-
-  for (int i_beacon = 0; i_beacon < n_beacons; ++i_beacon) {
-    if (largestBeaconSize[i_beacon] > 0) {
-      markBeacon(beacon_name[i_beacon], beaconX[i_beacon], beaconY[i_beacon]);
-      // std::cout << "WO_BEACON_YELLOW_PINK " << i_beacon << " " << beaconX[i_beacon] << " " << beaconY[i_beacon]<< std::endl;
+    else {
+        imageX = -1;
+        imageY = -1;
+        // cout << "Goal not detected" << endl;
     }
-  }
-
-  delete[] blocks;
 }
-
-void ImageProcessor::mergeRow(block_t *rowA, block_t* rowB) {
-  int indexA = 0;
-  int indexB = 0;
-
-  while (indexA < iparams_.width / STEP && indexB < iparams_.width / STEP) {
-    auto blockA = &rowA[indexA];
-    auto blockB = &rowB[indexB];
-    
-    mergeBlock(blockA, blockB);
-
-    if (indexA + blockA->length <= indexB + blockB->length) {
-      indexA += blockA->length;
-    } else {
-      indexB += blockB->length;
-    }
-  }
-}
-
-void ImageProcessor::mergeBlock(block_t* blockA, block_t* blockB) {
-  if (blockA->color != blockB->color) { return; }
-
-  if (blockA->x + blockA->length > blockB->x && blockB->x + blockB->length > blockA->length) {
-    unionBlock(blockA, blockB);
-  }
-}
-
-void ImageProcessor::initBlock(block_t* blocks, int x, int y, int length, unsigned char color) {
-  int blockIndex = y/STEP * iparams_.width/STEP + x/STEP;
-  auto block = &blocks[blockIndex-length];
-
-  block->parent = block;
-
-  block->length = length;
-  block->color = color;
-
-  block->x = x-length;
-  block->y = y;
-
-  block->minX = block->x;
-  block->maxX = block->x + length;
-  block->minY = block->y;
-  block->maxY = block->y;
-
-
-  block->meanX = (block->x + length/2.) / iparams_.width;
-  block->meanY = y*1. / iparams_.height;
-  block->count = length;
-
-  for (int i = blockIndex-length+1; i < blockIndex; ++i) {
-    blocks[i].parent = block;
-  }
-
-  // DEBUG
-  // if (color == c_BLUE) {
-  //   std::cout << "Blue " << x << ", " << y << " " << length << std::endl;
-  // }
-
-  // if (color == c_ORANGE) {
-  //   std::cout << "Orange " << x << ", " << y << " " << length << std::endl;
-  // }
-
-  // if (color == c_FIELD_GREEN) {
-  //   std::cout << "Green " << x << ", " << y << " " << length << std::endl;
-  // }
-}
-
-void ImageProcessor::RLE(block_t* blocks) {
-  auto colors = getSegImg();
-  for (int y = 0; y < iparams_.height; y+=STEP) {
-    int length = 1;
-    auto color = colors[y * iparams_.width];
-
-    int x;
-    for (x = STEP; x < iparams_.width; x+=STEP) {
-      int colorIndex = y * iparams_.width + x;
-      auto currentColor = colors[colorIndex];
-      if (currentColor != color) {
-        initBlock(blocks, x, y, length, color);
-        length = 1;
-        color = currentColor;
-      } else {
-        length++;
-      }
-    }
-
-    initBlock(blocks, x, y, length, color);
-
-  }
-}
-
-block_t* ImageProcessor::findBlockParent(block_t* block) {
-  if (block->parent != block) {
-    return block->parent = findBlockParent(block->parent);
-  }
-  return block->parent;
-}
-
-void ImageProcessor::unionBlock(block_t* blockA, block_t* blockB) {
-  auto parentA = findBlockParent(blockA);
-  auto parentB = findBlockParent(blockB);
-
-  // std::cout << "Merging [" << blockB->x <<" " << blockB->y <<"] to [" << blockA->x << " " << blockA->y << "]!" << std::endl;
-
-  // if (parentA == parentB) {
-  //   // std::cout << parentA->x << " " << parentA->y << std::endl;
-  //   std::cout << "Error!" << std::endl;
-  // }
-
-  // If share same parent already, then 
-  if (parentA == parentB) {
-    return;
-    // parentB = blockB;
-  }
-
-  // Always merge to the top-left block
-  // if (parentB->x < parentA->x || parentB->y < parentA->y) {
-  //   auto tmp = parentB;
-  //   parentB = parentA;
-  //   parentA = tmp;
-  // }
-
-  long totalCount = parentA->count + parentB->count;
-  double weightA = parentA->count*1. / totalCount;
-  double weightB = parentB->count*1. / totalCount;
-  parentA->meanX = parentA->meanX * weightA + parentB->meanX * weightB;
-  parentA->meanY = parentA->meanY * weightA + parentB->meanY * weightB;
-
-  parentA->minX = MIN(parentA->minX, parentB->minX);
-  parentA->minY = MIN(parentA->minY, parentB->minY);
-  parentA->maxX = MAX(parentA->maxX, parentB->maxX);
-  parentA->maxY = MAX(parentA->maxY, parentB->maxY);
-
-  parentA->count += parentB->count;
-
-  parentB->parent = parentA;
-}
-
 
 int ImageProcessor::getTeamColor() {
   return vblocks_.robot_state->team_;
@@ -617,20 +392,111 @@ float ImageProcessor::getHeadChange() const {
 }
 
 std::vector<BallCandidate*> ImageProcessor::getBallCandidates() {
-  return std::vector<BallCandidate*>();
+    for(int i = 0; i < ball_candidates.size(); ++i) {
+        delete(ball_candidates[i]);
+    }
+    ball_candidates.clear();
+
+    const int width = iparams_.width;
+    const int height = iparams_.height;
+    const int xstep = (1 << iparams_.defaultHorizontalStepScale);
+    const int ystep = (1 << iparams_.defaultVerticalStepScale);
+    unsigned char* segImg = getSegImg();
+
+    if(segImg == NULL){
+        return ball_candidates;
+    }
+
+    vector<Blob> orangeBlobs;
+
+    if (camera_ == Camera::BOTTOM)
+        orangeBlobs = filterBlobs(detected_blobs, c_ORANGE, 200);
+    else
+        orangeBlobs = filterBlobs(detected_blobs, c_ORANGE, 50);
+
+    sort(orangeBlobs.begin(), orangeBlobs.end(), BlobCompare);
+    for(int i = 0; i < orangeBlobs.size(); ++i) {
+
+        double sideRatio = double(orangeBlobs[i].dx) / (orangeBlobs[i].dy);
+        // cout << sideRatio << endl;
+        if (camera_ == Camera::TOP && (sideRatio < 0.6 || sideRatio > 1.4)) {
+          // std::cout << "Skipping due to side ratio: " << i << " " << sideRatio << endl;
+          // cout << "skipping" << endl;
+          continue;
+        }
+
+        // area ratio
+        double rectArea = (orangeBlobs[i].dx) * (orangeBlobs[i].dy);
+        double density = (orangeBlobs[i].lpCount / rectArea);
+
+        if (density < 0.5) {
+          // std::cout << "Skipping due to density: " << i << " " << density << endl;
+          // cout << "skipping" << endl;
+          continue;
+        }
+
+        int BALL_MAX_AREA_THRESHOLD = camera_ == Camera::BOTTOM ? iparams_.size : 1600;
+
+        if (rectArea > BALL_MAX_AREA_THRESHOLD)
+            continue;
+
+        // filter out candidate if not on green ground
+        int xstart = max(orangeBlobs[i].avgX - orangeBlobs[i].dx * 1, 0);
+        int xend   = min(orangeBlobs[i].avgX + orangeBlobs[i].dx * 1, width - 1);
+        int ystart = min(orangeBlobs[i].avgY + orangeBlobs[i].dy, height - 1);
+        int yend   = min(orangeBlobs[i].avgY + orangeBlobs[i].dy * 2, height - 1);
+        xstart -= xstart % xstep;
+        xend -= xend % xstep;
+        ystart -= ystart % ystep;
+        yend -= yend % ystep;
+
+        double tot_count = 1;
+        double green_count = 0;
+        for(int x=xstart; x <= xend; x += xstep){
+          for(int y=ystart; y <= yend; y += ystep){
+            auto c = static_cast<Color>(segImg[y * width + x]);
+            green_count += (c == c_FIELD_GREEN) ? 1 : 0;
+            tot_count += 1;
+          }
+        }
+        // If the ball is near bottom of image, it can still be green
+        if (green_count / tot_count < 0.2 && (yend - ystart) > 5) {
+          continue;
+        }
+
+        // std::cout << "Not skipping: " << i << " " << sideRatio << " " << areaRatio << endl;
+        // std::cout << "Blob " << i << " " << orangeBlobs[i].avgX << " " << orangeBlobs[i].avgY 
+        //       << " " << orangeBlobs[i].lpCount << " " << orangeBlobs[i].dx << " " << orangeBlobs[i].dy << endl;
+
+        BallCandidate* ballc = new BallCandidate();
+        ballc->centerX = orangeBlobs[i].avgX;
+        ballc->centerY = orangeBlobs[i].avgY;
+        ballc->radius = (orangeBlobs[i].dx + orangeBlobs[i].dy) / 4;
+        ballc->width = orangeBlobs[i].dx;
+        ballc->height = orangeBlobs[i].dy;
+
+        Position p = cmatrix_.getWorldPosition(ballc->centerX, ballc->centerY);
+        ballc->groundDistance = cmatrix_.groundDistance(p);
+        // [TODO] add the confidence value for ball candidates
+        ballc->confidence = 0.0;
+        // [TODO] add the blob on the heap and send
+        ballc->blob = NULL;
+        ballc->valid = true;
+        // [TODO] add the absolute and relative positions
+        ball_candidates.push_back(ballc);
+
+        break;
+    }
+    return ball_candidates;
 }
 
 BallCandidate* ImageProcessor::getBestBallCandidate() {
-  // auto ball = ;
-  return NULL;
+    getBallCandidates();
+    if(ball_candidates.size() == 0)
+        return NULL;
+    return ball_candidates[0];
 }
 
-WorldObject* ImageProcessor::getBall() {
-  auto ball = &vblocks_.world_object->objects_[WO_BALL];
-  // std::cout << ball->imageCenterX << " " << ball->imageCenterY << std::endl;
-  return &vblocks_.world_object->objects_[WO_BALL];
-}
- 
 void ImageProcessor::enableCalibration(bool value) {
   enableCalibration_ = value;
 }

@@ -9,7 +9,6 @@
 #define IS_RUNNING_CORE (core_ && core_->vision_ && ((UTMainWnd*)parent_)->runCoreRadio->isChecked())
 
 void VisionWindow::redrawImages() {
-
   if(!enableDraw_) return;
 
   if (((UTMainWnd*)parent_)->streamRadio->isChecked()) {
@@ -77,7 +76,7 @@ void VisionWindow::updateBigImage() {
     if (cbxOverlay->isChecked()) {
       drawGoal(bigImage);
       drawBall(bigImage);
-      // drawBallCands(bigImage);
+      drawBallCands(bigImage);
       drawBeacons(bigImage);
     }
   }
@@ -104,12 +103,12 @@ void VisionWindow::redrawImages(ImageWidget* rawImage, ImageWidget* segImage, Im
   if (cbxOverlay->isChecked()) {
     drawGoal(rawImage);
     drawBall(rawImage);
-    // drawBallCands(rawImage);
+    drawBallCands(rawImage);
     drawBeacons(rawImage);
 
     drawGoal(segImage);
     drawBall(segImage);
-    // drawBallCands(segImage);
+    drawBallCands(segImage);
     drawBeacons(segImage);
   }
 
@@ -212,16 +211,13 @@ void VisionWindow::drawBall(ImageWidget* image) {
   if(IS_RUNNING_CORE) {
     ImageProcessor* processor = getImageProcessor(image);
 
-    WorldObject* ball = processor->getBall();
-    if(!ball) return;
-    if(!ball->seen) return;
-    if( (ball->fromTopCamera && _widgetAssignments[image] == Camera::BOTTOM) ||
-        (!ball->fromTopCamera && _widgetAssignments[image] == Camera::TOP) ) return;
+    BallCandidate* best = processor->getBestBallCandidate();
+    if(!best) return;
 
-    int r = ball->radius;
+    int r = best->radius;
     painter.drawEllipse(
-      (int)ball->imageCenterX - r - 1,
-      (int)ball->imageCenterY - r - 1, 2 * r + 2, 2 * r + 2);
+      (int)best->centerX - r - 1,
+      (int)best->centerY - r - 1, 2 * r + 2, 2 * r + 2);
   }
   else if (world_object_block_ != NULL) {
     WorldObject* ball = &world_object_block_->objects_[WO_BALL];
@@ -229,8 +225,6 @@ void VisionWindow::drawBall(ImageWidget* image) {
     if( (ball->fromTopCamera && _widgetAssignments[image] == Camera::BOTTOM) ||
         (!ball->fromTopCamera && _widgetAssignments[image] == Camera::TOP) ) return;
     int radius = ball->radius;
-
-    // std::cout << ball->imageCenterX << " " << ball->imageCentery << std::endl;
     painter.drawEllipse(ball->imageCenterX - radius, ball->imageCenterY - radius, radius * 2, radius * 2);
   }
 }
@@ -248,27 +242,20 @@ void VisionWindow::drawGoal(ImageWidget* image) {
   if(not goal.seen) return;
   if(goal.fromTopCamera and _widgetAssignments[image] == Camera::BOTTOM) return;
   if(not goal.fromTopCamera and _widgetAssignments[image] == Camera::TOP) return;
-  // std::cout << goal.imageCenterX << " " << goal.imageCenterY << std::endl;
+
   QPen pen(segCol[c_BLUE]);
 
-  int width = cmatrix.getCameraWidthByDistance(goal.visionDistance, 850);
+  int width = cmatrix.getCameraWidthByDistance(goal.visionDistance, 1000);
   int height = cmatrix.getCameraHeightByDistance(goal.visionDistance, 500);
-
-  // int width = 50;
-  // int height = 25;
-
-  // std::cout << width << " " << height << " and " << goal.imageCenterX << " " << goal.imageCenterY << " " << goal.fromTopCamera << std::endl;
-
   int x1 = goal.imageCenterX - width / 2;
   
   // Draw top
-  int ty1 = goal.imageCenterY - height / 2;
+  int ty1 = goal.imageCenterY - height;
   QPainterPath path;
   path.addRoundedRect(QRect(x1, ty1, width, height), 5, 5);
-  // painter.setPen(pen);
+  painter.setPen(pen);
   painter.fillPath(path, QBrush(segCol[c_BLUE]));
-  // painter.setPen(QPen(QColor(0, 255, 127), 3));
-  // painter.drawEllipse(x1, ty1, 10, 10);
+
 }
 
 void VisionWindow::drawBallCands(ImageWidget* image) {
@@ -363,5 +350,13 @@ void VisionWindow::drawBeacons(ImageWidget* image) {
     bpath.addRoundedRect(QRect(x1, by1, width, height), 5, 5);
     painter.setPen(bpen);
     painter.fillPath(bpath, QBrush(beacon.second[1]));
+
+    // Draw pointer if occluded
+    if(object.occluded) {
+      painter.setPen(QPen(Qt::red));
+      painter.setFont(QFont("Helvetica", 8));
+      painter.drawText(QPointF(object.imageCenterX - width, object.imageCenterY + 1.5 * height), "Occluded");
+    }
+
   }
 }

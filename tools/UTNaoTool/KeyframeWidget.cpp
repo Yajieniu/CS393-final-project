@@ -115,9 +115,10 @@ KeyframeWidget::KeyframeWidget(QWidget* parent) : ConfigWidget(parent) {
 void KeyframeWidget::loadConfig(const ToolConfig& config) {
   kfconfig_ = config.kfConfig;
   switch(kfconfig_.base) {
+    std::cout << "\n\n\n\n\n load Config \n\n\n\n" << std::endl;
+    case SupportBase::LeftFoot: rdoLeftFoot->setChecked(true); break;
     case SupportBase::TorsoBase: rdoTorso->setChecked(true); break;
     case SupportBase::SensorFoot: rdoSensor->setChecked(true); break;
-    case SupportBase::LeftFoot: rdoLeftFoot->setChecked(true); break;
     case SupportBase::RightFoot: rdoRightFoot->setChecked(true); break;
   }
   emit updatedSupportBase(kfconfig_.base);
@@ -141,6 +142,8 @@ void KeyframeWidget::save() {
     ks.keyframes.push_back(kitem->keyframe());
   }
   ks.save(kfconfig_.sequence_file);
+  std::cout << "Kick saved to " << kfconfig_.sequence_file << std::endl;
+
 }
 
 void KeyframeWidget::reload() {
@@ -156,12 +159,35 @@ void KeyframeWidget::reload() {
   }
   if(!loading_)
     ConfigWidget::saveConfig();
+  std::cout << "Kick loaded from " << kfconfig_.sequence_file << std::endl;
 }
 
 void KeyframeWidget::saveAs() {
+  QString file = QFileDialog::getOpenFileName(this, 
+    tr("Open Kick File"),
+    QString(getenv("NAO_HOME")) + "/data/kicks",
+    tr("Kick files (*.yaml)"),
+    0, QFileDialog::DontUseNativeDialog
+  );
+  if (file.isEmpty())
+    return;
+  kfconfig_.sequence_file = file.toStdString();
+  save();
 }
 
 void KeyframeWidget::load() {
+
+  QString file = QFileDialog::getOpenFileName(this, 
+    tr("Open Kick File"),
+    QString(getenv("NAO_HOME")) + "/data/kicks",
+    tr("Kick files (*.yaml)"),
+    0, QFileDialog::DontUseNativeDialog
+  );
+  if (file.isEmpty())
+    return;
+  kfconfig_.sequence_file = file.toStdString();
+  reload();
+
 }
 
 void KeyframeWidget::addKeyframe() {
@@ -254,7 +280,7 @@ void KeyframeWidget::deactivateCurrent() {
 
 void KeyframeWidget::supportBaseUpdated(bool) {
   if(loading_) return;
-  auto base = SupportBase::TorsoBase;
+  auto base = SupportBase::LeftFoot;
   if(rdoTorso->isChecked()) base = SupportBase::TorsoBase;
   else if(rdoLeftFoot->isChecked()) base = SupportBase::LeftFoot;
   else if(rdoRightFoot->isChecked()) base = SupportBase::RightFoot;
