@@ -8,6 +8,7 @@ import memory
 import pose
 import commands
 import cfgstiff
+import mem_objects, core
 from state_machine import StateMachine, Node, C
 
 
@@ -22,6 +23,8 @@ class Playing(StateMachine):
         def run(self):
             if self.getFrames() <= 3:
                 memory.walk_request.noWalk()
+                goal = mem_objects.world_objects[core.WO_UNKNOWN_GOAL]
+                print("**********goal distance: ", goal.visionDistance)
                 memory.kick_request.setFwdKick()
             if self.getFrames() > 100 and not memory.kick_request.kick_running_:
                 self.finish()
