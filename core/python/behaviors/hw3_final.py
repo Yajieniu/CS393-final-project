@@ -20,7 +20,7 @@ RIGHT_FOOT_OFFSET = -0.25
 
 DELAY = 0.05
 BALL_MIN_PHASE1 = 250
-BALL_MIN_PHASE2 = 160
+BALL_MIN_PHASE2 = 170
 GOAL_MIN = 1000
 
 VX_MIN = 0.1
@@ -101,10 +101,6 @@ class FollowBall(Node):
     def run(self):
         global play_mode
         global kick_waiting
-
-        # if goal.visionDistance > GOAL_MIN:
-        #     play_mode = 1
-
         if not kick_mode and play_mode == 4: # Kick
             frames = self.getFrames()
             memory.walk_request.noWalk()
@@ -205,6 +201,7 @@ class FindBall(Node):
 
         elif play_mode == 3:
             if not ball.seen or (ball.fromTopCamera or ball_x > 2*BALL_MIN_PHASE1):
+            # if not ball.seen or (ball.fromTopCamera or ball_x > 1.5*BALL_MIN_PHASE2):
                 play_mode = 1
             # Stop and transfer to kick
             FACTOR = 1.
@@ -215,14 +212,17 @@ class FindBall(Node):
             vy = 0
             vtheta = 0
             if ball_x >= BALL_MIN_PHASE2:
-                vx = 0.25
-            if abs(ball_theta - RIGHT_FOOT_OFFSET) >= 0.05:
+                vx = 0.32
+            if abs(ball_theta - RIGHT_FOOT_OFFSET) >= 0.07:
                 vy = ball_theta - RIGHT_FOOT_OFFSET
+                # vtheta = vy * 1.0
+                # if goal.seen:
+                    # vtheta = 0.1*(ball_theta - goal_theta)
                 # vy = -ball_theta*0.5
                 # vtheta = (ball_theta-goal_theta)
                 # vtheta = -0.5*vy
 
-            if ball_x < BALL_MIN_PHASE2 and abs(vy) < 0.05:
+            if ball_x < BALL_MIN_PHASE2 and abs(vy) < 0.07:
                 play_mode = 4
                 left_offset = 0.5
 
@@ -238,16 +238,17 @@ class FindBall(Node):
             #     vx = 0
             #     vy = 0
             #     kick_mode = False
-            print ("\n\tkick!!\n")
+            print ("\n\n\n\n\tkick!!\n\n\n\n")
             vx = 0
             vy = 0
             vtheta = 0
             kick_mode = False
-            if not ball.seen or not (ball_x < BALL_MIN_PHASE2 and abs(vy) < 0.05):
+            if ball.seen and not (ball_x < BALL_MIN_PHASE2 and abs(vy) < 0.05):
                 play_mode = 3
                 kick_mode = True
             else:
                 sleep(0.5)
+
 
         elif play_mode == 5:
             if dribble > 0:
