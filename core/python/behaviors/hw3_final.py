@@ -101,6 +101,10 @@ class FollowBall(Node):
     def run(self):
         global play_mode
         global kick_waiting
+
+        # if goal.visionDistance > GOAL_MIN:
+        #     play_mode = 1
+
         if not kick_mode and play_mode == 4: # Kick
             frames = self.getFrames()
             memory.walk_request.noWalk()
@@ -211,7 +215,7 @@ class FindBall(Node):
             vy = 0
             vtheta = 0
             if ball_x >= BALL_MIN_PHASE2:
-                vx = 0.32
+                vx = 0.25
             if abs(ball_theta - RIGHT_FOOT_OFFSET) >= 0.05:
                 vy = ball_theta - RIGHT_FOOT_OFFSET
                 # vy = -ball_theta*0.5
@@ -239,12 +243,11 @@ class FindBall(Node):
             vy = 0
             vtheta = 0
             kick_mode = False
-            if not ball.seen or (ball.fromTopCamera or ball_x > 2*BALL_MIN_PHASE1):
+            if not ball.seen or not (ball_x < BALL_MIN_PHASE2 and abs(vy) < 0.05):
                 play_mode = 3
                 kick_mode = True
             else:
                 sleep(0.5)
-
 
         elif play_mode == 5:
             if dribble > 0:
