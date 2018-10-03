@@ -35,7 +35,7 @@ keyframes:
       LHipPitch: -24.6072857625849
       LKneePitch: 49.8321981938704
       LAnklePitch: -24.6999850874207
-      LAnkleRoll: -20.0902956674973
+      LAnkleRoll: -11.0902956674973
       RHipYawPitch: 0.00240422589561831
       RHipRoll: -21.0024042265209
       RHipPitch: -24.6999850874207
@@ -97,7 +97,7 @@ keyframes:
       LElbowYaw: -0.79343573304434
       LElbowRoll: -1.49175425435396
       RShoulderPitch: -89.3882951051451
-      RShoulderRoll: 12.1763255973854
+      RShoulderRoll: 42.1763255973854
       RElbowYaw: -0.964409023590334
       RElbowRoll: -1.93601706636553
   - name: normal stand
