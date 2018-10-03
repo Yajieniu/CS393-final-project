@@ -35,7 +35,7 @@ keyframes:
       LHipPitch: -24.6072857625849
       LKneePitch: 49.8321981938704
       LAnklePitch: -24.6999850874207
-      LAnkleRoll: -16.0902950983149
+      LAnkleRoll: -18.0902950983149
       RHipYawPitch: 0.00240422589561831
       RHipRoll: -21.0024042265209
       RHipPitch: -24.6999850874207
@@ -90,8 +90,8 @@ keyframes:
       RHipRoll: -30.0024042265209
       RHipPitch: -4.69998579889875
       RKneePitch: 79.7491294354963
-      RAnklePitch: -59.783066367808
-      RAnkleRoll: 43.0024019497913
+      RAnklePitch: -69.783066367808
+      RAnkleRoll: 27.0024019497913
       LShoulderPitch: -88.7682232287897
       LShoulderRoll: 8.2594174076473
       LElbowYaw: -0.79343573304434
@@ -110,7 +110,7 @@ keyframes:
       LHipPitch: -24.6072857625849
       LKneePitch: 49.8321981938704
       LAnklePitch: -24.6999850874207
-      LAnkleRoll: -24.0902950983149
+      LAnkleRoll: -22.0902950983149
       RHipYawPitch: 0.00240422589561831
       RHipRoll: -30.0024042265209
       RHipPitch: -74.6999873641504
@@ -130,24 +130,24 @@ keyframes:
     joints:
       HeadYaw: 0.612831876036623
       HeadPitch: -22.4978723961327
-      LHipYawPitch: -10.00240422589561831
+      LHipYawPitch: -20.00240422589561831
       LHipRoll: 21.0902950983149
       LHipPitch: -24.6072857625849
       LKneePitch: 49.8321981938704
       LAnklePitch: -24.6999850874207
       LAnkleRoll: -16.0902950983149
-      RHipYawPitch: -10.00240422589561831
+      RHipYawPitch: -20.00240422589561831
       RHipRoll: -21.0024042265209
       RHipPitch: -33.6999850874207
       RKneePitch: 59.7491294354963
-      RAnklePitch: -24.7830675061728
+      RAnklePitch: -26.7830675061728
       RAnkleRoll: 17.0024042265209
       LShoulderPitch: -88.7682232287897
       LShoulderRoll: 2.2594171230561
       LElbowYaw: -0.79343573304434
       LElbowRoll: -1.49175425435396
       RShoulderPitch: -89.3882951051451
-      RShoulderRoll: 8.1763258819766
+      RShoulderRoll: 12.1763258819766
       RElbowYaw: -0.964409023590334
       RElbowRoll: -1.93601706636553
   - name: normal stand
