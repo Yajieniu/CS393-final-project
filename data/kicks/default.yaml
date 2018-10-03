@@ -147,7 +147,7 @@ keyframes:
       LElbowYaw: -0.79343573304434
       LElbowRoll: -1.49175425435396
       RShoulderPitch: -89.3882951051451
-      RShoulderRoll: 88.1763258819766
+      RShoulderRoll: 8.1763258819766
       RElbowYaw: -0.964409023590334
       RElbowRoll: -1.93601706636553
   - name: normal stand
