@@ -10,22 +10,29 @@
 #include <memory/KickRequestBlock.h>
 
 #define JOINT_EPSILON (3.f * DEG_T_RAD)
-#define DEBUG false 
+#define DEBUG false
+#define HACK
 
 KickModule::KickModule() : state_(Finished), sequence_(NULL) { }
 
 void KickModule::initSpecificModule() {
+  #ifndef HACK
+  // For some reason, small changes to the default file are causing the walk
+  // to behave weird. Unclear what the root issue is but the fix right now is
+  // to load the kick on demand. Since kicks load quickly and happen
+  // relatively infrequently this should not add too much overhead to the kick
+  // behavior.
   auto file = cache_.memory->data_path_ + "/kicks/default.yaml";
-  // std::cout << 
   sequence_ = new KeyframeSequence();
   printf("Loading kick sequence from '%s'...", file.c_str());
   fflush(stdout);
-  if(sequence_->load(file))
+  if(sequence_->load(file)) {
     printf("success!\n");
-  else {
+  } else {
     printf("failed!\n");
     sequence_ = NULL;
   }
+  #endif
   initial_ = NULL;
 }
 
@@ -36,6 +43,18 @@ void KickModule::start() {
   cache_.kick_request->kick_running_ = true;
   keyframe_ = 0;
   frames_ = 0;
+  auto file = cache_.memory->data_path_ + "/kicks/default.yaml";
+  #ifdef HACK
+  sequence_ = new KeyframeSequence();
+  printf("Loading kick sequence from '%s'...", file.c_str());
+  fflush(stdout);
+  if(sequence_->load(file)) {
+    printf("success!\n");
+  } else {
+    printf("failed!\n");
+    sequence_ = NULL;
+  }
+  #endif
   initial_ = new Keyframe(cache_.joint->values_, 0);
 }
 
@@ -46,6 +65,10 @@ void KickModule::finish() {
   cache_.kick_request->kick_type_ == Kick::NO_KICK;
   if(initial_) delete initial_;
   initial_ = NULL;
+  #ifdef HACK
+  if(sequence_) delete sequence_;
+  sequence_ = NULL;
+  #endif
 }
 
 bool KickModule::finished() {
@@ -126,7 +149,6 @@ void KickModule::performKick() {
     moveBetweenKeyframes(keyframe, next, frames_);
   }
   frames_++;
-  std::cout << frames_ << std::endl;
 }
 
 bool KickModule::reachedKeyframe(const Keyframe& keyframe) {

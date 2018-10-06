@@ -15,21 +15,14 @@ from state_machine import Node, S, C, T, LoopingStateMachine
 import UTdebug
 
 DELAY = 0.05
-DIST_THRESHOLD = 240
-VX_MIN = 0.01
-VX_MAX = 1
-VY_MIN = 0.01
-VTHETA_MIN = 0.02
-VTHETA_MAX = 0.25
-DISCOUNT_FACTOR = 0.1
+DIST_THRESHOLD = 350 # threshold for stopping following ball and starts rotating
+THETA_THRESHOLD = 0.05 # 
 
-P = 1
-I = 0.0
-D = 0.1
+# RIGHT_FOOT_OFFSET = -0.20
 
+vtheta = 0.
 vx = 0.
 vy = 0.
-vtheta = 0.
 
 
 class Controller(object):
@@ -51,7 +44,7 @@ class Controller(object):
         self.iterm += error
         self.dterm = (error - self.last_error) / DELAY
 
-        print ("p=%.8f\t"%(self.pterm * self.Kp), "d=%.8f"%(self.dterm * self.Kd))
+        print ("p=%.8f\t"%(self.pterm * self.Kp), "i=%.8f"%(self.iterm * self.Kd), "d=%.8f"%(self.dterm * self.Kd))
 
         self.i += 1
         if self.i >= self.T:
@@ -76,62 +69,73 @@ class Stand(Node):
             self.finish()
 
 
-class FollowBall(Node):
+class MoveTowardBall(Node):
     def run(self):
-        commands.setWalkVelocity(vx, vy, vtheta)
+        commands.setWalkVelocity(vx, 0, vtheta)
 
 
 
-class FindBall(Node):
+
+class GazeBall(Node):
     def __init__(self):
         super(FindBall, self).__init__()
-        # self.vtheta_controller = Controller(p=1.0, i=0.0, d=0.0)
-        self.controller = Controller(p=P, i=I, d=D)
+        self.vtheta_controller = Controller(p=1.0, i=0.0, d=0.0)
+        self.vx_controller = Controller(p=4e-3, i=5e-4, d=1e-5)
 
     def run(self):
+        global vtheta
         global vx
+
+        ball = mem_objects.world_objects[core.WO_BALL]
+        ball_distance = ball.visionDistance
+        ball_bearing = ball.visionBearing
+
+        if not ball.seen or (not ball.fromTopCamera and ball_distance <= DIST_THRESHOLD):
+            print ("\n\n\n\t\tball not detected or too close \n\n\n")
+            vx = 0.0
+            vtheta = 0.0
+        else:
+
+            vx = self.vx_controller(ball_distance - DIST_THRESHOLD)
+            vtheta = ball_bearing
+
+        self.finish()
+
+class RotateAroundBall(Node):
+    def run(self):
+        commands.setWalkVelocity(0, vy, vtheta)
+
+
+class AlignGoal(Node):
+    def run(self):
         global vy
         global vtheta
 
         ball = mem_objects.world_objects[core.WO_BALL]
-        goal = mem_objects.world_objects[core.WO_UNKNOWN_GOAL]
+        ball_distance = ball.visionDistance
+        ball_bearing = ball.visionBearing
 
-        ball_theta = ball.visionBearing
-        ball_x = ball.visionDistance
-
-        goal_theta = goal.visionBearing
-        goal_x = goal.visionDistance
+        goal = mem_objects.world_objects[core.UNKNOWN_GOAL]
+        goal_distance = ball.visionDistance
+        goal_bearing = ball.visionBearing
+        goal_size = goal_bearing / abs(goal_bearing)
 
         if not ball.seen:
-            # print ("\n\n\n\t\tball not detected or too close \n\n\n")
-            vx = DISCOUNT_FACTOR*vx
-            vy = DISCOUNT_FACTOR*vy
-            vtheta = DISCOUNT_FACTOR*vtheta
-        elif ball.fromTopCamera or ball_x > DIST_THRESHOLD:
-            vx = self.controller(min( (ball_x - DIST_THRESHOLD)/10, VX_MAX))
-            vtheta = min ( (abs(ball_theta) > VTHETA_MIN)*abs(ball_theta), VTHETA_MAX
-                ) * (ball_theta/abs(ball_theta))
+            self.postSignal('ball_not_found')
+        elif not goal.seen:
+            vtheta = -0.5
+            vy = -0.5
         else:
-            vx = 0
-            if goal.seen:
-                vy = ball_theta
-                vtheta = ball_theta-goal_theta
-            else:
-                # walk around
-                vy = 0.5
-                vtheta = -0.5*vy
+            vtheta = ball_bearing
 
 
-        vx = vx * (vx > VX_MIN)
-        vy = vy * (vy > VY_MIN)
-        vtheta = vtheta * (vtheta > VTHETA_MIN)
 
-        self.finish()
+
 
 class Playing(LoopingStateMachine):
     def setup(self):
         findball = FindBall()
-        followball = FollowBall()
+        movetowardball = MoveTowardBall()
         stand = Stand()
         self.add_transition(stand, C, findball)
         self.add_transition(findball, C, followball, T(DELAY), findball)
