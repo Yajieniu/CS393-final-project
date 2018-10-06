@@ -1,8 +1,4 @@
-#include <tuple>
-#include <Eigen>
 #include "KalmanFilter.h"
-
-using namespace Eigen;
 
 /* 
 * Constructor
@@ -10,8 +6,8 @@ using namespace Eigen;
 * m: dimension of control vector
 * k: dimension of meansurement vector
 */
-KalmanFilter::KalmanFilter(int nn, int mm, int kk, MatrixXf& A, MatrixXf& B,
-			 MatrixXf& C, MatrixXf& R, MatrixXf& Q) {
+KalmanFilter::KalmanFilter(int nn, int mm, int kk, Eigen::MatrixXf& A, Eigen::MatrixXf& B,
+			 Eigen::MatrixXf& C, Eigen::MatrixXf& R, Eigen::MatrixXf& Q) {
 	n = nn;
 	m = mm;
 	k = kk;
@@ -30,48 +26,47 @@ KalmanFilter::KalmanFilter(int nn, int mm, int kk, MatrixXf& A, MatrixXf& B,
 
 }
 
-VectorXf KalmanFilter::predictMean(VectorXf& lastw, VectorXf& ut) {
+Eigen::VectorXf KalmanFilter::predictMean(Eigen::VectorXf& lastw, Eigen::VectorXf& ut) {
 
 	return At * lastw + Bt * ut;
 }
 
 
-MatrixXf KalmanFilter::predictCov(MatrixXf& lastCov) {
+Eigen::MatrixXf KalmanFilter::predictCov(Eigen::MatrixXf& lastCov) {
 
 	return At * lastCov * At.transpose() + Rt;
 }
 
 
-MatrixXf KalmanFilter::calKalmanFilter(MatrixXf& predictedCovt) {
+Eigen::MatrixXf KalmanFilter::calKalmanFilter(Eigen::MatrixXf& predictedCovt) {
 
-	return predictedCovt * Ct.transpose() * 
-			(Ct * predictedCovt * Ct.transpose() + Qt).inverse();
+	return predictedCovt * Ct.transpose() * (Ct * predictedCovt * Ct.transpose() + Qt).inverse();
 }
 
 
-VectorXf KalmanFilter::updateMean(VectorXf& predictedWt, VectorXf& zt,
-						   MatrixXf& Kt) {
+Eigen::VectorXf KalmanFilter::updateMean(Eigen::VectorXf& predictedWt, Eigen::VectorXf& zt,
+						   Eigen::MatrixXf& Kt) {
 
 	return predictedWt + Kt * (zt - Ct * predictedWt);
 }
 
 
-MatrixXf KalmanFilter::updateCovt(MatrixXf& Kt, MatrixXf& lastCov) {
+Eigen::MatrixXf KalmanFilter::updateCovt(Eigen::MatrixXf& Kt, Eigen::MatrixXf& lastCov) {
 	
-	MatrixXd I = MatrixXd::Identity(n);
+	Eigen::MatrixXf I = Eigen::MatrixXf::Identity(n,n);
 
 	return (I - Kt * Ct) * lastCov;
 }
  
-tuple<VectorXf, MatrixXf> KalmanFilter::algorithm(MatrixXf& lastCov, 
-	VectorXf& lastw, VectorXf& ut, VectorXf& zt, int t) {
+std::tuple<Eigen::VectorXf, Eigen::MatrixXf> KalmanFilter::algorithm(Eigen::MatrixXf& lastCov, 
+	Eigen::VectorXf& lastw, Eigen::VectorXf& ut, Eigen::VectorXf& zt, int t) {
 
-	VectorXf predictedWt = predictMean(lastw, ut);
-	MatrixXf predictedCovt = predictCov(lastCov);
+	Eigen::VectorXf predictedWt = predictMean(lastw, ut);
+	Eigen::MatrixXf predictedCovt = predictCov(lastCov);
 
-	MatrixXf Kt = calKalmanFilter(predictedCovt);
-	MatrixXf Covt = updateCov(Kt, lastCov);
-	VectorXf wt = updateMean(predictedWt, zt, Kt);
+	Eigen::MatrixXf Kt = calKalmanFilter(predictedCovt);
+	Eigen::MatrixXf Covt = updateCovt(Kt, lastCov);
+	Eigen::VectorXf wt = updateMean(predictedWt, zt, Kt);
 
-	return make_tuple<wt, Covt>;
+	return std::make_tuple(wt, Covt);
 }
