@@ -227,17 +227,6 @@ class FindBall(Node):
                 left_offset = 0.5
 
         elif play_mode == 4:
-            # if left_offset > 0:
-            #     print ('moving left '*100)
-            #     left_offset -= DELAY
-            #     vy = 0.3
-            #     vx = 0.25
-            # elif left_offset > -1:
-            #     left_offset -= DELAY
-            # else:
-            #     vx = 0
-            #     vy = 0
-            #     kick_mode = False
             print ("\n\n\n\n\tkick!!\n\n\n\n")
             vx = 0
             vy = 0
