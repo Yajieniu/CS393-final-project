@@ -3,6 +3,8 @@
 #include <Module.h>
 #include <memory/MemoryCache.h>
 #include <localization/LocalizationParams.h>
+#include <math/KalmanFilter.h>
+
 
 class ParticleFilter;
 class Point2D;
@@ -20,7 +22,8 @@ class LocalizationModule : public Module {
     void processFrame();
 
     void loadParams(LocalizationParams params);
-    
+    void updateState();
+
     void moveBall(const Point2D& position);
     void movePlayer(const Point2D& position, float orientation);
   protected:
@@ -28,4 +31,5 @@ class LocalizationModule : public Module {
     TextLogger*& tlogger_;
     LocalizationParams params_;
     ParticleFilter* pfilter_;
+    KalmanFilter * KF_;
 };

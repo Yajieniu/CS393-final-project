@@ -64,6 +64,8 @@ void LocalizationModule::reInit() {
   cache_.localization_mem->player_ = Point2D(-750,0);
   cache_.localization_mem->state = decltype(cache_.localization_mem->state)::Zero();
   cache_.localization_mem->covariance = decltype(cache_.localization_mem->covariance)::Identity();
+
+  initKalmanFilter();
 }
 
 void LocalizationModule::moveBall(const Point2D& position) {
@@ -94,10 +96,17 @@ void LocalizationModule::processFrame() {
     auto globalBall = relBall.relativeToGlobal(self.loc, self.orientation);
 
     // Update the ball in the WorldObject block so that it can be accessed in python
+    lastx = ball.loc.x;
+    lasty = ball.loc.y;
     ball.loc = globalBall;
     ball.distance = ball.visionDistance;
     ball.bearing = ball.visionBearing;
-    //ball.absVel = fill this in
+
+    // ball.absVel = fill this in
+    ball.absVel.x = (ball.loc.x - lastx) * 30;
+    ball.absVel.y = (ball.loc.y - lasty) * 30; 
+
+    updateState()
 
     // Update the localization memory objects with localization calculations
     // so that they are drawn in the World window
@@ -110,4 +119,15 @@ void LocalizationModule::processFrame() {
     ball.distance = 10000.0f;
     ball.bearing = 0.0f;
   }
+}
+
+
+void initKalmanFilter() {
+
+}
+
+
+void LocalizatoinModle::updateState() {
+
+  auto& ball = cahce_.world_object->objects_[WO_BALL];
 }
