@@ -40,7 +40,8 @@ Eigen::MatrixXf KalmanFilter::predictCov(Eigen::MatrixXf& lastCov) {
 
 Eigen::MatrixXf KalmanFilter::calKalmanFilter(Eigen::MatrixXf& predictedCovt) {
 
-	return predictedCovt * Ct.transpose() * (Ct * predictedCovt * Ct.transpose() + Qt).inverse();
+	return predictedCovt * Ct.transpose() * 
+		(Ct * predictedCovt * Ct.transpose() + Qt).inverse();
 }
 
 
