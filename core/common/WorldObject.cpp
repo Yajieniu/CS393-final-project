@@ -30,6 +30,7 @@ WorldObject::WorldObject() {
   worldY = 0;
   veloX = 0;
   veloY = 0;
+  
 }
 
 WorldObject::WorldObject(WorldObjectType type) : WorldObject() {

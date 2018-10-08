@@ -26,26 +26,26 @@ endingRightThreshold = 200 # in pixel
 endingLeftThreshold = 160 # in pixel
 
 
-class KilmanFilter(object):
+# class KilmanFilter(object):
 
-	def __init__(self):
-		self.n = 4                  # dimen of w
-		self.m = 4					# dimen of u
-		self.k = 5					# dimen of z
+# 	def __init__(self):
+# 		self.n = 4                  # dimen of w
+# 		self.m = 4					# dimen of u
+# 		self.k = 5					# dimen of z
 
-		self.A = np.eye(n)   		# A : n x n, for state
-		self.B = np.zeros((n, m))	# B : n x m, for control
-		self.C = np.zeros((k, n))	# C : k x n, for covariance
-		self.R = np.eye(n)			# R : n x n, state noise covariance
-		self.Q = np.eye(k)			# Q : k x k, measurement noise
+# 		self.A = np.eye(n)   		# A : n x n, for state
+# 		self.B = np.zeros((n, m))	# B : n x m, for control
+# 		self.C = np.zeros((k, n))	# C : k x n, for covariance
+# 		self.R = np.eye(n)			# R : n x n, state noise covariance
+# 		self.Q = np.eye(k)			# Q : k x k, measurement noise
 
-		self.Cov = np.eye(n)        # covariance matrix, n x n
-		self.w = np.ones(n)   		# states, starts as uniform distribution
-		self.u = np.zeros((m, 1)) 	# control, always 0
-		self.z = np.ones(k)			# needs to be updated before use
+# 		self.Cov = np.eye(n)        # covariance matrix, n x n
+# 		self.w = np.ones(n)   		# states, starts as uniform distribution
+# 		self.u = np.zeros((m, 1)) 	# control, always 0
+# 		self.z = np.ones(k)			# needs to be updated before use
 
-	def __call__(self, zt):	
-		self.z = zt
+# 	def __call__(self, zt):	
+# 		self.z = zt
 
 
 

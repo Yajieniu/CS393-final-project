@@ -65,7 +65,7 @@ void LocalizationModule::reInit() {
   cache_.localization_mem->state = decltype(cache_.localization_mem->state)::Zero();
   cache_.localization_mem->covariance = decltype(cache_.localization_mem->covariance)::Identity();
 
-  initKalmanFilter();
+  KF_ = new KalmanFilter();
 }
 
 void LocalizationModule::moveBall(const Point2D& position) {
@@ -96,17 +96,17 @@ void LocalizationModule::processFrame() {
     auto globalBall = relBall.relativeToGlobal(self.loc, self.orientation);
 
     // Update the ball in the WorldObject block so that it can be accessed in python
-    lastx = ball.loc.x;
-    lasty = ball.loc.y;
+    auto lastx = ball.loc.x;  //;;
+    auto lasty = ball.loc.y;  //;;
     ball.loc = globalBall;
     ball.distance = ball.visionDistance;
     ball.bearing = ball.visionBearing;
 
     // ball.absVel = fill this in
-    ball.absVel.x = (ball.loc.x - lastx) * 30;
-    ball.absVel.y = (ball.loc.y - lasty) * 30; 
+    ball.absVel.x = (ball.loc.x - lastx);  //;;
+    ball.absVel.y = (ball.loc.y - lasty);  //;;
 
-    updateState()
+    updateState(lastx, lasty)   //;;
 
     // Update the localization memory objects with localization calculations
     // so that they are drawn in the World window
@@ -122,12 +122,29 @@ void LocalizationModule::processFrame() {
 }
 
 
-void initKalmanFilter() {
-
-}
-
-
-void LocalizatoinModle::updateState() {
+void LocalizatoinModle::updateState(auto lastx, auto lasty) {
 
   auto& ball = cahce_.world_object->objects_[WO_BALL];
+
+
+  //states, pay attention to the first frame!! NOT handled
+  Eigen::VectorXf &wt = (lastx, lasty, ball.absVel.x, ball.absVel.y);
+
+  // control, always 0
+  Eigen::VectorXf &ut = VectorXf::zero(Kalman_m);
+  assert(sizeof(*ut)/sizeof(*ut[0]) == Kalman_m);
+
+  // last covariance of the state, not sure how to get
+  // needs to be changed
+  Eigen::MatrixXf &cov = MatrixXf::Ones(Kalman_n);
+
+
+  // should we include more measurements????
+  Eigen::VectorXf &zt = (ball.loc.x, ball.loc.y);
+
+  // needs to define wt and covt
+  // std::make_tuple(wt, Covt);
+
+  // (wt, Covt) = KF_.algorithm(cov, wt, ut, zt);
+
 }

@@ -22,8 +22,7 @@ class LocalizationModule : public Module {
     void processFrame();
 
     void loadParams(LocalizationParams params);
-    void updateState();
-
+    void updateState(auto lastx, auto lasty)
     void moveBall(const Point2D& position);
     void movePlayer(const Point2D& position, float orientation);
   protected:
