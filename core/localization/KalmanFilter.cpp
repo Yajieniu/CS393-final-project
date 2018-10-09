@@ -48,6 +48,11 @@ void KalmanFilter::setwt(Vectornf &wt) {
 	this->wt = wt;
 }
 
+void KalmanFilter::setCovt(Matrixnnf& Covt) {
+	initialized = true;
+	this->Covt = Covt;
+}
+
 void KalmanFilter::setConstants(Matrixnnf &At, Matrixnmf &Bt, Matrixknf &Ct, 
  	Matrixnnf &Rt, Matrixnnf &Qt) {
 	

@@ -3,7 +3,7 @@
 #include <Module.h>
 #include <memory/MemoryCache.h>
 #include <localization/LocalizationParams.h>
-#include <localization/KalmanFilter.h>
+#include <localization/ExtendedKalmanFilter.h>
 
 
 class ParticleFilter;
@@ -30,7 +30,7 @@ class LocalizationModule : public Module {
     TextLogger*& tlogger_;
     LocalizationParams params_;
     ParticleFilter* pfilter_;
-    KalmanFilter* KF_;
+    ExtendedKalmanFilter* KF_;
 
     float lastBallX=-1;
     float lastBallY=-1;

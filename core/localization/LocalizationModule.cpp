@@ -65,7 +65,7 @@ void LocalizationModule::reInit() {
   cache_.localization_mem->state = decltype(cache_.localization_mem->state)::Zero();
   cache_.localization_mem->covariance = decltype(cache_.localization_mem->covariance)::Identity();
 
-  KF_ = new KalmanFilter();
+  KF_ = new ExtendedKalmanFilter();
 }
 
 void LocalizationModule::moveBall(const Point2D& position) {
@@ -143,38 +143,41 @@ void LocalizationModule::updateState() {
   auto& ball = cache_.world_object->objects_[WO_BALL];
 
 
-  //states, pay attention to the first frame!! NOT handled
+  //states, pay attention to the first frame!! NOT handled !! Was automatically handeled because wt was sent as parameter which was given default value
   if (!KF_->isInitialized()) {
-    static KalmanFilter::Vectornf initWt = Eigen::VectorXf::Zero(KF_->get_n());
+    ExtendedKalmanFilter::Vectornf initWt;
     initWt << ball.loc.x, ball.loc.y, ball.absVel.x, ball.absVel.y;
     KF_->setwt(initWt);
 
+    ExtendedKalmanFilter::Matrixnnf initCovt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 1000.0f;
+    KF_->setCovt(initCovt);
+
     // Define Kalman filter parameters
-    static KalmanFilter::Matrixnnf At = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n());
+    static ExtendedKalmanFilter::Matrixnnf At = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n());
     At(0,2) = 1; // Delta
     At(1,3) = 1; // Delta
-    static KalmanFilter::Matrixnmf Bt = Eigen::MatrixXf::Zero(KF_->get_n(), KF_->get_m());
-    static KalmanFilter::Matrixknf Ct = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_n());
-    // static KalmanFilter::Matrixknf Ct << 
-    static KalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 1.0f;
-    static KalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 10.0f;
+    // Abheek: ^ Seems wrong 
+    static ExtendedKalmanFilter::Matrixnmf Bt = Eigen::MatrixXf::Zero(KF_->get_n(), KF_->get_m());
+    static ExtendedKalmanFilter::Matrixknf Ct = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_n());
+    static ExtendedKalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 1.0f;
+    static ExtendedKalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 10.0f;
 
     KF_->setConstants(At, Bt, Ct, Rt, Qt);
   }
 
 
   // control, always 0
-  static KalmanFilter::Vectormf ut = Eigen::VectorXf::Zero(KF_->get_m());
+  static ExtendedKalmanFilter::Vectormf ut = Eigen::VectorXf::Zero(KF_->get_m());
   // assert(sizeof(*ut)/sizeof(*ut[0]) == KF_->m);
 
-  static KalmanFilter::Vectornf wt = Eigen::VectorXf::Zero(KF_->get_n());
+  static ExtendedKalmanFilter::Vectornf wt = Eigen::VectorXf::Zero(KF_->get_n());
   // last covariance of the state, not sure how to get
   // needs to be changed
-  static KalmanFilter::Matrixnnf cov = Eigen::MatrixXf::Ones(KF_->get_n(), KF_->get_n()) * 10000.0f;
+  static ExtendedKalmanFilter::Matrixnnf cov = Eigen::MatrixXf::Ones(KF_->get_n(), KF_->get_n()) * 10000.0f;
 
 
   // should we include more measurements????
-  static KalmanFilter::Vectorkf zt = Eigen::VectorXf::Zero(KF_->get_k());
+  static ExtendedKalmanFilter::Vectorkf zt = Eigen::VectorXf::Zero(KF_->get_k());
   zt << ball.loc.x, ball.loc.y, ball.absVel.x, ball.absVel.y;
 
   // needs to define wt and covt
