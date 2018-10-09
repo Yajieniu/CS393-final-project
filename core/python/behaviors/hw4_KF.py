@@ -15,6 +15,7 @@ import UTdebug
 
 # Added in assignment 4:
 import numpy as np 
+import math
 
 # State models: (x, y, vx, vy)
 
@@ -22,7 +23,8 @@ import numpy as np
 # imageCenterX, imageCenterY, position p, visionBearing, 
 # visionDistance
 
-DELAY = 1./30
+CENTER_THRESHOLD = 50
+V_THRESHOLD = 10
 
 
 # class KilmanFilter(object):
@@ -51,19 +53,22 @@ DELAY = 1./30
 class RaiseLeft(Node):
 	# raise left arm 
 	def run(self):
-		UTdebug.log(15, "Raising left arm.")
+		# UTdebug.log(15, "\n\n\n**********Raising left arm.")
+		print("\n\n\n**********Raising left arm.")
 
 
 class RaiseRight(Node):
 	# raise right arm
 	def run(self):
-		UTdebug.log(15, "Raising right arm.")
+		# UTdebug.log(15, "\n\n**********Raising right arm.")
+		print("\n\n\n**********Raising right arm.")
 
 
 class RaiseBoth(Node):
 	# raise both arms
 	def run(self):
-		UTdebug.log(15, "Raising both arms.")
+		# UTdebug.log(15, "\n\n**********Raising both arms.")
+		print("\n\n\n**********Raising both arm.")
 
 
 
@@ -71,43 +76,50 @@ class RaiseArms(Node):
 	def run(self):
 		# get predicted location and velocity
 		ball = mem_objects.world_objects[core.WO_BALL]
+		# import pdb; pdb.set_trace()
+		distance = ball.distance
+		x = ball.loc.x
+		y = ball.loc.y
+		vx = ball.absVel.x
+		vy = ball.absVel.y
+		v = math.sqrt(vx*vx+vy*vy)
+		print (x, y, vx, vy)
 
-		if ball.seen:
-			x = ball.loc.x
-			y = ball.loc.y
-			vx = ball.absVel.x
-			vy = ball.absVel.y
+		if v > V_THRESHOLD and ball.seen:
+			norm_vx = vx / v
+			norm_vy = vy / v
+			end_x = x + distance * norm_vx
+			end_y = y + distance * norm_vy
 
-			print (x, y, vx, vy)
-			# end_x = x + y * vx / vy
+			print ("Distance: ", distance)
+			print ("Predict end y: ", end_y)
 
-			self.poseSignal('not_seen')
-			# end_y = y + x * vy 
-
-		# # assuming accerlaration is 0
-		# endX = ball.worldX + ball.worldY * ball.veloX / ball.veloY
-
-		# if endX > endingRightThreshold:
-		# 	choice = "right"
-		# elif endX < endingLeftThreshold:
-		# 	choice = "left"
+			if end_y < -CENTER_THRESHOLD:
+				choice =  "right"
+			elif end_y > CENTER_THRESHOLD:
+				choice = "left"
+			else:
+				choice = "center"
+			
+			self.postSignal(choice)
 		# else:
-		# 	choice = "center"
+		# 	norm_vx = 0.0
+		# 	norm_vy = 0.0
+		# 	bearing = math.atan2(x, y)
 
-			self.poseSignal(choice)
+		# commands.setHeadPan(ball.bearing, 0.1)
 		else:
-			self.poseSignal('not_seen')
-
+			self.postSignal('not_seen')
 
 class Playing(LoopingStateMachine):
 	def setup(self):
 		raiseArm = RaiseArms()
 		arms = {"left": RaiseLeft(),
-			   "right": RaiseRight(),
-			   "center": RaiseBoth(),
-			   "not_seen" : RaiseArms(),
-			   }
+		"right": RaiseRight(),
+		"center": RaiseBoth(),
+		"not_seen" : RaiseArms(),
+		}
 
-	   	for direction in arms:
-	   		arm = arms[direction]
-	   		self.add_transition(raiseArm, S(direction), arm, T(0.5), raiseArm)
+		for direction in arms:
+			arm = arms[direction]
+			self.add_transition(raiseArm, S(direction), arm, T(.5), raiseArm)

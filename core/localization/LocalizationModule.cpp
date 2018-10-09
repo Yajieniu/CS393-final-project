@@ -116,13 +116,13 @@ void LocalizationModule::processFrame() {
     lastBallX = ball.loc.x;
     lastBallY = ball.loc.y;
 
-    std::cout << "\nRaw output\n( ";
-    std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
+    // std::cout << "\nRaw output\n( ";
+    // std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
 
     updateState();
 
-    std::cout << "\nKalman output\n( ";
-    std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
+    // std::cout << "\nKalman output\n( ";
+    // std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
 
     // Update the localization memory objects with localization calculations
     // so that they are drawn in the World window
@@ -157,7 +157,7 @@ void LocalizationModule::updateState() {
     static KalmanFilter::Matrixknf Ct = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_n());
     // static KalmanFilter::Matrixknf Ct << 
     static KalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 1.0f;
-    static KalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 100.0f;
+    static KalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 10.0f;
 
     KF_->setConstants(At, Bt, Ct, Rt, Qt);
   }
@@ -180,11 +180,6 @@ void LocalizationModule::updateState() {
   // needs to define wt and covt
   // std::make_tuple(wt, Covt);
   std::tie(wt, cov) = KF_->algorithm(ut, zt);
-
-  // ball.worldX = wt(0);
-  // ball.worldY = wt(1);
-  // ball.veloX = wt(2);
-  // ball.veloY = wt(3);
 
   ball.loc.x = wt(0);
   ball.loc.y = wt(1);
