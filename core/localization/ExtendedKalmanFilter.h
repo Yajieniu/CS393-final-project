@@ -3,7 +3,7 @@
 #include <Eigen/LU>
 
 #define extended_kalman_n 4 // number of states
-#define extended_kalman_m 0 // number of controls // 0 may not work
+#define extended_kalman_m 1 // number of controls // 0 may not work
 #define extended_kalman_k 4 // number of measurements
 
 class ExtendedKalmanFilter {

@@ -23,6 +23,7 @@ import math
 # visionDistance
 
 CENTER_THRESHOLD = 50
+GOAL_SIDE = 500
 V_THRESHOLD = 10
 
 
@@ -60,17 +61,20 @@ class RaiseArms(Node):
 		vx = ball.absVel.x
 		vy = ball.absVel.y
 		v = math.sqrt(vx*vx+vy*vy)
-		print (x, y, vx, vy)
+		# print (x, y, vx, vy)
 
-		if v > V_THRESHOLD and ball.seen:
+		if vx < 0 and ball.seen:
 			norm_vx = vx / v
 			norm_vy = vy / v
 			end_x = x + distance * norm_vx
 			end_y = y + distance * norm_vy
 
 			print ("Distance: ", distance)
+			print ("Predict velocity: ", vx, vy)
 			print ("Predict end y: ", end_y)
-
+			# May need moving average for y. Fluctuating v can cause problems
+		
+		if v > V_THRESHOLD and vx < 0 and ball.seen and abs(end_y) < GOAL_SIDE:
 			if end_y < -CENTER_THRESHOLD:
 				choice =  "right"
 			elif end_y > CENTER_THRESHOLD:
@@ -99,4 +103,4 @@ class Playing(LoopingStateMachine):
 
 		for direction in arms:
 			arm = arms[direction]
-			self.add_transition(raiseArm, S(direction), arm, T(.5), raiseArm)
+			self.add_transition(raiseArm, S(direction), arm, T(.1), raiseArm)
