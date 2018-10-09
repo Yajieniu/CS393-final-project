@@ -96,15 +96,25 @@ void LocalizationModule::processFrame() {
     auto globalBall = relBall.relativeToGlobal(self.loc, self.orientation);
 
     // Update the ball in the WorldObject block so that it can be accessed in python
-    auto lastx = ball.loc.x;
-    auto lasty = ball.loc.y;
     ball.loc = relBall;
     ball.distance = ball.visionDistance;
     ball.bearing = ball.visionBearing;
 
+
+
     // ball.absVel = fill this in
-    ball.absVel.x = (ball.loc.x - lastx);
-    ball.absVel.y = (ball.loc.y - lasty);
+    // std::cout << ball.absVel.x << " " << ball.absVel.y << endl;
+
+    if (lastBallX == -1. && lastBallY == -1) {
+      ball.absVel.x = 0;
+      ball.absVel.y = 0;
+    } else {
+      ball.absVel.x = ball.loc.x - lastBallX;
+      ball.absVel.y = ball.loc.y - lastBallY;
+    }
+
+    lastBallX = ball.loc.x;
+    lastBallY = ball.loc.y;
 
     std::cout << "\nRaw output\n( ";
     std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
@@ -141,13 +151,13 @@ void LocalizationModule::updateState() {
 
     // Define Kalman filter parameters
     static KalmanFilter::Matrixnnf At = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n());
-    At(0,2) = 1./30.;
-    At(1,3) = 1./30.;
+    At(0,2) = 1; // Delta
+    At(1,3) = 1; // Delta
     static KalmanFilter::Matrixnmf Bt = Eigen::MatrixXf::Zero(KF_->get_n(), KF_->get_m());
     static KalmanFilter::Matrixknf Ct = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_n());
     // static KalmanFilter::Matrixknf Ct << 
     static KalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 1.0f;
-    static KalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 1.0f;
+    static KalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 100.0f;
 
     KF_->setConstants(At, Bt, Ct, Rt, Qt);
   }
@@ -180,4 +190,6 @@ void LocalizationModule::updateState() {
   ball.loc.y = wt(1);
   ball.absVel.x = wt(2);
   ball.absVel.y = wt(3);
+
+  // ball.loc.x = 
 }

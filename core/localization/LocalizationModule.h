@@ -31,4 +31,7 @@ class LocalizationModule : public Module {
     LocalizationParams params_;
     ParticleFilter* pfilter_;
     KalmanFilter* KF_;
+
+    float lastBallX=-1;
+    float lastBallY=-1;
 };

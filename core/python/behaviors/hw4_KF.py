@@ -22,8 +22,7 @@ import numpy as np
 # imageCenterX, imageCenterY, position p, visionBearing, 
 # visionDistance
 
-endingRightThreshold = 200 # in pixel
-endingLeftThreshold = 160 # in pixel
+DELAY = 1./30
 
 
 # class KilmanFilter(object):
@@ -67,22 +66,37 @@ class RaiseBoth(Node):
 		UTdebug.log(15, "Raising both arms.")
 
 
+
 class RaiseArms(Node):
 	def run(self):
 		# get predicted location and velocity
 		ball = mem_objects.world_objects[core.WO_BALL]
 
-		# assuming accerlaration is 0
-		endX = ball.worldX + ball.worldY * ball.veloX / ball.veloY
+		if ball.seen:
+			x = ball.loc.x
+			y = ball.loc.y
+			vx = ball.absVel.x
+			vy = ball.absVel.y
 
-		if endX > endingRightThreshold:
-			choice = "right"
-		elif endX < endingLeftThreshold:
-			choice = "left"
+			print (x, y, vx, vy)
+			# end_x = x + y * vx / vy
+
+			self.poseSignal('not_seen')
+			# end_y = y + x * vy 
+
+		# # assuming accerlaration is 0
+		# endX = ball.worldX + ball.worldY * ball.veloX / ball.veloY
+
+		# if endX > endingRightThreshold:
+		# 	choice = "right"
+		# elif endX < endingLeftThreshold:
+		# 	choice = "left"
+		# else:
+		# 	choice = "center"
+
+			self.poseSignal(choice)
 		else:
-			choice = "center"
-
-		self.poseSignal(choice)
+			self.poseSignal('not_seen')
 
 
 class Playing(LoopingStateMachine):
@@ -90,9 +104,10 @@ class Playing(LoopingStateMachine):
 		raiseArm = RaiseArms()
 		arms = {"left": RaiseLeft(),
 			   "right": RaiseRight(),
-			   "center": RaiseBoth()
+			   "center": RaiseBoth(),
+			   "not_seen" : RaiseArms(),
 			   }
 
 	   	for direction in arms:
 	   		arm = arms[direction]
-	   		self.add_transition(raiseArm, S(direction), arm, T(6), raiseArm)
+	   		self.add_transition(raiseArm, S(direction), arm, T(0.5), raiseArm)
