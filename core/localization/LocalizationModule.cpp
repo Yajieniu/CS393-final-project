@@ -96,17 +96,23 @@ void LocalizationModule::processFrame() {
     auto globalBall = relBall.relativeToGlobal(self.loc, self.orientation);
 
     // Update the ball in the WorldObject block so that it can be accessed in python
-    auto lastx = ball.loc.x;  //;;
-    auto lasty = ball.loc.y;  //;;
-    ball.loc = globalBall;
+    auto lastx = ball.loc.x;
+    auto lasty = ball.loc.y;
+    ball.loc = relBall;
     ball.distance = ball.visionDistance;
     ball.bearing = ball.visionBearing;
 
     // ball.absVel = fill this in
-    ball.absVel.x = (ball.loc.x - lastx);  //;;
-    ball.absVel.y = (ball.loc.y - lasty);  //;;
+    ball.absVel.x = (ball.loc.x - lastx);
+    ball.absVel.y = (ball.loc.y - lasty);
 
-    updateState(lastx, lasty)   //;;
+    std::cout << "\nRaw output\n( ";
+    std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
+
+    updateState();
+
+    std::cout << "\nKalman output\n( ";
+    std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
 
     // Update the localization memory objects with localization calculations
     // so that they are drawn in the World window
@@ -122,29 +128,38 @@ void LocalizationModule::processFrame() {
 }
 
 
-void LocalizatoinModle::updateState(auto lastx, auto lasty) {
+void LocalizationModule::updateState() {
 
-  auto& ball = cahce_.world_object->objects_[WO_BALL];
+  auto& ball = cache_.world_object->objects_[WO_BALL];
 
 
   //states, pay attention to the first frame!! NOT handled
-  Eigen::VectorXf &wt = (lastx, lasty, ball.absVel.x, ball.absVel.y);
+  static KalmanFilter::Vectornf wt = Eigen::VectorXf::Zero(KF_->get_n());
 
   // control, always 0
-  Eigen::VectorXf &ut = VectorXf::zero(Kalman_m);
-  assert(sizeof(*ut)/sizeof(*ut[0]) == Kalman_m);
+  static KalmanFilter::Vectormf ut = Eigen::VectorXf::Zero(KF_->get_m());
+  // assert(sizeof(*ut)/sizeof(*ut[0]) == KF_->m);
 
   // last covariance of the state, not sure how to get
   // needs to be changed
-  Eigen::MatrixXf &cov = MatrixXf::Ones(Kalman_n);
+  static KalmanFilter::Matrixnnf cov = Eigen::MatrixXf::Ones(KF_->get_n(), KF_->get_n()) * 10000.0f;
 
 
   // should we include more measurements????
-  Eigen::VectorXf &zt = (ball.loc.x, ball.loc.y);
+  static KalmanFilter::Vectorkf zt = Eigen::VectorXf::Zero(KF_->get_k());
+  zt << ball.loc.x, ball.loc.y, ball.absVel.x, ball.absVel.y;
 
   // needs to define wt and covt
   // std::make_tuple(wt, Covt);
+  std::tie(wt, cov) = KF_->algorithm(cov, wt, ut, zt);
 
-  // (wt, Covt) = KF_.algorithm(cov, wt, ut, zt);
+  // ball.worldX = wt(0);
+  // ball.worldY = wt(1);
+  // ball.veloX = wt(2);
+  // ball.veloY = wt(3);
 
+  ball.loc.x = wt(0);
+  ball.loc.y = wt(1);
+  ball.absVel.x = wt(2);
+  ball.absVel.y = wt(3);
 }

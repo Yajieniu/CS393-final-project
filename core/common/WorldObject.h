@@ -413,6 +413,12 @@ DECLARE_INTERNAL_SCHEMA(class WorldObject {
 
     // NEW Occluded beacon parameter
     SCHEMA_FIELD(bool occluded);
+
+    // // NEW Ball Kalman Filter
+    // SCHEMA_FIELD(float worldX);
+    // SCHEMA_FIELD(float worldY);
+    // SCHEMA_FIELD(float veloX);
+    // SCHEMA_FIELD(float veloY);
 });
 
 typedef std::vector<WorldObject> ObjectSet;

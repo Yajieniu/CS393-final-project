@@ -2,24 +2,26 @@
 #include <Eigen/Core>
 #include <Eigen/LU>
 
-#define kalman_n 5 // number of states
-#define kalman_m 5 // number of controls
-#define kalman_k 5 // number of measurements
+#define kalman_n 4 // number of states
+#define kalman_m 0 // number of controls // 0 may not work
+#define kalman_k 4 // number of measurements
 
 class KalmanFilter {
 
-	int n;
-	int m;
-	int k;
-
+public:
 	typedef Eigen::Matrix<float, kalman_n, kalman_n> Matrixnnf;
 	typedef Eigen::Matrix<float, kalman_n, kalman_m> Matrixnmf;
 	typedef Eigen::Matrix<float, kalman_k, kalman_n> Matrixknf;
 	typedef Eigen::Matrix<float, kalman_k, kalman_k> Matrixkkf;
 
-	typedef Eigen::Vector<kalman_n, float> Vectornf;
-	typedef Eigen::Vector<kalman_m, float> Vectormf;
-	typedef Eigen::Vector<kalman_k, float> Vectorkf;
+	typedef Eigen::Matrix<float, kalman_n, 1>  Vectornf;
+	typedef Eigen::Matrix<float, kalman_m, 1> Vectormf;
+	typedef Eigen::Matrix<float, kalman_k, 1> Vectorkf;
+
+private:
+	int n;
+	int m;
+	int k;
 	
 	Matrixnnf At;
 	Matrixnmf Bt;
@@ -28,10 +30,10 @@ class KalmanFilter {
 	Matrixkkf Qt;
 
 
-	Matrixnnf lastCov;
-	Vectornf lastw;
-	Vectormf ut;
-	Vectorkf zt;
+	// Matrixnnf lastCov;
+	// Vectornf lastw;
+	// Vectormf ut;
+	// Vectorkf zt;
 
 
 	// Vectornf& predictMean(Eigen::VectorXf&, Eigen::VectorXf&);
@@ -41,8 +43,10 @@ class KalmanFilter {
 	// Matrixnnf& updateCovt(Eigen::MatrixXf&, Eigen::MatrixXf&);
 
 public:
-	KalmanFilter(); 
-	std::tuple<Eigen::Vectornf&, Eigen::Matrixnnf&> 
-		algorithm(Eigen::Matrixnnf&, Eigen::Vectornf&, Eigen::Vectormf&, Eigen::Vectorkf&, int);	
+	KalmanFilter();
+	int get_n();
+	int get_m();
+	int get_k();
+	std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> algorithm(Matrixnnf&, Vectornf&, Vectormf&, Vectorkf&);	
 };
 

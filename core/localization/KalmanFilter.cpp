@@ -22,13 +22,12 @@ KalmanFilter::KalmanFilter() {
 
 }
 
-std::tuple<Vectornf&, Matrixnnf&> KalmanFilter::algorithm(Matrixnnf& cov, 
-	Vectornf& w, Vectormf& u, Vectorkf& z) {
+int KalmanFilter::get_n() {return n;}
+int KalmanFilter::get_m() {return m;}
+int KalmanFilter::get_k() {return k;}
 
-	lastCov = *cov;
-	lastw = *w;
-	ut = *u;
-	zt = *z;
+std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> KalmanFilter::algorithm(Matrixnnf& lastCov, 
+		Vectornf& lastw, Vectormf& ut, Vectorkf& zt) {
 
 	// predict state
 	Vectornf predictedWt = At * lastw + Bt * ut; 
@@ -41,13 +40,14 @@ std::tuple<Vectornf&, Matrixnnf&> KalmanFilter::algorithm(Matrixnnf& cov,
 				(Ct * predictedCovt * Ct.transpose() + Qt).inverse();
 
 	// update state
-	Vectornf& wt = predictedWt + Kt * (zt - Ct * predictedWt);
+	Vectornf wt = predictedWt + Kt * (zt - Ct * predictedWt);
 	
 	// update covariance
 	MatrixXf I = MatrixXf::Identity(n,n);
-	Matrixnnf& Covt = (I - Kt * Ct) * lastCov;
+	Matrixnnf Covt = (I - Kt * Ct) * lastCov;
 
 	return std::make_tuple(wt, Covt);
+
 }
 
 

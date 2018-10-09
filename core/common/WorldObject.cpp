@@ -26,10 +26,10 @@ WorldObject::WorldObject() {
   imageCenterY=0;
   fieldLineIndex = -1;
   fromTopCamera = false;
-  worldX = 0;
-  worldY = 0;
-  veloX = 0;
-  veloY = 0;
+  // worldX = 0;
+  // worldY = 0;
+  // veloX = 0;
+  // veloY = 0;
   
 }
 
