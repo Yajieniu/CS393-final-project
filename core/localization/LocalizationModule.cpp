@@ -61,8 +61,11 @@ void LocalizationModule::initFromWorld() {
 // Reinitialize from scratch
 void LocalizationModule::reInit() {
   pfilter_->init(Point2D(-750,0), 0.0f);
+  cache_.localization_mem->player_ = Point2D(-750,0);
   cache_.localization_mem->state = decltype(cache_.localization_mem->state)::Zero();
   cache_.localization_mem->covariance = decltype(cache_.localization_mem->covariance)::Identity();
+
+  KF_ = new KalmanFilter();
 }
 
 void LocalizationModule::moveBall(const Point2D& position) {
@@ -79,12 +82,10 @@ void LocalizationModule::processFrame() {
   auto& ball = cache_.world_object->objects_[WO_BALL];
   auto& self = cache_.world_object->objects_[cache_.robot_state->WO_SELF];
 
-  // Process the current frame and retrieve our location/orientation estimate
-  // from the particle filter
-  pfilter_->processFrame();
-  self.loc = pfilter_->pose().translation;
-  self.orientation = pfilter_->pose().rotation;
-  log(40, "Localization Update: x=%2.f, y=%2.f, theta=%2.2f", self.loc.x, self.loc.y, self.orientation * RAD_T_DEG);
+  // Retrieve the robot's current location from localization memory
+  // and store it back into world objects
+  auto sloc = cache_.localization_mem->player_;
+  self.loc = sloc;
     
   //TODO: modify this block to use your Kalman filter implementation
   if(ball.seen) {
@@ -95,10 +96,23 @@ void LocalizationModule::processFrame() {
     auto globalBall = relBall.relativeToGlobal(self.loc, self.orientation);
 
     // Update the ball in the WorldObject block so that it can be accessed in python
-    ball.loc = globalBall;
+    auto lastx = ball.loc.x;
+    auto lasty = ball.loc.y;
+    ball.loc = relBall;
     ball.distance = ball.visionDistance;
     ball.bearing = ball.visionBearing;
-    //ball.absVel = fill this in
+
+    // ball.absVel = fill this in
+    ball.absVel.x = (ball.loc.x - lastx);
+    ball.absVel.y = (ball.loc.y - lasty);
+
+    std::cout << "\nRaw output\n( ";
+    std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
+
+    updateState();
+
+    std::cout << "\nKalman output\n( ";
+    std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
 
     // Update the localization memory objects with localization calculations
     // so that they are drawn in the World window
@@ -111,4 +125,41 @@ void LocalizationModule::processFrame() {
     ball.distance = 10000.0f;
     ball.bearing = 0.0f;
   }
+}
+
+
+void LocalizationModule::updateState() {
+
+  auto& ball = cache_.world_object->objects_[WO_BALL];
+
+
+  //states, pay attention to the first frame!! NOT handled
+  static KalmanFilter::Vectornf wt = Eigen::VectorXf::Zero(KF_->get_n());
+
+  // control, always 0
+  static KalmanFilter::Vectormf ut = Eigen::VectorXf::Zero(KF_->get_m());
+  // assert(sizeof(*ut)/sizeof(*ut[0]) == KF_->m);
+
+  // last covariance of the state, not sure how to get
+  // needs to be changed
+  static KalmanFilter::Matrixnnf cov = Eigen::MatrixXf::Ones(KF_->get_n(), KF_->get_n()) * 10000.0f;
+
+
+  // should we include more measurements????
+  static KalmanFilter::Vectorkf zt = Eigen::VectorXf::Zero(KF_->get_k());
+  zt << ball.loc.x, ball.loc.y, ball.absVel.x, ball.absVel.y;
+
+  // needs to define wt and covt
+  // std::make_tuple(wt, Covt);
+  std::tie(wt, cov) = KF_->algorithm(cov, wt, ut, zt);
+
+  // ball.worldX = wt(0);
+  // ball.worldY = wt(1);
+  // ball.veloX = wt(2);
+  // ball.veloY = wt(3);
+
+  ball.loc.x = wt(0);
+  ball.loc.y = wt(1);
+  ball.absVel.x = wt(2);
+  ball.absVel.y = wt(3);
 }

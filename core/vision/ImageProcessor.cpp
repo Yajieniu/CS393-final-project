@@ -437,8 +437,10 @@ std::vector<BallCandidate*> ImageProcessor::getBallCandidates() {
 
         int BALL_MAX_AREA_THRESHOLD = camera_ == Camera::BOTTOM ? iparams_.size : 1600;
 
-        if (rectArea > BALL_MAX_AREA_THRESHOLD)
+        if (rectArea > BALL_MAX_AREA_THRESHOLD) {
+            // std::cout << "Skipping due to max area: " << i << " " << rectArea << endl;
             continue;
+        }
 
         // filter out candidate if not on green ground
         int xstart = max(orangeBlobs[i].avgX - orangeBlobs[i].dx * 1, 0);
@@ -460,9 +462,10 @@ std::vector<BallCandidate*> ImageProcessor::getBallCandidates() {
           }
         }
         // If the ball is near bottom of image, it can still be green
-        if (green_count / tot_count < 0.2 && (yend - ystart) > 5) {
-          continue;
-        }
+        // if (green_count / tot_count < 0.2 && (yend - ystart) > 5) {
+        //   std::cout << "Skipping due to greeness: " << yend - ystart << " " << green_count / tot_count << endl;
+        //   continue;
+        // }
 
         // std::cout << "Not skipping: " << i << " " << sideRatio << " " << areaRatio << endl;
         // std::cout << "Blob " << i << " " << orangeBlobs[i].avgX << " " << orangeBlobs[i].avgY 
