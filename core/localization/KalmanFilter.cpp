@@ -1,5 +1,7 @@
 #include "KalmanFilter.h"
+#include <iostream> 
 
+using namespace std;
 using namespace Eigen;
 
 /* 
@@ -8,48 +10,92 @@ using namespace Eigen;
 * m: dimension of control vector
 * k: dimension of meansurement vector
 */
+// KalmanFilter::KalmanFilter(Matrixnnf &At, Matrixnmf &Bt, Matrixknf &Ct, 
+// 	Matrixnnf &Rt, Matrixnnf &Qt) {
+
 KalmanFilter::KalmanFilter() {
-	
+
   n = kalman_n;
   m = kalman_m;
   k = kalman_k;
 
-  Matrixnnf At = MatrixXf::Identity(n, n);
-  Matrixnmf Bt = MatrixXf::Zero(n, m);
-  Matrixknf Ct = MatrixXf::Zero(k, n);
-  Matrixnnf Rt = MatrixXf::Identity(n, n);
-  Matrixkkf Qt = MatrixXf::Identity(k, k);
+  // this->At = At;
+  // this->Bt = Bt;
+  // this->Ct = Ct;
+  // this->Rt = Rt;
+  // this->Qt = Qt;
+
+  At = MatrixXf::Identity(n, n);
+  Bt = MatrixXf::Zero(n, m);
+  Ct = MatrixXf::Zero(k, n);
+  Rt = MatrixXf::Identity(n, n);
+  Qt = MatrixXf::Identity(k, k);
+
+  // Might need to change initial belief
+  wt = Vectornf::Zero(n);
+  Covt = MatrixXf::Identity(n, n);
+
+  initialized = false;
 
 }
 
 int KalmanFilter::get_n() {return n;}
 int KalmanFilter::get_m() {return m;}
 int KalmanFilter::get_k() {return k;}
+bool KalmanFilter::isInitialized() {return initialized;}
+void KalmanFilter::setwt(Vectornf &wt) {
+	initialized = true;
+	this->wt = wt;
+}
 
-std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> KalmanFilter::algorithm(Matrixnnf& lastCov, 
-		Vectornf& lastw, Vectormf& ut, Vectorkf& zt) {
+void KalmanFilter::setConstants(Matrixnnf &At, Matrixnmf &Bt, Matrixknf &Ct, 
+ 	Matrixnnf &Rt, Matrixnnf &Qt) {
+	
+	this->At = Matrixnnf(At);
+	this->Bt = Matrixnmf(Bt);
+	this->Ct = Matrixknf(Ct);
+	this->Rt = Matrixnnf(Rt);
+	this->Qt = Matrixnnf(Qt);
+}
+
+
+std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> KalmanFilter::algorithm
+	(Vectormf& ut, Vectorkf& zt) {
+
+	static string sep = "\n----------------------------------------\n";
+
+	// std::cout << "At: " << At << sep;
+
+	// std::cout << "old wt: " << wt << sep;
 
 	// predict state
-	Vectornf predictedWt = At * lastw + Bt * ut; 
+	Vectornf predictedWt = At * wt + Bt * ut; 
+
+	// cout << "predictedWt: " << predictedWt << sep;
+	// wt = predictedWt;
 
 	// predict covariance
-	Matrixnnf predictedCovt = At * lastCov * At.transpose() + Rt;
+	Matrixnnf predictedCovt = At * Covt * At.transpose() + Rt;
+
+	// cout << "predictedCovt: " << predictedCovt << sep;
 
 	// calcualte Kalman gain
 	Matrixnnf Kt = predictedCovt * Ct.transpose() * 
 				(Ct * predictedCovt * Ct.transpose() + Qt).inverse();
 
+	// cout << "Kt: " << Kt << sep;
 	// update state
-	Vectornf wt = predictedWt + Kt * (zt - Ct * predictedWt);
+	this->wt = predictedWt + Kt * (zt - Ct * predictedWt);
+
+	// cout << "new wt: " << wt << sep;
 	
 	// update covariance
 	MatrixXf I = MatrixXf::Identity(n,n);
-	Matrixnnf Covt = (I - Kt * Ct) * lastCov;
+	this->Covt = (I - Kt * Ct) * Covt;
 
-	return std::make_tuple(wt, Covt);
+	return std::make_tuple(predictedWt, Covt);
 
 }
-
 
 // std::tuple<VectorXf&, MatrixXf&> KalmanFilter::algorithm1(MatrixXf& lastCov, 
 // 	VectorXf& lastw, VectorXf& ut, VectorXf& zt) {

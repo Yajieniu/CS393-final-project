@@ -3,7 +3,7 @@
 #include <Eigen/LU>
 
 #define kalman_n 4 // number of states
-#define kalman_m 0 // number of controls // 0 may not work
+#define kalman_m 1 // number of controls // 0 may not work
 #define kalman_k 4 // number of measurements
 
 class KalmanFilter {
@@ -29,7 +29,10 @@ private:
 	Matrixnnf Rt;
 	Matrixkkf Qt;
 
+	Vectornf wt;
+	Matrixnnf Covt;
 
+	bool initialized;
 	// Matrixnnf lastCov;
 	// Vectornf lastw;
 	// Vectormf ut;
@@ -43,10 +46,16 @@ private:
 	// Matrixnnf& updateCovt(Eigen::MatrixXf&, Eigen::MatrixXf&);
 
 public:
+	// KalmanFilter(KalmanFilter::Matrixnnf&, KalmanFilter::Matrixnmf&, 
+	// 	KalmanFilter::Matrixknf&, KalmanFilter::Matrixnnf&, KalmanFilter::Matrixnnf&);
 	KalmanFilter();
 	int get_n();
 	int get_m();
 	int get_k();
-	std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> algorithm(Matrixnnf&, Vectornf&, Vectormf&, Vectorkf&);	
+	bool isInitialized();
+	void setwt(Vectornf&);
+	void setCovt(Matrixnnf&);
+	void setConstants(Matrixnnf&, Matrixnmf&, Matrixknf&, Matrixnnf&, Matrixnnf&);
+	std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> algorithm(Vectormf&, Vectorkf&);	
 };
 

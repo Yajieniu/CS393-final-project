@@ -134,12 +134,30 @@ void LocalizationModule::updateState() {
 
 
   //states, pay attention to the first frame!! NOT handled
-  static KalmanFilter::Vectornf wt = Eigen::VectorXf::Zero(KF_->get_n());
+  if (!KF_->isInitialized()) {
+    static KalmanFilter::Vectornf initWt = Eigen::VectorXf::Zero(KF_->get_n());
+    initWt << ball.loc.x, ball.loc.y, ball.absVel.x, ball.absVel.y;
+    KF_->setwt(initWt);
+
+    // Define Kalman filter parameters
+    static KalmanFilter::Matrixnnf At = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n());
+    At(0,2) = 1./30.;
+    At(1,3) = 1./30.;
+    static KalmanFilter::Matrixnmf Bt = Eigen::MatrixXf::Zero(KF_->get_n(), KF_->get_m());
+    static KalmanFilter::Matrixknf Ct = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_n());
+    // static KalmanFilter::Matrixknf Ct << 
+    static KalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 1.0f;
+    static KalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 1.0f;
+
+    KF_->setConstants(At, Bt, Ct, Rt, Qt);
+  }
+
 
   // control, always 0
   static KalmanFilter::Vectormf ut = Eigen::VectorXf::Zero(KF_->get_m());
   // assert(sizeof(*ut)/sizeof(*ut[0]) == KF_->m);
 
+  static KalmanFilter::Vectornf wt = Eigen::VectorXf::Zero(KF_->get_n());
   // last covariance of the state, not sure how to get
   // needs to be changed
   static KalmanFilter::Matrixnnf cov = Eigen::MatrixXf::Ones(KF_->get_n(), KF_->get_n()) * 10000.0f;
@@ -151,7 +169,7 @@ void LocalizationModule::updateState() {
 
   // needs to define wt and covt
   // std::make_tuple(wt, Covt);
-  std::tie(wt, cov) = KF_->algorithm(cov, wt, ut, zt);
+  std::tie(wt, cov) = KF_->algorithm(ut, zt);
 
   // ball.worldX = wt(0);
   // ball.worldY = wt(1);
