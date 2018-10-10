@@ -1,9 +1,12 @@
 #pragma once
 
+#include <math.h>       /* sqrt */
 #include <Module.h>
 #include <memory/MemoryCache.h>
 #include <localization/LocalizationParams.h>
-#include <localization/ExtendedKalmanFilter.h>
+// #include <localization/ExtendedKalmanFilter.h>
+#include <localization/KalmanFilter.h>
+
 
 
 class ParticleFilter;
@@ -22,7 +25,7 @@ class LocalizationModule : public Module {
     void processFrame();
 
     void loadParams(LocalizationParams params);
-    void updateState();
+    void updateState(bool ballSeen);
     void moveBall(const Point2D& position);
     void movePlayer(const Point2D& position, float orientation);
   protected:
@@ -30,7 +33,7 @@ class LocalizationModule : public Module {
     TextLogger*& tlogger_;
     LocalizationParams params_;
     ParticleFilter* pfilter_;
-    ExtendedKalmanFilter* KF_;
+    KalmanFilter* KF_;
 
     float lastBallX=-1;
     float lastBallY=-1;

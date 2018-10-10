@@ -26,7 +26,7 @@ import cfgpose
 
 CENTER_THRESHOLD = 50
 GOAL_SIDE = 500
-V_THRESHOLD = 50
+V_THRESHOLD = 10
 
 
 
@@ -83,64 +83,37 @@ class RaiseArms(Node):
 		v = math.sqrt(vx*vx+vy*vy)
 		print (x, y, vx, vy)
 		
+		commands.setHeadPan(ball.bearing, 0.1)
 
-		if not ball.seen:
-			print ("\n\n\nball not seen!\n\n\n")
-			choice = "nomove"
-			# print ("\n\n\n\n Ball moving!!! \n\n\n\n")
-		elif v < V_THRESHOLD:
-			commands.setHeadPan(ball.bearing, 0.05)
-			print ("\n\n\nball steady\n\n\n")
-			choice = "nomove"
-		else:
-			commands.setHeadPan(ball.bearing, 0.05)
-			print ("\n\n\n ball moving!!!\n\n\n")
+		if vx < 0 and ball.seen:
+			norm_vx = vx / v
+			norm_vy = vy / v
+			end_x = x + distance * norm_vx
+			end_y = y + distance * norm_vy
 
-			end_y = y + x * vy/vx
-
-			if v > V_THRESHOLD:
-				if end_y < -CENTER_THRESHOLD:
-					print ("\n\n\n\nleft!!!!!\n\n\n")
-					choice = "left"
-				elif end_y > CENTER_THRESHOLD:
-					print ("\n\n\n\nright!!!!!\n\n\n")
-					choice = "right"
-				else:
-					print ("\n\n\n\ncenter!!!!!\n\n\n")
-					choice = "center"
-
-			else:
-				choice = "nomove"
-
-					# if vx < 0 and ball.seen:
-		# 	norm_vx = vx / v
-		# 	norm_vy = vy / v
-		# 	end_x = x + distance * norm_vx
-		# 	end_y = y + distance * norm_vy
-
-		# 	print ("Distance: ", distance)
-		# 	print ("Predict velocity: ", vx, vy)
-		# 	print ("Predict end y: ", end_y)
-		# 	# May need moving average for y. Fluctuating v can cause problems
+			print ("Distance: ", distance)
+			print ("Predict velocity: ", vx, vy)
+			print ("Predict end y: ", end_y)
+			# May need moving average for y. Fluctuating v can cause problems
 		
-		# # if v > V_THRESHOLD and vx < 0 and ball.seen and abs(end_y) < GOAL_SIDE:
-		# 	if end_y < -CENTER_THRESHOLD:
-		# 		choice =  "right"
-		# 	elif end_y > CENTER_THRESHOLD:
-		# 		choice = "left"
-		# 	else:
-		# 		choice = "center"
+		# if v > V_THRESHOLD and vx < 0 and ball.seen and abs(end_y) < GOAL_SIDE:
+			if end_y < -CENTER_THRESHOLD:
+				choice =  "right"
+			elif end_y > CENTER_THRESHOLD:
+				choice = "left"
+			else:
+				choice = "center"
 			
-		# 	self.postSignal(choice)
-		# 	print("\n\n\n\n\n*******************************************\n", choice, "\n\n\n\n\n\n")
-		# # else:
-		# # 	norm_vx = 0.0
-		# # 	norm_vy = 0.0
-		# # 	bearing = math.atan2(x, y)
-
+			self.postSignal(choice)
+			print("\n\n\n\n\n*******************************************\n", choice, "\n\n\n\n\n\n")
 		# else:
-		# 	print("\n\n\n\n\n&&&&&&&&&&&&&&&&&&&&&&\n", 'notnotnotnotnot_seen or ball not approaching', 'v is', v, 'vx is', vx, "\n\n\n\n\n\n")
-		self.postSignal('not_seen')
+		# 	norm_vx = 0.0
+		# 	norm_vy = 0.0
+		# 	bearing = math.atan2(x, y)
+
+		else:
+			print("\n\n\n\n\n&&&&&&&&&&&&&&&&&&&&&&\n", 'notnotnotnotnot_seen', 'v is', v, 'vx is', vx, "\n\n\n\n\n\n")
+			self.postSignal('not_seen')
 		
 
 class Playing(LoopingStateMachine):
@@ -149,7 +122,7 @@ class Playing(LoopingStateMachine):
 		arms = {"left": pose.RaiseLeftArm(),
 		"right": pose.RaiseRightArm(),
 		"center": pose.RaiseBothArms(),
-		"nomove": pose.SittingPose()
+		"not_seen": pose.SittingPose()
 		}
 
 		# arms = {"left": RaiseLeft(),
@@ -160,4 +133,4 @@ class Playing(LoopingStateMachine):
 
 		for direction in arms:
 			arm = arms[direction]
-			self.add_transition(raiseArm, S(direction), arm, T(0.05), raiseArm)
+			self.add_transition(raiseArm, S(direction), arm, T(1), raiseArm)

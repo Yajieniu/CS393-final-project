@@ -1,5 +1,6 @@
 #include "KalmanFilter.h"
 #include <iostream> 
+#include <assert.h>
 
 using namespace std;
 using namespace Eigen;
@@ -63,6 +64,10 @@ void KalmanFilter::setConstants(Matrixnnf &At, Matrixnmf &Bt, Matrixknf &Ct,
 	this->Qt = Matrixnnf(Qt);
 }
 
+void KalmanFilter::updateCovt(float ratio) {
+	this->Covt = this->Covt * ratio;
+}
+
 
 std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> KalmanFilter::algorithm
 	(Vectormf& ut, Vectorkf& zt) {
@@ -71,36 +76,51 @@ std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> KalmanFilter::algori
 
 	// std::cout << "At: " << At << sep;
 
-	// std::cout << "old wt: " << wt << sep;
+	// std::cout << "old wt: \n" << wt << sep;
 
 	// predict state
 	Vectornf predictedWt = At * wt + Bt * ut; 
 
-	// cout << "predictedWt: " << predictedWt << sep;
+	// cout << "predictedWt: \n" << predictedWt << sep;
 	// wt = predictedWt;
 
 	// predict covariance
 	Matrixnnf predictedCovt = At * Covt * At.transpose() + Rt;
 
-	// cout << "predictedCovt: " << predictedCovt << sep;
+	// cout << "predictedCovt: \n" << predictedCovt << sep;
 
 	// calcualte Kalman gain
 	Matrixnnf Kt = predictedCovt * Ct.transpose() * 
 				(Ct * predictedCovt * Ct.transpose() + Qt).inverse();
 
-	// cout << "Kt: " << Kt << sep;
+	// assert(predictedCovt * Ct.transpose() * 
+	// 		(Ct * predictedCovt * Ct.transpose() + Qt).isInvertible());
+
+	// cout << "Kt: \n" << Kt << sep;
 	// update state
 	this->wt = predictedWt + Kt * (zt - Ct * predictedWt);
 
-	// cout << "new wt: " << wt << sep;
+	// cout << "new wt: \n" << wt << sep;
 	
 	// update covariance
 	MatrixXf I = MatrixXf::Identity(n,n);
-	this->Covt = (I - Kt * Ct) * Covt;
+	this->Covt = (I - Kt * Ct) * Covt; //
+	this->Covt = (this->Covt + this->Covt.transpose()) / 2;
+	// * (I - Kt * Ct) + Kt * Rt * Kt.transpose();
+
+	// cout << "new Covt: \n" << this->Covt << endl;
+
+	// LLT<Matrixnnf> lltOfCovt(Covt);
+
+	// if (lltOfCovt.info() == Eigen::NumericalIssue) {
+	// 	cout << "Covt not PSD" << endl;
+	// };
 
 	return std::make_tuple(predictedWt, Covt);
 
 }
+
+// void KalmanFilter::increaseCovt()
 
 // std::tuple<VectorXf&, MatrixXf&> KalmanFilter::algorithm1(MatrixXf& lastCov, 
 // 	VectorXf& lastw, VectorXf& ut, VectorXf& zt) {

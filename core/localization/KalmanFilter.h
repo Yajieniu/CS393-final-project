@@ -1,6 +1,7 @@
 #include <tuple>
 #include <Eigen/Core>
 #include <Eigen/LU>
+// #include <Eigne/FullPivLU>
 
 #define kalman_n 4 // number of states
 #define kalman_m 1 // number of controls // 0 may not work
@@ -56,6 +57,7 @@ public:
 	void setwt(Vectornf&);
 	void setCovt(Matrixnnf&);
 	void setConstants(Matrixnnf&, Matrixnmf&, Matrixknf&, Matrixnnf&, Matrixnnf&);
+	void updateCovt(float);
 	std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> algorithm(Vectormf&, Vectorkf&);	
 };
 
