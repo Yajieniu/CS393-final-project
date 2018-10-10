@@ -955,8 +955,8 @@ sittingPoseNoArms[core.RAnkleRoll] = 0
 
 ourSittingPose = dict()
 
-ourSittingPose[core.HeadYaw] = 0.0
-ourSittingPose[core.HeadPitch] = 0
+ourSittingPose[core.HeadYaw] = 0.09
+ourSittingPose[core.HeadPitch] = -1.0*22
 ourSittingPose[core.LShoulderPitch] = -90
 ourSittingPose[core.LShoulderRoll] = 10
 ourSittingPose[core.LElbowYaw] = 0
@@ -964,13 +964,13 @@ ourSittingPose[core.LElbowRoll] = 0
 ourSittingPose[core.LHipYawPitch] = -5
 ourSittingPose[core.LHipPitch] = -46.5
 ourSittingPose[core.LHipRoll] = -1.0 * 0
-ourSittingPose[core.LKneePitch] = 125
+ourSittingPose[core.LKneePitch] = 123
 ourSittingPose[core.LAnklePitch] = -70
 ourSittingPose[core.LAnkleRoll] = -1.0 * 0
 ourSittingPose[core.RHipYawPitch] = -5
 ourSittingPose[core.RHipPitch] = -46.5
 ourSittingPose[core.RHipRoll] = 0
-ourSittingPose[core.RKneePitch] = 125
+ourSittingPose[core.RKneePitch] = 123
 ourSittingPose[core.RAnklePitch] = -70
 ourSittingPose[core.RAnkleRoll] = 0
 ourSittingPose[core.RShoulderPitch] = -90
