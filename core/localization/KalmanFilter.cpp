@@ -68,6 +68,9 @@ void KalmanFilter::updateCovt(float ratio) {
 	this->Covt = this->Covt * ratio;
 }
 
+void KalmanFilter::reset() {
+	this->initialized = false;
+}
 
 std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> KalmanFilter::algorithm
 	(Vectormf& ut, Vectorkf& zt) {

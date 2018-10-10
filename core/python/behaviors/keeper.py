@@ -26,7 +26,7 @@ import cfgpose
 
 CENTER_THRESHOLD = 50
 GOAL_SIDE = 500
-V_THRESHOLD = 50
+V_THRESHOLD = 250
 
 
 
@@ -64,7 +64,7 @@ class RaiseBoth(Node):
 
 class NotSeen(Node):
 	def run(self):
-		i =0;
+		commands.setHeadPan(0, 0.05)
 
 
 class RaiseArms(Node):
@@ -81,12 +81,18 @@ class RaiseArms(Node):
 		vx = ball.absVel.x
 		vy = ball.absVel.y
 		v = math.sqrt(vx*vx+vy*vy)
-		print (x, y, vx, vy)
+		# print (x, y, vx, vy)
 		
+		end_y = y + x * vy/vx
+		print ("\n\n\n\n End y: ", end_y)
+		print ("\n\n\n\n V: ", v)
+		print ("\n\n\n\n bearing: ", ball.bearing)
+
 
 		if not ball.seen:
 			print ("\n\n\nball not seen!\n\n\n")
-			choice = "nomove"
+			commands.setHeadPan(0, 0.05, )
+			choice = "unseen"
 			# print ("\n\n\n\n Ball moving!!! \n\n\n\n")
 		elif v < V_THRESHOLD:
 			commands.setHeadPan(ball.bearing, 0.05)
@@ -96,7 +102,10 @@ class RaiseArms(Node):
 			commands.setHeadPan(ball.bearing, 0.05)
 			print ("\n\n\n ball moving!!!\n\n\n")
 
-			end_y = y + x * vy/vx
+			# end_y = y + x * vy/vx
+			# print ("\n\n\n\n End y: ", end_y)
+			# print ("\n\n\n\n V: ", v)
+			# print ("\n\n\n"v, )
 
 			if v > V_THRESHOLD:
 				if end_y < -CENTER_THRESHOLD:
@@ -149,7 +158,8 @@ class Playing(LoopingStateMachine):
 		arms = {"left": pose.RaiseLeftArm(),
 		"right": pose.RaiseRightArm(),
 		"center": pose.RaiseBothArms(),
-		"nomove": pose.SittingPose()
+		"unseen": NotSeen(),
+		"nomove": pose.SittingPose(),
 		}
 
 		# arms = {"left": RaiseLeft(),
