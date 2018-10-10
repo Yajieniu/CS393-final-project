@@ -137,7 +137,7 @@ void LocalizationModule::processFrame() {
   //TODO: How do we handle not seeing the ball?
   else {
     KF_->reset();
-    cout << "RESET" << endl;
+    // cout << "RESET" << endl;
     ball.distance = 10000.0f;
     ball.bearing = 0.0f;
 
@@ -169,18 +169,18 @@ void LocalizationModule::updateState(bool ballSeen) {
     At(0,2) = 1; // Delta T
     At(1,3) = 1; // Delta T
 
-    cout << At << endl;
+    // cout << At << endl;
 
     static KalmanFilter::Matrixnmf Bt = Eigen::MatrixXf::Zero(KF_->get_n(), KF_->get_m());
     static KalmanFilter::Matrixknf Ct = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_n());
-    static KalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 10.0f; // Rt: Transition variance
-    Rt(2,2) = 20.0f; 
-    Rt(3,3) = 20.0f;
-    static KalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 100.0f; // Qt: Measurement variance
-    Qt(2,2) = 200.0f;
-    Qt(3,3) = 200.0f;
-    Qt(0,2) = 100.0f;
-    Qt(1,3) = 100.0f;
+    static KalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 1.0f; // Rt: Transition variance
+    // Rt(2,2) = 20.0f; 
+    // Rt(3,3) = 20.0f;
+    static KalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 1.0f; // Qt: Measurement variance
+    // Qt(2,2) = 200.0f;
+    // Qt(3,3) = 200.0f;
+    // Qt(0,2) = 100.0f;
+    // Qt(1,3) = 100.0f;
 
     KF_->setConstants(At, Bt, Ct, Rt, Qt);
   }
@@ -200,10 +200,10 @@ void LocalizationModule::updateState(bool ballSeen) {
 
     std::tie(wt, cov) = KF_->algorithm(ut, zt);
 
-    ball.loc.x = wt(0);
-    ball.loc.y = wt(1);
-    ball.absVel.x = wt(2) * T;
-    ball.absVel.y = wt(3) * T;
+    // ball.loc.x = wt(0);
+    // ball.loc.y = wt(1);
+    // ball.absVel.x = wt(2);
+    // ball.absVel.y = wt(3);
     // ball.sd << cov(0,0) , cov(1,1);
     ball.sd = Point2D(cov(0,0), cov(1,1));
   

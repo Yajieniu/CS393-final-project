@@ -51,4 +51,5 @@ class Playing(StateMachine):
         walk = self.Walk()
         sit = pose.Sit()
         off = self.Off()
-        self.trans(stand, C, walk, T(5.0), sit, C, off)
+        raise_right = pose.RaiseRightArm()
+        self.trans(sit, C, raise_right, T(5.0), sit, C, off)

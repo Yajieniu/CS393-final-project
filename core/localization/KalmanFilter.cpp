@@ -108,7 +108,7 @@ std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> KalmanFilter::algori
 	// update covariance
 	MatrixXf I = MatrixXf::Identity(n,n);
 	this->Covt = (I - Kt * Ct) * Covt; //
-	this->Covt = (this->Covt + this->Covt.transpose()) / 2;
+	// this->Covt = (this->Covt + this->Covt.transpose()) / 2;
 	// * (I - Kt * Ct) + Kt * Rt * Kt.transpose();
 
 	// cout << "new Covt: \n" << this->Covt << endl;

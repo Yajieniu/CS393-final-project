@@ -18,15 +18,17 @@ import math
 import pose
 import cfgpose
 
+import time
+
 # State models: (x, y, vx, vy)
 
 # Measurements:
 # imageCenterX, imageCenterY, position p, visionBearing, 
 # visionDistance
 
-CENTER_THRESHOLD = 50
-GOAL_SIDE = 500
-V_THRESHOLD = 250
+CENTER_MIN_THRESHOLD = 50
+CENTER_MAX_THRESHOLD = 500
+V_THRESHOLD = 20
 
 
 
@@ -65,6 +67,14 @@ class RaiseBoth(Node):
 class NotSeen(Node):
 	def run(self):
 		commands.setHeadPan(0, 0.05)
+		if self.getTime() > 0.1:
+			self.finish()
+
+
+class Wait(Node):
+	def run(self):
+		if self.getTime() > 1:
+			self.finish()
 
 
 class RaiseArms(Node):
@@ -83,7 +93,10 @@ class RaiseArms(Node):
 		v = math.sqrt(vx*vx+vy*vy)
 		# print (x, y, vx, vy)
 		
-		end_y = y + x * vy/vx
+		if v > 0:
+			end_y = y + x * vy/vx
+		else:
+			end_y = y
 		print ("\n\n\n\n End y: ", end_y)
 		print ("\n\n\n\n V: ", v)
 		print ("\n\n\n\n bearing: ", ball.bearing)
@@ -91,7 +104,7 @@ class RaiseArms(Node):
 
 		if not ball.seen:
 			print ("\n\n\nball not seen!\n\n\n")
-			commands.setHeadPan(0, 0.05, )
+			commands.setHeadPan(0, 0.05)
 			choice = "unseen"
 			# print ("\n\n\n\n Ball moving!!! \n\n\n\n")
 		elif v < V_THRESHOLD:
@@ -102,64 +115,37 @@ class RaiseArms(Node):
 			commands.setHeadPan(ball.bearing, 0.05)
 			print ("\n\n\n ball moving!!!\n\n\n")
 
-			# end_y = y + x * vy/vx
-			# print ("\n\n\n\n End y: ", end_y)
-			# print ("\n\n\n\n V: ", v)
-			# print ("\n\n\n"v, )
-
-			if v > V_THRESHOLD:
-				if end_y < -CENTER_THRESHOLD:
+			if v > V_THRESHOLD and vx < 0:
+				if end_y < -CENTER_MIN_THRESHOLD and end_y > -CENTER_MAX_THRESHOLD:
 					print ("\n\n\n\nleft!!!!!\n\n\n")
 					choice = "left"
-				elif end_y > CENTER_THRESHOLD:
+				elif end_y > CENTER_MIN_THRESHOLD and end_y < CENTER_MAX_THRESHOLD:
 					print ("\n\n\n\nright!!!!!\n\n\n")
 					choice = "right"
-				else:
+				elif end_y < CENTER_MIN_THRESHOLD and end_y > -CENTER_MIN_THRESHOLD:
 					print ("\n\n\n\ncenter!!!!!\n\n\n")
 					choice = "center"
+				else:
+					choice = "nomove"
 
 			else:
+				print ("\n\n\n\nno move\n\n\n\n")
 				choice = "nomove"
 
-					# if vx < 0 and ball.seen:
-		# 	norm_vx = vx / v
-		# 	norm_vy = vy / v
-		# 	end_x = x + distance * norm_vx
-		# 	end_y = y + distance * norm_vy
-
-		# 	print ("Distance: ", distance)
-		# 	print ("Predict velocity: ", vx, vy)
-		# 	print ("Predict end y: ", end_y)
-		# 	# May need moving average for y. Fluctuating v can cause problems
-		
-		# # if v > V_THRESHOLD and vx < 0 and ball.seen and abs(end_y) < GOAL_SIDE:
-		# 	if end_y < -CENTER_THRESHOLD:
-		# 		choice =  "right"
-		# 	elif end_y > CENTER_THRESHOLD:
-		# 		choice = "left"
-		# 	else:
-		# 		choice = "center"
-			
-		# 	self.postSignal(choice)
-		# 	print("\n\n\n\n\n*******************************************\n", choice, "\n\n\n\n\n\n")
-		# # else:
-		# # 	norm_vx = 0.0
-		# # 	norm_vy = 0.0
-		# # 	bearing = math.atan2(x, y)
-
-		# else:
-		# 	print("\n\n\n\n\n&&&&&&&&&&&&&&&&&&&&&&\n", 'notnotnotnotnot_seen or ball not approaching', 'v is', v, 'vx is', vx, "\n\n\n\n\n\n")
-		self.postSignal('not_seen')
+		self.postSignal(choice)
 		
 
 class Playing(LoopingStateMachine):
 	def setup(self):
 		raiseArm = RaiseArms()
-		arms = {"left": pose.RaiseLeftArm(),
-		"right": pose.RaiseRightArm(),
-		"center": pose.RaiseBothArms(),
-		"unseen": NotSeen(),
-		"nomove": pose.SittingPose(),
+		sit = pose.SittingPose()
+		wait = Wait
+		arms = {
+			"left": pose.RaiseLeftArm(time=0.3),
+			"right": pose.RaiseRightArm(time=0.3),
+			"center": pose.RaiseBothArms(time=0.3),
+			"unseen": pose.SittingPose(time=0.3),
+			"nomove": pose.SittingPose(time=0.3),
 		}
 
 		# arms = {"left": RaiseLeft(),
@@ -167,7 +153,14 @@ class Playing(LoopingStateMachine):
 		# "center": RaiseBoth(),
 		# "not_seen": NotSeen()
 		# }
+		# self.add_transition(sit, T(0.5), pose.RaiseRightArm(), T(5), sit)
+		# self.trans(raiseArm, S("nomove"), sit, T(0.3), pose.RaiseBothArms(), T(5), raiseArm)
 
 		for direction in arms:
 			arm = arms[direction]
-			self.add_transition(raiseArm, S(direction), arm, T(0.05), raiseArm)
+			self.add_transition(raiseArm, S(direction), arm, T(0.4), raiseArm)
+
+			# if direction in ["left", "right", "center"]:
+				# self.add_transition(raiseArm, S(direction), arm, T(0.4), wait, C, raiseArm)
+			# else:
+				# self.add_transition(raiseArm, S(direction), arm, T(0.4), raiseArm)
