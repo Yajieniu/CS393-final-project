@@ -15,6 +15,8 @@ import UTdebug
 
 # Added in assignment 4:
 import math
+import pose
+import cfgpose
 
 # State models: (x, y, vx, vy)
 
@@ -32,22 +34,40 @@ class RaiseLeft(Node):
 	# raise left arm 
 	def run(self):
 		# UTdebug.log(15, "\n\n\n**********Raising left arm.")
-		print("\n\n\n**********Raising left arm.")
+		print("\n\n\n***************************************\
+			************************************************\
+			*************\
+			Raising left arm.\n\n\n\n")
+		stand = pose.BlockRight()
+		stand.run()
 
 
 class RaiseRight(Node):
 	# raise right arm
 	def run(self):
 		# UTdebug.log(15, "\n\n**********Raising right arm.")
-		print("\n\n\n**********Raising right arm.")
+		print("\n\n\n***************************************\
+			************************************************\
+			*************\
+			Raising right arm.\n\n\n\n")
+		stand = pose.StandStraight()
+		stand.run()
 
 
 class RaiseBoth(Node):
 	# raise both arms
 	def run(self):
 		# UTdebug.log(15, "\n\n**********Raising both arms.")
-		print("\n\n\n**********Raising both arm.")
+		print("\n\n\n***************************************\
+			************************************************\
+			*************\
+			Raising both arms.\n\n\n\n")		
+		stand = pose.StandStraight()
+		stand.run()
 
+class NotSeen(Node):
+	def run(self):
+		i =0;
 
 
 class RaiseArms(Node):
@@ -61,7 +81,7 @@ class RaiseArms(Node):
 		vx = ball.absVel.x
 		vy = ball.absVel.y
 		v = math.sqrt(vx*vx+vy*vy)
-		# print (x, y, vx, vy)
+		print (x, y, vx, vy)
 
 		if vx < 0 and ball.seen:
 			norm_vx = vx / v
@@ -74,7 +94,7 @@ class RaiseArms(Node):
 			print ("Predict end y: ", end_y)
 			# May need moving average for y. Fluctuating v can cause problems
 		
-		if v > V_THRESHOLD and vx < 0 and ball.seen and abs(end_y) < GOAL_SIDE:
+		# if v > V_THRESHOLD and vx < 0 and ball.seen and abs(end_y) < GOAL_SIDE:
 			if end_y < -CENTER_THRESHOLD:
 				choice =  "right"
 			elif end_y > CENTER_THRESHOLD:
@@ -83,6 +103,7 @@ class RaiseArms(Node):
 				choice = "center"
 			
 			self.postSignal(choice)
+			print("\n\n\n\n\n*******************************************\n", choice, "\n\n\n\n\n\n")
 		# else:
 		# 	norm_vx = 0.0
 		# 	norm_vy = 0.0
@@ -90,17 +111,19 @@ class RaiseArms(Node):
 
 		# commands.setHeadPan(ball.bearing, 0.1)
 		else:
+			print("\n\n\n\n\n&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&\n", 'notnotnotnotnot_seen', 'v is', v, 'vx is', vx, "\n\n\n\n\n\n")
 			self.postSignal('not_seen')
+		
 
 class Playing(LoopingStateMachine):
 	def setup(self):
 		raiseArm = RaiseArms()
-		arms = {"left": RaiseLeft(),
-		"right": RaiseRight(),
-		"center": RaiseBoth(),
-		"not_seen" : RaiseArms(),
+		arms = {"left": pose.RaiseLeftArm(),
+		"right": pose.RaiseRightArm(),
+		"center": pose.RaiseBothArms(),
+		"not_seen": notSeen()
 		}
 
 		for direction in arms:
 			arm = arms[direction]
-			self.add_transition(raiseArm, S(direction), arm, T(.1), raiseArm)
+			self.add_transition(raiseArm, S(direction), arm, T(1), raiseArm)

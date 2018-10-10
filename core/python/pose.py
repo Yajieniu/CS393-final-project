@@ -187,6 +187,39 @@ class Squat(Task):
       Stand()
     ])
 
+class RaiseRightArm(Task):
+  def __init__(self, time = 3.0):
+    super(RaiseRightArm, self).__init__(time=time)
+    self.setSubtask(PoseSequence(
+      cfgpose.sittingPoseNoArms, 0.5,
+      cfgpose.raiseRightArmPose, 0.5
+      ))
+
+class RaiseLeftArm(Task):
+  def __init__(self, time = 3.0):
+    super(RaiseLeftArm, self).__init__(time=time)
+    self.setSubtask(PoseSequence(
+      cfgpose.sittingPoseNoArms, 0.5,
+      cfgpose.raiseRightArmPose, 0.5
+      ))
+
+
+class RaiseBothArms(Task):
+  def __init__(self, time = 3.0):
+    super(RaiseBothArms, self).__init__(time=time)
+    self.setSubtask(PoseSequence(
+      cfgpose.sittingPoseNoArms, 0.5,
+      cfgpose.raiseBothArmsPose, 0.5
+      ))
+
+class SittingPose(Task):
+  def __init__(self, time = 3.0):
+    super(SittingPose, self).__init__(time=time)
+    self.setSubtask(PoseSequence(
+      cfgpose.sittingPoseNoArms, 0.5
+      ))
+
+
 class BlockRight(Task):
   def __init__(self, time = 3.0):
     super(BlockRight, self).__init__(time=time)
