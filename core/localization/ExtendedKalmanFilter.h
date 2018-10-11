@@ -46,6 +46,7 @@ public:
 	ExtendedKalmanFilter::Matrixknf dh (Vectornf&);
 
 	bool isInitialized();
+	void reset();
 	void setwt(Vectornf&);
 	void setCovt(Matrixnnf&);
 	void setConstants(Matrixnnf&, Matrixnmf&, Matrixknf&, Matrixnnf&, Matrixnnf&);

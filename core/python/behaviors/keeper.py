@@ -26,14 +26,15 @@ import time
 # imageCenterX, imageCenterY, position p, visionBearing, 
 # visionDistance
 
-CENTER_MIN_THRESHOLD = 200
-CENTER_MAX_THRESHOLD = 800
-V_THRESHOLD = 35
+CENTER_MIN_THRESHOLD = 50
+CENTER_MAX_THRESHOLD = 500
+V_THRESHOLD = 25
+VX_THRESHOLD = 10
 X_THRESHOLD = 600
 
 running_vx = 0.0
 running_vy = 0.0
-FACTOR = 0.4
+FACTOR = 0.1
 
 class RaiseLeft(Node):
 	# raise left arm 
@@ -107,7 +108,6 @@ class RaiseArms(Node):
 		# y += 100
 
 		if v > V_THRESHOLD:
-			# end_y = y + x * running_vy/running_vx
 			end_y = y + x * running_vy/running_vx
 		else:
 			end_y = y
@@ -122,9 +122,6 @@ class RaiseArms(Node):
 			print ("\n\n\nball not seen!\n\n\n")
 			commands.setHeadPan(0, 0.05)
 			choice = "unseen"
-			# running_vx = 0.0
-			# running_vy = 0.0
-			# print ("\n\n\n\n Ball moving!!! \n\n\n\n")
 		elif v < V_THRESHOLD:
 			commands.setHeadPan(ball.bearing, 0.05)
 			print ("\n\n\nball steady\n\n\n")
@@ -136,40 +133,22 @@ class RaiseArms(Node):
 			head_angle = core.joint_values[core.HeadPan]
 			print ("head angllllle!", head_angle)
 
-
-			# if v > V_THRESHOLD and running_vx < 0 and (X_THRESHOLD - 100) <= x and (x <= X_THRESHOLD+ 100):
-			if v > V_THRESHOLD and running_vx < -15 and x <= X_THRESHOLD:
-
-				if head_angle < -0.3 and end_y < CENTER_MAX_THRESHOLD:
-					choice = "right"
-				elif head_angle > 0.3 and end_y > -CENTER_MAX_THRESHOLD:
+			if v > V_THRESHOLD and -running_vx > VX_THRESHOLD and x <= X_THRESHOLD:
+				if -end_y > CENTER_MIN_THRESHOLD and -end_y < CENTER_MAX_THRESHOLD:
+					print ("\n\n\n\nleft!!!!!\n\n\n")
 					choice = "left"
-				elif end_y < CENTER_MAX_THRESHOLD and end_y > -CENTER_MAX_THRESHOLD:
+				elif end_y > CENTER_MIN_THRESHOLD and end_y < CENTER_MAX_THRESHOLD:
+					print ("\n\n\n\nright!!!!!\n\n\n")
+					choice = "right"
+				elif end_y < CENTER_MIN_THRESHOLD and -end_y < CENTER_MIN_THRESHOLD:
+					print ("\n\n\n\ncenter!!!!!\n\n\n")
 					choice = "center"
 				else:
 					choice = "nomove"
 
-				# end_y -= 50;
-				# if end_y < -CENTER_MIN_THRESHOLD and end_y > -CENTER_MAX_THRESHOLD:
-				# 	print ("\n\n\n\nleft!!!!!\n\n\n")
-				# 	choice = "left"
-				# elif end_y > CENTER_MIN_THRESHOLD and end_y < CENTER_MAX_THRESHOLD:
-				# 	print ("\n\n\n\nright!!!!!\n\n\n")
-				# 	choice = "right"
-				# elif end_y < CENTER_MIN_THRESHOLD and end_y > -CENTER_MIN_THRESHOLD:
-				# 	print ("\n\n\n\ncenter!!!!!\n\n\n")
-				# 	choice = "center"
-				# else:
-				# 	choice = "nomove"
-
 			else:
 				print ("\n\n\n\nno move\n\n\n\n")
 				choice = "nomove"
-
-
-			# else:
-			# 	print ("\n\n\n\nno move\n\n\n\n")
-			# 	choice = "nomove"
 
 		self.postSignal(choice)
 		
@@ -187,14 +166,6 @@ class Playing(LoopingStateMachine):
 			"nomove": pose.SittingPose(time=0.3),
 		}
 
-		# arms = {"left": RaiseLeft(),
-		# "right": RaiseRight(),
-		# "center": RaiseBoth(),
-		# "not_seen": NotSeen()
-		# }
-		# self.add_transition(sit, T(0.5), pose.RaiseRightArm(), T(5), sit)
-		# self.trans(raiseArm, S("nomove"), sit, T(0.3), pose.RaiseBothArms(), T(5), raiseArm)
-
 		for direction in arms:
 			arm = arms[direction]
 			if direction in ["left", "right", "center"]:
@@ -202,7 +173,3 @@ class Playing(LoopingStateMachine):
 			else:
 				self.add_transition(raiseArm, S(direction), arm, T(0.1), raiseArm)
 
-			# if direction in ["left", "right", "center"]:
-				# self.add_transition(raiseArm, S(direction), arm, T(0.4), wait, C, raiseArm)
-			# else:
-				# self.add_transition(raiseArm, S(direction), arm, T(0.4), raiseArm)

@@ -10,58 +10,58 @@ objects:
   gtconfig:
     placements_:
       0:
-        x: 1456.78
-        y: -98.9225
+        x: 1351.36
+        y: 982.861
         orientation: 0
         height: 0
       1:
-        x: 869.247
-        y: -410.858
-        orientation: -59
+        x: 331.32
+        y: -953.008
+        orientation: 68
         height: 0
       2:
-        x: 387.612
-        y: 1231
+        x: 722.269
+        y: 419
         orientation: 0
         height: 0
       3:
-        x: 257.15
-        y: 525
+        x: 426.634
+        y: 474
         orientation: 0
         height: 0
       4:
-        x: 730.528
-        y: 510
+        x: 223.228
+        y: -72
         orientation: 0
         height: 0
       5:
-        x: 3.58309
-        y: -290
+        x: 718.832
+        y: -1217
         orientation: 127
         height: 0
       6:
-        x: 1453.51
-        y: 1008
+        x: 1374.37
+        y: 223
         orientation: 0
         height: 0
       7:
-        x: 1481.52
-        y: 293
+        x: 1096.92
+        y: 390
         orientation: 0
         height: 0
       8:
-        x: 917.166
-        y: -1216
+        x: 284.88
+        y: 313
         orientation: 0
         height: 0
       9:
-        x: 531.22
-        y: -825
+        x: 1298.99
+        y: -700
         orientation: 0
         height: 0
       10:
-        x: 775.277
-        y: -1213
+        x: 172.408
+        y: 509
         orientation: 0
         height: 0
       11:
@@ -72,58 +72,58 @@ objects:
   bconfig:
     placements_:
       0:
-        x: 1456.78
-        y: -98.9225
+        x: 1351.36
+        y: 982.861
         orientation: 0
         height: 0
       1:
-        x: 869.247
-        y: -410.858
-        orientation: -59
+        x: 331.32
+        y: -953.008
+        orientation: 68
         height: 0
       2:
-        x: 387.612
-        y: 1231
+        x: 722.269
+        y: 419
         orientation: 0
         height: 0
       3:
-        x: 257.15
-        y: 525
+        x: 426.634
+        y: 474
         orientation: 0
         height: 0
       4:
-        x: 730.528
-        y: 510
+        x: 223.228
+        y: -72
         orientation: 0
         height: 0
       5:
-        x: 3.58309
-        y: -290
+        x: 718.832
+        y: -1217
         orientation: 127
         height: 0
       6:
-        x: 1453.51
-        y: 1008
+        x: 1374.37
+        y: 223
         orientation: 0
         height: 0
       7:
-        x: 1481.52
-        y: 293
+        x: 1096.92
+        y: 390
         orientation: 0
         height: 0
       8:
-        x: 917.166
-        y: -1216
+        x: 284.88
+        y: 313
         orientation: 0
         height: 0
       9:
-        x: 531.22
-        y: -825
+        x: 1298.99
+        y: -700
         orientation: 0
         height: 0
       10:
-        x: 775.277
-        y: -1213
+        x: 172.408
+        y: 509
         orientation: 0
         height: 0
       11:

@@ -26,6 +26,10 @@ int ExtendedKalmanFilter::get_m() {return m;}
 int ExtendedKalmanFilter::get_k() {return k;}
 bool ExtendedKalmanFilter::isInitialized() {return initialized;}
 
+void ExtendedKalmanFilter::reset() {
+	this->initialized = false;
+}
+
 void ExtendedKalmanFilter::setwt(Vectornf &wt) {
 	this->wt = wt;
 }
@@ -44,23 +48,6 @@ void ExtendedKalmanFilter::setConstants(Matrixnnf &At, Matrixnmf &Bt, Matrixknf 
 	this->Rt = Matrixnnf(Rt);
 	this->Qt = Matrixnnf(Qt);
 }
-
-ExtendedKalmanFilter::Vectornf ExtendedKalmanFilter::g ( Vectornf& wt, Vectormf& ut ) {
-	return (At * wt + Bt * ut);
-}
-
-ExtendedKalmanFilter::Matrixnnf ExtendedKalmanFilter::dg ( Vectornf& wt, Vectormf& ut ) {
-	return At;
-}
-
-ExtendedKalmanFilter::Vectorkf ExtendedKalmanFilter::h ( Vectornf& wt ) {
-	return (Ct * wt);
-}
-
-ExtendedKalmanFilter::Matrixknf ExtendedKalmanFilter::dh ( Vectornf& wt ) {
-	return Ct;
-}
-
 
 std::tuple<ExtendedKalmanFilter::Vectornf, ExtendedKalmanFilter::Matrixnnf> ExtendedKalmanFilter::algorithm
 	(Vectormf& ut, Vectorkf& zt) {
@@ -89,3 +76,18 @@ std::tuple<ExtendedKalmanFilter::Vectornf, ExtendedKalmanFilter::Matrixnnf> Exte
 
 }
 
+ExtendedKalmanFilter::Vectornf ExtendedKalmanFilter::g ( Vectornf& wt, Vectormf& ut ) {
+	return (At * wt + Bt * ut);
+}
+
+ExtendedKalmanFilter::Matrixnnf ExtendedKalmanFilter::dg ( Vectornf& wt, Vectormf& ut ) {
+	return At;
+}
+
+ExtendedKalmanFilter::Vectorkf ExtendedKalmanFilter::h ( Vectornf& wt ) {
+	return (Ct * wt);
+}
+
+ExtendedKalmanFilter::Matrixknf ExtendedKalmanFilter::dh ( Vectornf& wt ) {
+	return Ct;
+}
