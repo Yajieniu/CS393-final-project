@@ -26,4 +26,7 @@ class ParticleFilter {
 
     mutable Pose2D mean_;
     mutable bool dirty_;
+
+    // Number of Particles
+    int M;
 };
