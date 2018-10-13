@@ -12,7 +12,6 @@ class ParticleFilter {
     ParticleFilter(MemoryCache& cache, TextLogger*& tlogger);
     void init(Point2D loc, float orientation);
     void processFrame();
-    void NeedUpdate();
     const Pose2D& pose() const;
     inline const std::vector<Particle>& particles() const {
       return cache_.localization_mem->particles;
@@ -24,8 +23,9 @@ class ParticleFilter {
     }
 
   private:
-    void PFAlgorithm();
-    Particle& sampling(String& ut, Particle& xm);
+    void RandomParticleMCL();
+    Particle& sample_motion_model(Particle& xtm, auto& disp, Particle& xm);
+    Particle& randPose();
     float getWeight(Particle & x); 
     Particle& resampling(std::vector<Particle>& particles, 
                 float (&weights)[numOfParticles]);
@@ -36,15 +36,24 @@ class ParticleFilter {
 
     mutable Pose2D mean_;
     mutable bool dirty_;
-    mutable bool backToRandom;
+    mutable bool backToRandom = false;
     mutable bool needToUpdate;
+    float w_slow;
+    float w_fast;
+    float a_slow;
+    float a_fast;
+    float X_MIN = -2500.0;
+    float X_MAX = 2500.0;
+    float Y_MIN = -1250.0;
+    float Y_MAX = 1250.0;
     
-
-    String Controls[6] = ['forward', 
-                          'backward', 
-                          'left', 
-                          'right', 
-                          'turn_left',
-                          'turn_right'
-                          ]
+    // Beacons World Locations
+    static map<WorldObjectType, Point2D> beaconLocation = {
+      { WO_BEACON_BLUE_YELLOW,    {1500, -1000} },
+      { WO_BEACON_YELLOW_BLUE,    {1500, 1000} },
+      { WO_BEACON_BLUE_PINK,      {0, -1000} },
+      { WO_BEACON_PINK_BLUE,      {0, 1000} },
+      { WO_BEACON_PINK_YELLOW,    {-1500, -1000} },
+      { WO_BEACON_YELLOW_PINK,    {-1500, 1000} }
+    };
 };

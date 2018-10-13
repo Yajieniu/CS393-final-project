@@ -517,7 +517,7 @@ void MotionCore::receiveData() {
 
 void MotionCore::updateOdometry(){
   // TODO RE-ENABLE ODOMETRY
-/*
+
   // set if standing or walking
   odometry_->standing = !walk_info_->walk_is_active_;
   if (odometry_->standing) {
@@ -548,6 +548,8 @@ void MotionCore::updateOdometry(){
   //std::cout << next_stand_frame_ << " " << frame_info_->frame_id << std::endl;
   if (do_odometry_correction) {
     // TODO: currently ignoring other offsets
+    // Yajie: ???????????
+    // not sure what should we change here
     float steps_per_second = 50.0 / al_walk_param_->walk_step_min_period_;
     float max_turn_speed = DEG_T_RAD * al_walk_param_->walk_max_step_theta_ * steps_per_second;
     float turn_offset_vel = walk_request_->odometry_turn_offset_ * max_turn_speed;
@@ -568,5 +570,5 @@ void MotionCore::updateOdometry(){
     odometry_->displacement.rotation *= al_walk_param_->turn_ccw_odometry_factor_;
   else
     odometry_->displacement.rotation *= al_walk_param_->turn_cw_odometry_factor_;
-*/
+
 }
