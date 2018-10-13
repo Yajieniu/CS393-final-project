@@ -1,0 +1,7 @@
+---
+options:
+  - SHOW_FIELD
+  - SHOW_ROBOT
+  - SHOW_BALL
+  - SHOW_LOCATION_TEXT_OVERLAY
+...
