@@ -5,7 +5,6 @@
 #include <memory/LocalizationBlock.h>
 #include <localization/Logging.h>
 
-#define numOfParticles = 3000;  // number of particles
 
 class ParticleFilter {
   public:
@@ -28,7 +27,7 @@ class ParticleFilter {
     Particle& randPose();
     float getWeight(Particle & x); 
     Particle& resampling(std::vector<Particle>& particles, 
-                float (&weights)[numOfParticles]);
+                float *, float totalWeight);
 
 
     MemoryCache& cache_;
@@ -38,6 +37,7 @@ class ParticleFilter {
     mutable bool dirty_;
     mutable bool backToRandom = false;
     mutable bool needToUpdate;
+    const int numOfParticles = 3000;
     float w_slow;
     float w_fast;
     float a_slow;
@@ -47,13 +47,4 @@ class ParticleFilter {
     float Y_MIN = -1250.0;
     float Y_MAX = 1250.0;
     
-    // Beacons World Locations
-    static map<WorldObjectType, Point2D> beaconLocation = {
-      { WO_BEACON_BLUE_YELLOW,    {1500, -1000} },
-      { WO_BEACON_YELLOW_BLUE,    {1500, 1000} },
-      { WO_BEACON_BLUE_PINK,      {0, -1000} },
-      { WO_BEACON_PINK_BLUE,      {0, 1000} },
-      { WO_BEACON_PINK_YELLOW,    {-1500, -1000} },
-      { WO_BEACON_YELLOW_PINK,    {-1500, 1000} }
-    };
 };

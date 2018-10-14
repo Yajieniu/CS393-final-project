@@ -2,9 +2,21 @@
 #include <memory/FrameInfoBlock.h>
 #include <memory/OdometryBlock.h>
 #include <common/Random.h>
+#include <common/WorldObject.h>
 #include <assert.h>
 #include <math.h>
 
+
+
+// Beacons World Locations
+static map<WorldObjectType, Point2D> beaconLocation = {
+  { WO_BEACON_BLUE_YELLOW,    {1500, -1000} },
+  { WO_BEACON_YELLOW_BLUE,    {1500, 1000} },
+  { WO_BEACON_BLUE_PINK,      {0, -1000} },
+  { WO_BEACON_PINK_BLUE,      {0, 1000} },
+  { WO_BEACON_PINK_YELLOW,    {-1500, -1000} },
+  { WO_BEACON_YELLOW_PINK,    {-1500, 1000} }
+};
 
 /* 
  * Create an instance of class Particle Filter. 
@@ -63,9 +75,9 @@ void ParticleFilter::processFrame() {
 void ParticleFilter::RandomParticleMCL() {
 
   // Getting the last particle set
-  std::vector<Particle> particles = particles();
-  std::vector<Particle> X = particles;
-  std::vector<Particle> X1 = particles;
+  std::vector<Particle> particles = ParticleFilter::particles();
+  std::vector<Particle> X;
+  std::vector<Particle> X1;
   Particle tempP;
   float weights[numOfParticles] = {};
   float totalWeight = 0.0;
@@ -91,8 +103,8 @@ void ParticleFilter::RandomParticleMCL() {
     w_avg = w_avg + 1/numOfParticles * tempP.w;
   }
 
-  w_slow = w_slwo + a_slow * (w_avg - w_slow);
-  w_fast = w_fast _ a_fast * (w_avg - w_fast);
+  w_slow = w_slow + a_slow * (w_avg - w_slow);
+  w_fast = w_fast + a_fast * (w_avg - w_fast);
 
   // Instead of normalizing the weight, here is getting 
   // the sum of all weights
@@ -106,14 +118,15 @@ void ParticleFilter::RandomParticleMCL() {
   for (int i = 0; i < M; i++) {
     randNumber = std::rand() / ((float) RAND_MAX);
     if (randNumber <= std::max(0.0, 1.0 - w_fast/w_slow)) {
-      X1[i] = randPose();
+      X1[i] = ParticleFilter::randPose();
     }
     else {
-      X1[i] = resampling(particles, weights, totalWeights);
+      X1[i] = ParticleFilter::resampling(particles, weights, totalWeight);
     }
   }
 
   // store the result back into memory
+  // is this the way to save to cache??????????
   cache_.localization_mem->particles = X1;
 }
 
@@ -139,10 +152,10 @@ Particle& ParticleFilter::randPose() {
  * and have a similar theta.
  */
 Particle& ParticleFilter::resampling(std::vector<Particle>& particles, 
-  float (&weights)[numOfParticles], float totalWeights) {
+  float *weights, float totalWeight) {
 
   Particle newP;
-  float randNumber = ((float) rand()) / RAND_MAX * totalWeights;
+  float randNumber = ((float) rand()) / RAND_MAX * totalWeight;
 
   int i = 0;
   assert(weights[0] == 0);
@@ -159,12 +172,13 @@ Particle& ParticleFilter::resampling(std::vector<Particle>& particles,
   std::vector<float> t_range;
 
   // the location of the newly sample particle falls in this range
-  x_range = { std::max(X_MIN, particles[i-1].x-2),
-              std::min(X_MAX, particles[i-1].x+2)};
-  y_range = { std::max(Y_MIN, particles[i-1].y-2),
-              std::min(Y_MAX, particles[i-1].y+2)};
-  t_range = { std::max(-180.0, particles[i-1].t-2),
-              std::min(180.0, particles[i-1].t-2)};
+  x_range.push_back(std::max(X_MIN, particles[i-1].x-2));
+  x_range.push_back(std::min(X_MAX, particles[i-1].x+2));
+  x_range.push_back(std::max(Y_MIN, particles[i-1].y-2));
+  x_range.push_back(std::min(Y_MAX, particles[i-1].y+2));
+  x_range.push_back(std::max((float) -180, particles[i-1].t-2));
+  x_range.push_back(std::min((float) 180, particles[i-1].t-2));
+
 
   // determine the location of new particle
   newP.x = ((float) rand()) / RAND_MAX * 
@@ -199,12 +213,12 @@ Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Partic
 
 
   // Assuming theta is between (-180, 180) degree
-  if (newp.theta > 180) {
-    newp.theta -= 360;
+  if (newp.t > 180) {
+    newp.t -= 360;
   }
 
-  if (newp.theta < -180) {
-    newp.theta += 360;
+  if (newp.t < -180) {
+    newp.t += 360;
   }
 
   assert(newp.t >= -180 && newp.t <= 180);

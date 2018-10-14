@@ -517,7 +517,7 @@ void MotionCore::receiveData() {
 
 void MotionCore::updateOdometry(){
   // TODO RE-ENABLE ODOMETRY
-
+/*
   // set if standing or walking
   odometry_->standing = !walk_info_->walk_is_active_;
   if (odometry_->standing) {
@@ -570,5 +570,5 @@ void MotionCore::updateOdometry(){
     odometry_->displacement.rotation *= al_walk_param_->turn_ccw_odometry_factor_;
   else
     odometry_->displacement.rotation *= al_walk_param_->turn_cw_odometry_factor_;
-
+*/
 }
