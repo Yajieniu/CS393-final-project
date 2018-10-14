@@ -197,8 +197,20 @@ Particle& ParticleFilter::resampling(std::vector<Particle>& particles,
 
 /* Algorithm line 6. Get weights for each new sample. */
 float ParticleFilter::getWeight(Particle & x) {
+  x.w = 1;
 
+  for (const auto& beacon : beaconLocation) {
+    const auto& object =  cache_.world_object->objects_[beacon.first];
+    if ( object.seen == false )
+      continue;
 
+    float dist = ( (beacon.second.x - x.x)*(beacon.second.x - x.x)
+                + (beacon.second.y - x.y)*(beacon.second.y - x.y) );
+    x.w *= gaussianPDF ( dist , object.visionDistance );
+
+  }
+
+  // If no beacon seen, then everyone gets weight 1
   return x.w;
 }
 
@@ -241,4 +253,8 @@ const Pose2D& ParticleFilter::pose() const {
     dirty_ = false;
   }
   return mean_;
+}
+
+inline float ParticleFilter::gaussianPDF( float x, float mu, float sigma = 100) {
+  return (1 / sqrt(2*M_PI*sig*sig)) * exp(- ((x-mu)*(x-mu)) / (2*sig*sig) ) ;
 }

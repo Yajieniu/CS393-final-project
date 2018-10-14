@@ -28,6 +28,7 @@ class ParticleFilter {
     float getWeight(Particle & x); 
     Particle& resampling(std::vector<Particle>& particles, 
                 float *, float totalWeight);
+    inline float gaussianPDF(float, float, float);
 
 
     MemoryCache& cache_;
