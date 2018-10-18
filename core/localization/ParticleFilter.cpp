@@ -6,6 +6,10 @@
 #include <assert.h>
 #include <math.h>
 
+/*
+Assuming theta = 0 when we are facing away from the goal
+i.e.,, robot's back towards the goal.
+*/
 
 
 // Beacons World Locations
@@ -199,6 +203,8 @@ Particle& ParticleFilter::resampling(std::vector<Particle>& particles,
 float ParticleFilter::getWeight(Particle & x) {
   x.w = 1;
 
+  // TODO: set variance for gaussian, and may need to debug to adjust signs.
+  // Also haven't compiled because other parts not complete. May have error.
   for (const auto& beacon : beaconLocation) {
     const auto& object =  cache_.world_object->objects_[beacon.first];
     if ( object.seen == false )
@@ -206,8 +212,25 @@ float ParticleFilter::getWeight(Particle & x) {
 
     float dist = ( (beacon.second.x - x.x)*(beacon.second.x - x.x)
                 + (beacon.second.y - x.y)*(beacon.second.y - x.y) );
-    x.w *= gaussianPDF ( dist , object.visionDistance );
+    x.w *= gaussianPDF ( object.visionDistance, dist, 100 );
 
+    /*
+      We have to decide what is the best way to work with theta from
+      -pi to +pi, while functions like tanh() return -pi/2 to pi/2.
+      Currently setting everything to (-pi/2, pi/2], which is incorrect
+      if we have error of exactly pi!!!
+    */
+
+    float world_theta = tanh((beacon.second.y - x.y) / (beacon.second.x - x.x));
+    while (world_theta <= -M_PI/2) world_theta += M_PI;
+    while (world_theta > M_PI/2) world_theta -= M_PI;
+
+    // TODO: May have to debug to use correct sign.
+    float relative_theta = x.t + object.visionBearing;
+    while (relative_theta <= -M_PI/2) relative_theta += M_PI;
+    while (relative_theta > M_PI/2) relative_theta -= M_PI;
+
+    x.w *= gaussianPDF ( relative_theta, world_theta, 1 );
   }
 
   // If no beacon seen, then everyone gets weight 1
