@@ -33,8 +33,8 @@ ParticleFilter::ParticleFilter(MemoryCache& cache, TextLogger*& tlogger)
   backToRandom(false){
     w_slow = 0;
     w_fast = 0;
-    a_slow = 0.1;
-    a_fast = 1000;
+    a_slow = 0.001;
+    a_fast = 0.9;
 }
 
 /* 
@@ -104,7 +104,7 @@ void ParticleFilter::RandomParticleMCL() {
     tempP = sample_motion_model(tempP, disp, particles[i]); 
     assert(weights[i] == 0);
     totalWeight += getWeight(tempP);
-    X[i] = tempP;
+    X.push_back(tempP);
     w_avg = w_avg + 1/numOfParticles * tempP.w;
   }
 
@@ -120,15 +120,39 @@ void ParticleFilter::RandomParticleMCL() {
   }
 
   // Second part of the algorithm
-  for (int i = 0; i < M; i++) {
-    randNumber = std::rand() / ((float) RAND_MAX);
-    if (randNumber <= std::max(0.0, 1.0 - w_fast/w_slow)) {
-      X1[i] = ParticleFilter::randPose();
-    }
-    else {
-      X1[i] = ParticleFilter::resampling(particles, weights, totalWeight);
+
+  resample_version = 1;  // 1: more random, 2: morn even
+  
+  if (resample_version == 1) {  // more random, resample according to random number
+    for (int i = 0; i < M; i++) {
+      randNumber = std::rand() / ((float) RAND_MAX);
+      if (randNumber <= std::max(0.0, 1.0 - w_fast/w_slow)) {
+        X1[i] = ParticleFilter::randPose();
+      }
+      else {
+        X1[i] = ParticleFilter::resampling(particles, weights, totalWeight, resample_version, 1);
+      }
     }
   }
+  else if (resample_version == 2) {
+    float counter = 0.0;
+    for (int i = 0; i < M; i++) {
+      randNumber = std::rand() / ((float) RAND_MAX);
+      if (randNumber <= std::max(0.0, 1.0 - w_fast/w_slow)) {
+        X1[i] = ParticleFilter::randPose();
+      }
+      else {
+        counter++;
+      }
+    } 
+  
+
+    for (int i = 0; i < counter; i++) {
+      int newParticleIndex = floor(i * counter / M);
+      X1[i] = ParticleFilter::resampling(particles, weights, totalWeight, resample_version, newParticleIndex);
+    }
+  }
+
 
   // store the result back into memory
   // is this the way to save to cache??????????
@@ -157,19 +181,26 @@ Particle& ParticleFilter::randPose() {
  * and have a similar theta.
  */
 Particle& ParticleFilter::resampling(std::vector<Particle>& particles, 
-  float *weights, float totalWeight) {
+  float *weights, float totalWeight, int version, int newParticleIndex) {
 
   Particle newP;
-  float randNumber = ((float) rand()) / RAND_MAX * totalWeight;
-
   int i = 0;
   assert(weights[0] == 0);
-  assert(randNumber <= weights[numOfParticles-1]);
-  
-  // resampled particle should be close to particles[i-1]
-  while(randNumber >= weights[i]) {
-    i++;
+  assert(version == 1 || version == 2);
+
+  if (version == 1) {
+    float randNumber = ((float) rand()) / RAND_MAX * totalWeight;
+    assert(randNumber <= weights[numOfParticles-1]);
+    
+    // resampled particle should be close to particles[i-1]
+    while(randNumber >= weights[i]) {
+      i++;
+    }
   }
+  else {
+    i = newParticleIndex + 1;
+  }
+
   assert(i>0);
 
   std::vector<float> x_range;
@@ -178,11 +209,11 @@ Particle& ParticleFilter::resampling(std::vector<Particle>& particles,
 
   // the location of the newly sample particle falls in this range
   x_range.push_back(std::max(X_MIN, particles[i-1].x-2));
-  x_range.push_back(std::min(X_MAX, particles[i-1].x+2));
-  x_range.push_back(std::max(Y_MIN, particles[i-1].y-2));
-  x_range.push_back(std::min(Y_MAX, particles[i-1].y+2));
-  x_range.push_back(std::max((float) -180, particles[i-1].t-2));
-  x_range.push_back(std::min((float) 180, particles[i-1].t-2));
+  x_range.push_back(std::min(X_MAX, particles[i-1].x+2)); 
+  y_range.push_back(std::max(Y_MIN, particles[i-1].y-2));
+  y_range.push_back(std::min(Y_MAX, particles[i-1].y+2));
+  t_range.push_back(std::max((float) -180, particles[i-1].t-2));
+  t_range.push_back(std::min((float) 180, particles[i-1].t-2));
 
 
   // determine the location of new particle
@@ -201,7 +232,7 @@ Particle& ParticleFilter::resampling(std::vector<Particle>& particles,
 }
 
 /* Algorithm line 6. Get weights for each new sample. */
-float ParticleFilter::getWeight(Particle & x) {
+Particle& ParticleFilter::getWeight(Particle & x) {
   x.w = 1;
 
   // TODO: set variance for gaussian, and may need to debug to adjust signs.
@@ -234,30 +265,44 @@ float ParticleFilter::getWeight(Particle & x) {
     x.w *= gaussianPDF ( relative_theta, world_theta, 1 );
   }
 
+
   // If no beacon seen, then everyone gets weight 1
-  return x.w;
+  return x;
 }
+
+inline float ParticleFilter::gaussianPDF( float x, float mu, float sigma = 100) {
+  return (1 / sqrt(2*M_PI*sigma*sigma)) * exp(- ((x-mu)*(x-mu)) / (2*sigma*sigma));
+}
+
+
+inline float ParticleFilter::gaussianNoiseInSampleMotionModel(float std) {
+  float mean = 0;
+
+  return (1 / sqrt(2*M_PI*std*std)) * exp(- ((x-mean)*(x-mean)) / (2*std*std));
+}
+
 
 /* 
  * Algorithm line 5. 
  * Get new estimated samples from the motion. 
  */
 Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Particle& p) {
-  newp.x = p.x + disp.translation.x * cos(p.t * RAD_T_DEG);
-  newp.y = p.y + disp.translation.y * sin(p.t * RAD_T_DEG);
-  newp.t = p.t + disp.rotation * RAD_T_DEG;
+
+  newp.x = p.x + disp.translation.x * cos(p.t * RAD_T_DEG) + gaussianNoiseInSampleMotionModel(2.1);
+  newp.y = p.y + disp.translation.y * sin(p.t * RAD_T_DEG) + gaussianNoiseInSampleMotionModel(2.1);
+  newp.t = p.t + disp.rotation * RAD_T_DEG + gaussianNoiseInSampleMotionModel(1.2);
 
 
   // Assuming theta is between (-180, 180) degree
-  if (newp.t > 180) {
-    newp.t -= 360;
+  if (newp.t > 180.0) {
+    newp.t -= 360.0;
   }
 
-  if (newp.t < -180) {
-    newp.t += 360;
+  if (newp.t < -180.0) {
+    newp.t += 360.0;
   }
 
-  assert(newp.t >= -180 && newp.t <= 180);
+  assert(newp.t >= -180.0 && newp.t <= 180.0);
 
   newp.w = p.w;
   return newp;
@@ -277,8 +322,4 @@ const Pose2D& ParticleFilter::pose() const {
     dirty_ = false;
   }
   return mean_;
-}
-
-inline float ParticleFilter::gaussianPDF( float x, float mu, float sigma = 100) {
-  return (1 / sqrt(2*M_PI*sigma*sigma)) * exp(- ((x-mu)*(x-mu)) / (2*sigma*sigma) ) ;
 }

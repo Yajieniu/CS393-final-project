@@ -25,10 +25,11 @@ class ParticleFilter {
     void RandomParticleMCL();
     Particle& sample_motion_model(Particle& xtm, auto& disp, Particle& xm);
     Particle& randPose();
-    float getWeight(Particle & x); 
+    Particle& getWeight(Particle & x); 
     Particle& resampling(std::vector<Particle>& particles, 
-                float *, float totalWeight);
+                float *, float, int, int);
     inline float gaussianPDF(float, float, float);
+    inline float gaussianNoiseInSampleMotionModel();
 
 
     MemoryCache& cache_;
