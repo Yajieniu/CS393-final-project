@@ -206,7 +206,7 @@ float ParticleFilter::getWeight(Particle & x) {
   // TODO: set variance for gaussian, and may need to debug to adjust signs.
   // Also haven't compiled because other parts not complete. May have error.
   for (const auto& beacon : beaconLocation) {
-    const auto& object =  cache_.world_object->objects_[beacon.first];
+    const auto& object = cache_.world_object->objects_[beacon.first];
     if ( object.seen == false )
       continue;
 
@@ -279,5 +279,5 @@ const Pose2D& ParticleFilter::pose() const {
 }
 
 inline float ParticleFilter::gaussianPDF( float x, float mu, float sigma = 100) {
-  return (1 / sqrt(2*M_PI*sig*sig)) * exp(- ((x-mu)*(x-mu)) / (2*sig*sig) ) ;
+  return (1 / sqrt(2*M_PI*sigma*sigma)) * exp(- ((x-mu)*(x-mu)) / (2*sigma*sigma) ) ;
 }
