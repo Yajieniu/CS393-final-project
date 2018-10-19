@@ -9,7 +9,7 @@
 #define IS_RUNNING_CORE (core_ && core_->vision_ && ((UTMainWnd*)parent_)->runCoreRadio->isChecked())
 
 void VisionWindow::redrawImages() {
-  if(DEBUG_WINDOW) std::cout << "redrawImages\n";
+
   if(!enableDraw_) return;
 
   if (((UTMainWnd*)parent_)->streamRadio->isChecked()) {
@@ -75,6 +75,7 @@ void VisionWindow::updateBigImage() {
   if (currentBigImageType_ == SEG_IMAGE){
     drawSegmentedImage(bigImage);
     if (cbxOverlay->isChecked()) {
+      drawGoal(bigImage);
       drawBall(bigImage);
       drawBallCands(bigImage);
       drawBeacons(bigImage);
@@ -101,10 +102,12 @@ void VisionWindow::redrawImages(ImageWidget* rawImage, ImageWidget* segImage, Im
 
   // if overlay is on, then draw objects on the raw and seg image as well
   if (cbxOverlay->isChecked()) {
+    drawGoal(rawImage);
     drawBall(rawImage);
     drawBallCands(rawImage);
     drawBeacons(rawImage);
 
+    drawGoal(segImage);
     drawBall(segImage);
     drawBallCands(segImage);
     drawBeacons(segImage);
@@ -225,6 +228,35 @@ void VisionWindow::drawBall(ImageWidget* image) {
     int radius = ball->radius;
     painter.drawEllipse(ball->imageCenterX - radius, ball->imageCenterY - radius, radius * 2, radius * 2);
   }
+}
+
+void VisionWindow::drawGoal(ImageWidget* image) {
+  if(!config_.all) return;
+  if(world_object_block_ == NULL) return;
+
+  auto processor = getImageProcessor(image);
+  const auto& cmatrix = processor->getCameraMatrix();
+  QPainter painter(image->getImage());
+  painter.setRenderHint(QPainter::Antialiasing);
+
+  auto& goal = world_object_block_->objects_[WO_UNKNOWN_GOAL];
+  if(not goal.seen) return;
+  if(goal.fromTopCamera and _widgetAssignments[image] == Camera::BOTTOM) return;
+  if(not goal.fromTopCamera and _widgetAssignments[image] == Camera::TOP) return;
+  std::cout << "Drawing goal" << std::endl;
+  QPen pen(segCol[c_BLUE]);
+
+  int width = cmatrix.getCameraWidthByDistance(goal.visionDistance, 110);
+  int height = cmatrix.getCameraHeightByDistance(goal.visionDistance, 100);
+  int x1 = goal.imageCenterX - width / 2;
+  
+  // Draw top
+  int ty1 = goal.imageCenterY - height;
+  QPainterPath path;
+  path.addRoundedRect(QRect(x1, ty1, width, height), 5, 5);
+  painter.setPen(pen);
+  painter.fillPath(path, QBrush(segCol[c_BLUE]));
+
 }
 
 void VisionWindow::drawBallCands(ImageWidget* image) {

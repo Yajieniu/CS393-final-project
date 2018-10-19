@@ -151,6 +151,9 @@ UTMainWnd::UTMainWnd(const Arguments& args) :
   connect (actionReOpen_Log, SIGNAL(triggered()), this, SLOT(reopenLog()) );
   connect (actionOpen_Recent_Log, SIGNAL(triggered()), this, SLOT(openRecent()));
   connect (actionReRun_Core, SIGNAL(triggered()), this, SLOT(rerunCore()));
+  connect (actionOpen_Log, SIGNAL(triggered()), worldWnd_, SLOT(pause()) );
+  connect (actionReOpen_Log, SIGNAL(triggered()), worldWnd_, SLOT(pause()) );
+  connect (actionOpen_Recent_Log, SIGNAL(triggered()), worldWnd_, SLOT(pause()));
 
   connect (runCoreRadio, SIGNAL(clicked()), this, SLOT(runCore()) );
   connect (viewLogRadio, SIGNAL(clicked()), this, SLOT(runLog()) );
@@ -386,7 +389,6 @@ void UTMainWnd::runCoreFrame(int i, bool start, bool end) {
     if(config_.coreBehaviors)
       visionCore_->interpreter_->processBehaviorFrame();
   }
-  visionCore_->audio_->processFrame();
 }
 
 void UTMainWnd::runLog() {
