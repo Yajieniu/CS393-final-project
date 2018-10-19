@@ -1,6 +1,7 @@
 #include <localization/ParticleFilter.h>
 #include <memory/FrameInfoBlock.h>
 #include <memory/OdometryBlock.h>
+#include <memory/WorldObjectBlock.h>
 #include <common/Random.h>
 #include <common/WorldObject.h>
 #include <assert.h>
