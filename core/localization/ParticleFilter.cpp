@@ -30,7 +30,7 @@ static map<WorldObjectType, Point2D> beaconLocation = {
  */
 ParticleFilter::ParticleFilter(MemoryCache& cache, TextLogger*& tlogger) 
   : cache_(cache), tlogger_(tlogger), dirty_(true),
-  backToRandom(false){
+  backToRandom(true){
     w_slow = 0;
     w_fast = 0;
     a_slow = 0.001;
@@ -38,8 +38,8 @@ ParticleFilter::ParticleFilter(MemoryCache& cache, TextLogger*& tlogger)
 }
 
 /* 
- * Initialize the particle filter. 
- * Does not make sense to me. 
+ * Initialize the position of our robot. 
+ * Location and orientation are given.
  */
 void ParticleFilter::init(Point2D loc, float orientation) {
   mean_.translation = loc;
@@ -58,6 +58,7 @@ void ParticleFilter::processFrame() {
   // We have a fixed number of particles.
   particles().resize(numOfParticles); 
 
+  backToRandom = true;
   if (backToRandom) { // could get rid of this random part
     // Generate random particles for demonstration
     particles().resize(100);  // change the num of particles
@@ -121,39 +122,29 @@ void ParticleFilter::RandomParticleMCL() {
 
   // Second part of the algorithm
 
-  resample_version = 1;  // 1: more random, 2: morn even
   
-  if (resample_version == 1) {  // more random, resample according to random number
-    for (int i = 0; i < M; i++) {
-      randNumber = std::rand() / ((float) RAND_MAX);
-      if (randNumber <= std::max(0.0, 1.0 - w_fast/w_slow)) {
-        X1[i] = ParticleFilter::randPose();
-      }
-      else {
-        X1[i] = ParticleFilter::resampling(particles, weights, totalWeight, resample_version, 1);
-      }
+  float counter = 0.0;  // count how many particles we should resample
+  for (int i = 0; i < M; i++) {
+    randNumber = std::rand() / ((float) RAND_MAX);
+    if (randNumber <= std::max(0.0, 1.0 - w_fast/w_slow)) {
+      X1.push_back(ParticleFilter::randPose(tempP));
     }
+    else {
+      counter += 1.0;   
+    }
+  } 
+
+  // 1: Roulette wheel, resample according to random number
+  // 2: Systematic resampling, low variance
+  int resample_version = 2;  // 1: more random, 2: morn even
+  int newParticleIndex = 0;
+  assert(resample_version == 1 || resample_version == 2);  // must be 1 or 2
+
+  for (int i = 0; i < counter; i++) {
+    newParticleIndex = floor(i * counter / M);  // not used if resample_version is 1
+    X1.push_back(ParticleFilter::resampling(tempP, particles, weights, totalWeight, resample_version, newParticleIndex));
   }
-  else if (resample_version == 2) {
-    float counter = 0.0;
-    for (int i = 0; i < M; i++) {
-      randNumber = std::rand() / ((float) RAND_MAX);
-      if (randNumber <= std::max(0.0, 1.0 - w_fast/w_slow)) {
-        X1[i] = ParticleFilter::randPose();
-      }
-      else {
-        counter++;
-      }
-    } 
   
-
-    for (int i = 0; i < counter; i++) {
-      int newParticleIndex = floor(i * counter / M);
-      X1[i] = ParticleFilter::resampling(particles, weights, totalWeight, resample_version, newParticleIndex);
-    }
-  }
-
-
   // store the result back into memory
   // is this the way to save to cache??????????
   cache_.localization_mem->particles = X1;
@@ -164,14 +155,13 @@ void ParticleFilter::RandomParticleMCL() {
  * random x, random y, and random theta.
  * weight is 0 since it will not be used anywhere.
  */
-Particle& ParticleFilter::randPose() {
-  Particle particle;
-  particle.x = ((float) std::rand()) / RAND_MAX * X_MAX * 2 - X_MAX;
-  particle.y = ((float) std::rand()) / RAND_MAX * Y_MAX * 2 - Y_MAX;
-  particle.t = ((float) std::rand()) / RAND_MAX * 360 - 180;
-  particle.w = 0;
+Particle& ParticleFilter::randPose(Particle& p) {
+  p.x = ((float) std::rand()) / RAND_MAX * X_MAX * 2 - X_MAX;
+  p.y = ((float) std::rand()) / RAND_MAX * Y_MAX * 2 - Y_MAX;
+  p.t = ((float) std::rand()) / RAND_MAX * 360 - 180;
+  p.w = 0;  // will not be used
 
-  return particle;
+  return p;
 }
 
 /*  
@@ -180,10 +170,9 @@ Particle& ParticleFilter::randPose() {
  * the new particle wil fall into a small range around p, 
  * and have a similar theta.
  */
-Particle& ParticleFilter::resampling(std::vector<Particle>& particles, 
+Particle& ParticleFilter::resampling(Particle& newP, std::vector<Particle>& particles, 
   float *weights, float totalWeight, int version, int newParticleIndex) {
 
-  Particle newP;
   int i = 0;
   assert(weights[0] == 0);
   assert(version == 1 || version == 2);
@@ -197,7 +186,7 @@ Particle& ParticleFilter::resampling(std::vector<Particle>& particles,
       i++;
     }
   }
-  else {
+  else {  // version 2, Systematic resampling
     i = newParticleIndex + 1;
   }
 
@@ -208,12 +197,14 @@ Particle& ParticleFilter::resampling(std::vector<Particle>& particles,
   std::vector<float> t_range;
 
   // the location of the newly sample particle falls in this range
-  x_range.push_back(std::max(X_MIN, particles[i-1].x-2));
-  x_range.push_back(std::min(X_MAX, particles[i-1].x+2)); 
-  y_range.push_back(std::max(Y_MIN, particles[i-1].y-2));
-  y_range.push_back(std::min(Y_MAX, particles[i-1].y+2));
-  t_range.push_back(std::max((float) -180, particles[i-1].t-2));
-  t_range.push_back(std::min((float) 180, particles[i-1].t-2));
+  float range = 2.2;
+  float tRange = 1.8;
+  x_range.push_back(std::max(X_MIN, particles[i-1].x-range));
+  x_range.push_back(std::min(X_MAX, particles[i-1].x+range)); 
+  y_range.push_back(std::max(Y_MIN, particles[i-1].y-range));
+  y_range.push_back(std::min(Y_MAX, particles[i-1].y+range));
+  t_range.push_back(std::max((float) -180, particles[i-1].t-tRange));
+  t_range.push_back(std::min((float) 180, particles[i-1].t-tRange));
 
 
   // determine the location of new particle
@@ -232,8 +223,8 @@ Particle& ParticleFilter::resampling(std::vector<Particle>& particles,
 }
 
 /* Algorithm line 6. Get weights for each new sample. */
-Particle& ParticleFilter::getWeight(Particle & x) {
-  x.w = 1;
+float ParticleFilter::getWeight(Particle & p) {
+  p.w = 1;
 
   // TODO: set variance for gaussian, and may need to debug to adjust signs.
   // Also haven't compiled because other parts not complete. May have error.
@@ -242,9 +233,10 @@ Particle& ParticleFilter::getWeight(Particle & x) {
     if ( object.seen == false )
       continue;
 
-    float dist = ( (beacon.second.x - x.x)*(beacon.second.x - x.x)
-                + (beacon.second.y - x.y)*(beacon.second.y - x.y) );
-    x.w *= gaussianPDF ( object.visionDistance, dist, 100 );
+    // 
+    float dist = ( (beacon.second.x - p.x)*(beacon.second.x - p.x)
+                + (beacon.second.y - p.y)*(beacon.second.y - p.y) );
+    p.w *= gaussianPDF ( object.visionDistance, dist, 100 );
 
     /*
       We have to decide what is the best way to work with theta from
@@ -253,6 +245,7 @@ Particle& ParticleFilter::getWeight(Particle & x) {
       if we have error of exactly pi!!!
     */
 
+    /*
     float world_theta = tanh((beacon.second.y - x.y) / (beacon.second.x - x.x));
     while (world_theta <= -M_PI/2) world_theta += M_PI;
     while (world_theta > M_PI/2) world_theta -= M_PI;
@@ -261,24 +254,35 @@ Particle& ParticleFilter::getWeight(Particle & x) {
     float relative_theta = x.t + object.visionBearing;
     while (relative_theta <= -M_PI/2) relative_theta += M_PI;
     while (relative_theta > M_PI/2) relative_theta -= M_PI;
+    */
 
-    x.w *= gaussianPDF ( relative_theta, world_theta, 1 );
+    float beacon_theta = atan((beacon.second.y - p.y) / (beacon.second.x - p.x));
+    assert(beacon_theta >= -M_PI && beacon_theta <= M_PI);    
+
+    // assuming visionBearing is from -pi/2 to pi/2
+    float beacon_bearing = object.visionBearing;
+    assert(beacon_bearing >= -M_PI && beacon_bearing <= M_PI);
+
+    float theta = beacon_theta - beacon_bearing;
+
+    if (beacon.second.x - p.x < 0 && beacon.second.y - p.y < 0) {
+      theta -= M_PI;
+    }
+
+    if (beacon.second.x - p.x < 0 && beacon.second.y - p.y > 0) {
+      theta += M_PI;
+    }
+
+
+    p.w *= gaussianPDF (p.t, theta * RAD_T_DEG, 1 );
   }
 
-
   // If no beacon seen, then everyone gets weight 1
-  return x;
+  return p.w;
 }
 
 inline float ParticleFilter::gaussianPDF( float x, float mu, float sigma = 100) {
   return (1 / sqrt(2*M_PI*sigma*sigma)) * exp(- ((x-mu)*(x-mu)) / (2*sigma*sigma));
-}
-
-
-inline float ParticleFilter::gaussianNoiseInSampleMotionModel(float std) {
-  float mean = 0;
-
-  return (1 / sqrt(2*M_PI*std*std)) * exp(- ((x-mean)*(x-mean)) / (2*std*std));
 }
 
 
@@ -288,19 +292,19 @@ inline float ParticleFilter::gaussianNoiseInSampleMotionModel(float std) {
  */
 Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Particle& p) {
 
-  newp.x = p.x + disp.translation.x * cos(p.t * RAD_T_DEG) + gaussianNoiseInSampleMotionModel(2.1);
-  newp.y = p.y + disp.translation.y * sin(p.t * RAD_T_DEG) + gaussianNoiseInSampleMotionModel(2.1);
-  newp.t = p.t + disp.rotation * RAD_T_DEG + gaussianNoiseInSampleMotionModel(1.2);
+  // add noise to the new sample, noise is Guassian with 0 mean
+  std::default_random_engine generator;
+  std::normal_distribution<float> distribution(0.0, 2.0);  // inputs are mean and variance
+
+  // update location
+  newp.x = p.x + disp.translation.x * cos(p.t * RAD_T_DEG) + distribution(generator);
+  newp.y = p.y + disp.translation.y * sin(p.t * RAD_T_DEG) + distribution(generator);
+  newp.t = p.t + disp.rotation * RAD_T_DEG + distribution(generator);
 
 
   // Assuming theta is between (-180, 180) degree
-  if (newp.t > 180.0) {
-    newp.t -= 360.0;
-  }
-
-  if (newp.t < -180.0) {
-    newp.t += 360.0;
-  }
+  newp.t -= newp.t >  180.0 ? 360.0 : 0;
+  newp.t += newp.t < -180.0 ? 360.0 : 0;
 
   assert(newp.t >= -180.0 && newp.t <= 180.0);
 
@@ -314,6 +318,8 @@ const Pose2D& ParticleFilter::pose() const {
     mean_ = Pose2D();
     using T = decltype(mean_.translation);
     for(const auto& p : particles()) {
+      // no need to weight since they have equal weight
+      // weights are only used in resample process
       mean_.translation += T(p.x,p.y);
       mean_.rotation += p.t;
     }
