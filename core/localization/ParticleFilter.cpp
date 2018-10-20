@@ -58,7 +58,7 @@ void ParticleFilter::processFrame() {
   // We have a fixed number of particles.
   particles().resize(numOfParticles); 
 
-  backToRandom = true;
+  backToRandom = false;
   if (backToRandom) { // could get rid of this random part
     // Generate random particles for demonstration
     particles().resize(100);  // change the num of particles
@@ -171,10 +171,10 @@ Particle& ParticleFilter::randPose(Particle& p) {
  * and have a similar theta.
  */
 Particle& ParticleFilter::resampling(Particle& newP, std::vector<Particle>& particles, 
-  float *weights, float totalWeight, int version, int newParticleIndex) {
+  float weights[], float totalWeight, int version, int newParticleIndex) {
 
   int i = 0;
-  assert(weights[0] == 0);
+  // assert(weights[0] == 0); // Abheek: Why should it be 0? It was set to X[0].w
   assert(version == 1 || version == 2);
 
   if (version == 1) {
@@ -274,7 +274,7 @@ float ParticleFilter::getWeight(Particle & p) {
     }
 
 
-    p.w *= gaussianPDF (p.t, theta * RAD_T_DEG, 1 );
+    p.w *= gaussianPDF (p.t, theta * RAD_T_DEG, 10 );
   }
 
   // If no beacon seen, then everyone gets weight 1
