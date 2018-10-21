@@ -12,8 +12,6 @@ Assuming theta = 0 when we are facing away from the goal
 i.e.,, robot's back towards the goal.
 */
 
-#define PI 3.14159265
-
 
 // Beacons World Locations
 static map<WorldObjectType, Point2D> beaconLocation = {
@@ -35,8 +33,8 @@ ParticleFilter::ParticleFilter(MemoryCache& cache, TextLogger*& tlogger)
   backToRandom(true){
     w_slow = 0;
     w_fast = 0;
-    a_slow = 0.001;
-    a_fast = 0.9;
+    a_slow = 0.01;
+    a_fast = 0.1;
 
 }
 
@@ -65,9 +63,9 @@ void ParticleFilter::processFrame() {
       // cout << getName(beacon.first) << " not seen.\n\n";
     }
     else {
-      // cout << getName(beacon.first) << " seen.\n";
-      // cout << "At distance : " << object.visionDistance << endl;
-      // cout << "At bearing : " << object.visionBearing << endl;
+      cout << getName(beacon.first) << " seen.\n";
+      cout << "At distance : " << object.visionDistance << endl;
+      cout << "At bearing : " << object.visionBearing << endl;
     }
   }
   // We have a fixed number of particles.
@@ -80,8 +78,8 @@ void ParticleFilter::processFrame() {
       // p.x = Random::inst().sampleU() * X_MAX * 2 - X_MAX ;
       // p.y = Random::inst().sampleU() * Y_MAX * 2 - Y_MAX;
       // p.t = Random::inst().sampleU() * 360 - 180;
-      p.x = Random::inst().sampleU() * 100; // For debugging. Use above 
-      p.y = Random::inst().sampleU() * 100; // For debugging. Use above 
+      p.x = Random::inst().sampleU() * 500-250; // For debugging. Use above 
+      p.y = Random::inst().sampleU() * 500-250; // For debugging. Use above 
       p.t = 0;                              // For debugging. Use above 
       p.w = 1;
     }
@@ -103,7 +101,7 @@ void ParticleFilter::RandomParticleMCL() {
 
   // Getting the last particle set
   std::vector<Particle> particles = ParticleFilter::particles();
-  std::vector<Particle> X;
+  std::vector<Particle> X0;
   std::vector<Particle> X1;
   Particle tempP;
   float weights[numOfParticles] = {};
@@ -128,7 +126,7 @@ void ParticleFilter::RandomParticleMCL() {
     tempP = sample_motion_model(tempP, disp, particles[i]); 
     assert(weights[i] == 0);
     totalWeight += getWeight(tempP);
-    X.push_back(tempP);
+    X0.push_back(tempP);
     w_avg = w_avg + 1/numOfParticles * tempP.w;
   }
 
@@ -143,35 +141,38 @@ void ParticleFilter::RandomParticleMCL() {
 
   // Instead of normalizing the weight, here is getting 
   // the sum of all weights
-  weights[0] = X[0].w;
+  weights[0] = X0[0].w;
   for (int i = 1; i < numOfParticles; i++) {
-    assert(X[i].w >= 0);
-    weights[i] = weights[i-1] + X[i].w;
+    assert(X0[i].w >= 0);
+    weights[i] = weights[i-1] + X0[i].w;
   }
 
+  assert (weights[numOfParticles-1] == totalWeight);
   // Second part of the algorithm
 
   
-  float counter = 0.0;  // count how many particles we should resample
+  int counter = 0;  // count how many particles we should resample
   for (int i = 0; i < numOfParticles; i++) {
     randNumber = Random::inst().sampleU();
     if (randNumber <= std::max(0.0, 1.0 - w_fast/w_slow)) {
       X1.push_back(ParticleFilter::randPose(tempP));
     }
     else {
-      counter += 1.0;   
+      counter += 1;   
     }
-  } 
+  }
+
+  cout << "resample: " << counter << endl;
 
   // 1: Roulette wheel, resample according to random number
   // 2: Systematic resampling, low variance
-  int resample_version = 2;  // 1: more random, 2: morn even
+  int resample_version = 1;  // 1: more random, 2: morn even
   int newParticleIndex = 0;
   assert(resample_version == 1 || resample_version == 2);  // must be 1 or 2
 
   for (int i = 0; i < counter; i++) {
     newParticleIndex = floor(i * counter / numOfParticles);  // not used if resample_version is 1
-    X1.push_back(resampling(tempP, particles, weights, totalWeight, resample_version, newParticleIndex));
+    X1.push_back(resampling(tempP, X0, weights, totalWeight, resample_version, newParticleIndex));
   }
   
   // store the result back into memory
@@ -211,7 +212,7 @@ Particle& ParticleFilter::resampling(Particle& newP, std::vector<Particle>& part
     assert(randNumber <= weights[numOfParticles-1]);
     
     // resampled particle should be close to particles[i-1]
-    while(randNumber >= weights[i]) {
+    while(randNumber > weights[i]) {
       i++;
     }
   }
@@ -219,36 +220,41 @@ Particle& ParticleFilter::resampling(Particle& newP, std::vector<Particle>& part
     i = newParticleIndex + 1;
   }
 
-  assert(i>0);
-
-  std::vector<float> x_range;
-  std::vector<float> y_range;
-  std::vector<float> t_range;
-
-  // the location of the newly sample particle falls in this range
-  float range = 2.2;
-  float tRange = 1.8;
-  x_range.push_back(std::max(X_MIN, particles[i-1].x-range));
-  x_range.push_back(std::min(X_MAX, particles[i-1].x+range)); 
-  y_range.push_back(std::max(Y_MIN, particles[i-1].y-range));
-  y_range.push_back(std::min(Y_MAX, particles[i-1].y+range));
-  t_range.push_back(std::max((float) -180, particles[i-1].t-tRange));
-  t_range.push_back(std::min((float) 180, particles[i-1].t-tRange));
-
-
-  // determine the location of new particle
-  newP.x = Random::inst().sampleU() * 
-               (x_range[1] - x_range[0]) + x_range[0];
-
-  newP.y = Random::inst().sampleU() * 
-               (y_range[1] - y_range[0]) + y_range[0];
-
-  newP.t = Random::inst().sampleU() * 
-               (t_range[1] - t_range[0]) + t_range[0];
-
-  newP.w = 0;  // whatever, not used in the future
+  newP.x = particles[i].x;
+  newP.y = particles[i].y;
+  newP.t = particles[i].t;
 
   return newP;
+  // std::vector<float> x_range;
+  // std::vector<float> y_range;
+  // std::vector<float> t_range;
+
+
+
+  // the location of the newly sample particle falls in this range
+  // float range = 2.2;
+  // float tRange = 1.8;
+  // x_range.push_back(std::max(X_MIN, particles[i-1].x-range));
+  // x_range.push_back(std::min(X_MAX, particles[i-1].x+range)); 
+  // y_range.push_back(std::max(Y_MIN, particles[i-1].y-range));
+  // y_range.push_back(std::min(Y_MAX, particles[i-1].y+range));
+  // t_range.push_back(std::max((float) -180, particles[i-1].t-tRange));
+  // t_range.push_back(std::min((float) 180, particles[i-1].t-tRange));
+
+
+  // // determine the location of new particle
+  // newP.x = Random::inst().sampleU() * 
+  //              (x_range[1] - x_range[0]) + x_range[0];
+
+  // newP.y = Random::inst().sampleU() * 
+  //              (y_range[1] - y_range[0]) + y_range[0];
+
+  // newP.t = Random::inst().sampleU() * 
+  //              (t_range[1] - t_range[0]) + t_range[0];
+
+  // newP.w = 0;  // whatever, not used in the future
+
+  // return newP;
 }
 
 /* Algorithm line 6. Get weights for each new sample. */
@@ -264,7 +270,7 @@ float ParticleFilter::getWeight(Particle & p) {
 
     float dist = sqrt( (beacon.second.x - p.x)*(beacon.second.x - p.x)
                 + (beacon.second.y - p.y)*(beacon.second.y - p.y) );
-    p.w *= gaussianPDF ( object.visionDistance, dist, 1000 ); // TODO: may need to change sigma for real robot
+    p.w *= gaussianPDF ( object.visionDistance, dist, 100 ); // TODO: may need to change sigma for real robot
 
     /*
       We have to decide what is the best way to work with theta from
@@ -294,6 +300,8 @@ float ParticleFilter::getWeight(Particle & p) {
 
     float theta = beacon_theta - beacon_bearing;
 
+    // while (theta - p.t <= -M_PI) theta += M_
+
     if (beacon.second.x - p.x < 0 && beacon.second.y - p.y < 0) {
       theta -= M_PI;
     }
@@ -307,7 +315,7 @@ float ParticleFilter::getWeight(Particle & p) {
     // cout <<"("<<p.x<<", "<<p.y<<", "<<p.t<<", "<<p.w<<") ";
     // cout << beacon_theta*RAD_T_DEG << ", " << beacon_bearing*RAD_T_DEG << ", " << p.t <<", "<<theta*RAD_T_DEG<< endl;
 
-    p.w *= gaussianPDF (p.t, theta * RAD_T_DEG, 100 );
+    p.w *= gaussianPDF (p.t, theta, 25/RAD_T_DEG );
     // if (p.w > 0) cout << "Got a particle with non zero weight "<<"("<<p.x<<", "<<p.y<<", "<<p.t<<", "<<p.w<<")\n";
   }
 
@@ -337,13 +345,13 @@ Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Partic
   auto dist = sqrt(dx*dx+dy*dy);
 
 
-  newp.x = p.x + dist * cos(p.t); // + distribution(generator);
-  newp.y = p.y + dist * sin(p.t); // + distribution(generator); 
-  newp.t = p.t + disp.rotation; // + distribution(generator); 
+  newp.x = p.x + dist * cos(p.t) + Random::inst().sampleN() * 15; // + distribution(generator);
+  newp.y = p.y + dist * sin(p.t) + Random::inst().sampleN() * 15; // + distribution(generator); 
+  newp.t = p.t + disp.rotation + Random::inst().sampleN() * 5/RAD_T_DEG; // + distribution(generator); 
   // Assuming theta is between (-180, 180) degree
-  while (newp.t <= -PI) newp.t += 2*PI;
-  while (newp.t >= PI) newp.t -= 2*PI;
-  assert(newp.t >= -PI && newp.t <= PI);
+  while (newp.t <= -M_PI) newp.t += M_2PI;
+  while (newp.t >= M_PI) newp.t -= M_2PI;
+  assert(newp.t >= -M_PI && newp.t <= M_PI);
 
   newp.w = p.w;
   return newp;
