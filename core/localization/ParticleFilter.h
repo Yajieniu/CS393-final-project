@@ -5,7 +5,6 @@
 #include <memory/LocalizationBlock.h>
 #include <localization/Logging.h>
 
-
 class ParticleFilter {
   public:
     ParticleFilter(MemoryCache& cache, TextLogger*& tlogger);
@@ -39,7 +38,8 @@ class ParticleFilter {
     mutable bool dirty_;
     mutable bool backToRandom = false;
     mutable bool needToUpdate;
-    const int numOfParticles = 3000;
+    // const int numOfParticles = 3000;
+    const int numOfParticles = 300; // Use 300 for debugging; it's faster
     float w_slow;
     float w_fast;
     float a_slow;

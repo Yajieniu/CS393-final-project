@@ -12,6 +12,8 @@ Assuming theta = 0 when we are facing away from the goal
 i.e.,, robot's back towards the goal.
 */
 
+#define PI 3.14159265
+
 
 // Beacons World Locations
 static map<WorldObjectType, Point2D> beaconLocation = {
@@ -59,24 +61,28 @@ void ParticleFilter::processFrame() {
   // TEMP printing stuff
   for (const auto& beacon : beaconLocation) {
     const auto& object = cache_.world_object->objects_[beacon.first];
-    if ( object.seen == false )
-      cout << getName(beacon.first) << " not seen.\n\n";
+    if ( object.seen == false ) {
+      // cout << getName(beacon.first) << " not seen.\n\n";
+    }
     else {
-      cout << getName(beacon.first) << " seen.\n";
-      cout << "At distance : " << object.visionDistance << endl;
-      cout << "At bearing : " << object.visionBearing << endl;
+      // cout << getName(beacon.first) << " seen.\n";
+      // cout << "At distance : " << object.visionDistance << endl;
+      // cout << "At bearing : " << object.visionBearing << endl;
     }
   }
   // We have a fixed number of particles.
-  cout << "Current size of particles() = " << particles().size() << endl;
+  // cout << "Current size of particles() = " << particles().size() << endl;
 
   if (backToRandom) {
     particles().resize(numOfParticles); 
     auto frame = cache_.frame_info->frame_id;
     for(auto& p : particles()) {
-      p.x = Random::inst().sampleU() * X_MAX * 2 - X_MAX ;
-      p.y = Random::inst().sampleU() * Y_MAX * 2 - Y_MAX;
-      p.t = Random::inst().sampleU() * 360 - 180;
+      // p.x = Random::inst().sampleU() * X_MAX * 2 - X_MAX ;
+      // p.y = Random::inst().sampleU() * Y_MAX * 2 - Y_MAX;
+      // p.t = Random::inst().sampleU() * 360 - 180;
+      p.x = Random::inst().sampleU() * 100; // For debugging. Use above 
+      p.y = Random::inst().sampleU() * 100; // For debugging. Use above 
+      p.t = 0;                              // For debugging. Use above 
       p.w = 1;
     }
     backToRandom = false;
@@ -110,6 +116,10 @@ void ParticleFilter::RandomParticleMCL() {
   // contains x, and y and theta
   // But might need further translation
   const auto& disp = cache_.odometry->displacement;
+
+  // cout << "Updating particles from odometry: " << disp.translation.x ", " << disp.translation.y << " @" << disp.rotation %2.f,%2.f @ %2.2f", disp.translation.x, 
+  //           disp.translation.y, disp.rotation * RAD_T_DEG); 
+
   log(41, "Updating particles from odometry: %2.f,%2.f @ %2.2f", disp.translation.x, 
             disp.translation.y, disp.rotation * RAD_T_DEG); 
 
@@ -121,6 +131,12 @@ void ParticleFilter::RandomParticleMCL() {
     X.push_back(tempP);
     w_avg = w_avg + 1/numOfParticles * tempP.w;
   }
+
+  // Debug:
+  // cache_.localization_mem->particles = X; // Uncomment this two line to debug motion model
+  // return;                                 // Uncomment this two line to debug motion model
+
+
 
   w_slow = w_slow + a_slow * (w_avg - w_slow);
   w_fast = w_fast + a_fast * (w_avg - w_fast);
@@ -155,7 +171,7 @@ void ParticleFilter::RandomParticleMCL() {
 
   for (int i = 0; i < counter; i++) {
     newParticleIndex = floor(i * counter / numOfParticles);  // not used if resample_version is 1
-    X1.push_back(ParticleFilter::resampling(tempP, particles, weights, totalWeight, resample_version, newParticleIndex));
+    X1.push_back(resampling(tempP, particles, weights, totalWeight, resample_version, newParticleIndex));
   }
   
   // store the result back into memory
@@ -315,16 +331,19 @@ Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Partic
   std::normal_distribution<float> distribution(0.0, 2.0);  // inputs are mean and variance
 
   // update location
-  newp.x = p.x + disp.translation.x; // * cos(p.t * RAD_T_DEG) + distribution(generator);
-  newp.y = p.y + disp.translation.y; // * sin(p.t * RAD_T_DEG) + distribution(generator);
-  newp.t = p.t + disp.rotation * RAD_T_DEG; // + distribution(generator);
+  auto dx = disp.translation.x;
+  auto dy = disp.translation.y;
+  auto dtheta = disp.rotation;
+  auto dist = sqrt(dx*dx+dy*dy);
 
 
+  newp.x = p.x + dist * cos(p.t); // + distribution(generator);
+  newp.y = p.y + dist * sin(p.t); // + distribution(generator); 
+  newp.t = p.t + disp.rotation; // + distribution(generator); 
   // Assuming theta is between (-180, 180) degree
-  newp.t -= newp.t >  180.0 ? 360.0 : 0;
-  newp.t += newp.t < -180.0 ? 360.0 : 0;
-
-  assert(newp.t >= -180.0 && newp.t <= 180.0);
+  while (newp.t <= -PI) newp.t += 2*PI;
+  while (newp.t >= PI) newp.t -= 2*PI;
+  assert(newp.t >= -PI && newp.t <= PI);
 
   newp.w = p.w;
   return newp;
