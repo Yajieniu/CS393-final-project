@@ -13,14 +13,14 @@ import random
 from task import Task
 from state_machine import Node, C, S, T, LoopingStateMachine
 
-BEACONS = [
-	core.WO_BEACON_BLUE_YELLOW,
-	core.WO_BEACON_YELLOW_BLUE,
-	core.WO_BEACON_BLUE_PINK,
-	core.WO_BEACON_PINK_BLUE,
-	core.WO_BEACON_PINK_YELLOW,
-	core.WO_BEACON_YELLOW_PINK,
-]
+BEACONS = {
+	core.WO_BEACON_BLUE_YELLOW : 0,
+	core.WO_BEACON_YELLOW_BLUE : 0,
+	core.WO_BEACON_BLUE_PINK : 0,
+	core.WO_BEACON_PINK_BLUE : 0,
+	core.WO_BEACON_PINK_YELLOW : 0,
+	core.WO_BEACON_YELLOW_PINK : 0,
+}
 
 DIST_THRESHOLD = 50
 
@@ -28,26 +28,35 @@ vx = 0.0
 vy = 0.0
 vtheta = 0.0
 
-seen_two = 0.0
+seen_counter = 0.0
 
 class Turner(Node):
 	def run(self):
-		commands.setWalkVelocity(0.0, -0.1, 0.2)
+		commands.setHeadPan(0, 0.0)
+		commands.setWalkVelocity(0.1, 0.0, 0.3)
 
 class Mover(Node):
 	def run(self):
+		commands.setHeadPan(0, 0.0)
 		commands.setWalkVelocity(vx, vy, 0.0)
 
 class Localizer(Node):
 	def run(self):
-		global vx, vy, vtheta, seen_two
+		global vx, vy, vtheta, seen_counter
 		beacons = []
-		if sum([mem_objects.world_objects[beacon_name].seen for beacon_name in BEACONS]) >= 2:
-			seen_two = 5 # Counter
+		for beacon_name in BEACONS:
+			beacon = mem_objects.world_objects[beacon_name]
+			if beacon.seen:
+				BEACONS[beacon_name] = max(1, BEACONS[beacon_name])
 
-		seen_two -= 1
-		print (seen_two)
-		if seen_two <= 0: # Counter
+		print ("\n\n\nTotal beacons seen: %d\n\n\n"%sum(BEACONS.values()))
+		if sum(BEACONS.values()) >= 2:
+			seen_counter = 10
+			for beacon_name in BEACONS:
+				BEACONS[beacon_name] = 0
+
+		seen_counter -= 1
+		if seen_counter <= 0: # Counter
 			self.postSignal('turn')
 		else:
 			robot = mem_objects.world_objects[memory.robot_state.WO_SELF]
@@ -70,6 +79,12 @@ class Localizer(Node):
 			else:
 				self.postSignal('sit')
 
+# class HeadStraight(Node):
+# 	def run(self):
+# 		commands.setHeadPan(0, 0.0)
+# 		if self.getTime() > 0.2:
+# 			self.finish()
+
 class Walker(Node):
 	def run(self):
 		commands.setWalkVelocity(vx, vy, vtheta)
@@ -88,11 +103,11 @@ class Playing(LoopingStateMachine):
 			'sit'  : sitter,
 		}
 
-		# self.add_transition(turner, T(5.0), localizer)
+		# self.add_transition(, C, localizer)
 
 		for signal, node in nodes.iteritems():
 			if signal == 'sit':
-				self.add_transition(localizer, S(signal), node)
+				self.add_transition(localizer, S(signal), node, T(10), localizer)
 			else:
 				self.add_transition(localizer, S(signal), node, T(0.5), localizer)
 
