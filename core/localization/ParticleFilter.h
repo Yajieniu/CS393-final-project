@@ -10,7 +10,7 @@ class ParticleFilter {
     ParticleFilter(MemoryCache& cache, TextLogger*& tlogger);
     void init(Point2D loc, float orientation);
     void processFrame();
-    const Pose2D& pose() const;
+    const Pose2D& pose() ;
     inline const std::vector<Particle>& particles() const {
       return cache_.localization_mem->particles;
     }
@@ -29,7 +29,7 @@ class ParticleFilter {
     float getWeight(Particle & x, float); 
     inline float gaussianPDF(float, float, float);
     inline float gaussianNoiseInSampleMotionModel();
-    Pose2D kMeans ();
+    const Pose2D& kMeans ();
     float distance (Particle, Particle);
 
 

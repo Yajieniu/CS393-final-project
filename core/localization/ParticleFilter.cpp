@@ -277,7 +277,7 @@ float ParticleFilter::getWeight(Particle & p, float w_old) {
     count++;
     float dist = sqrt( (beacon.second.x - p.x)*(beacon.second.x - p.x)
                 + (beacon.second.y - p.y)*(beacon.second.y - p.y) );
-    w *= gaussianPDF ( object.visionDistance, dist, 50); // TODO: may need to change sigma for real robot
+    w *= gaussianPDF ( object.visionDistance, dist, 500); // TODO: may need to change sigma for real robot
 
     /*
       We have to decide what is the best way to work with theta from
@@ -363,26 +363,17 @@ Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Partic
   return newp;
 }
 
-const Pose2D& ParticleFilter::pose() const { // TODO: Implement K-Means here
+const Pose2D& ParticleFilter::pose() { // TODO: Implement K-Means here
   if(dirty_) {
     // Compute the mean pose estimate
-    mean_ = Pose2D();
-    using T = decltype(mean_.translation);
-    for(const auto& p : particles()) {
-      // no need to weight since they have equal weight
-      // weights are only used in resample process
-      mean_.translation += T(p.x,p.y);
-      mean_.rotation += p.t;
-    }
-    if(particles().size() > 0)
-      mean_ /= static_cast<float>(particles().size());
+    mean_ = kMeans();
     dirty_ = false;
   }
   return mean_;
 }
 
-Pose2D ParticleFilter::kmeans() {
-  vector<Particle> &P = particles(); // for easier implementation
+const Pose2D& ParticleFilter::kMeans() {
+  auto &P = particles(); // for easier implementation
   static vector<Particle> means(K), old_means(K);
   static vector<int> Near(numOfParticles);
   const float threshold = 100; // to stop k-means early
@@ -421,6 +412,7 @@ Pose2D ParticleFilter::kmeans() {
     }
 
     for (auto &mean : means) {
+      if (mean.w < 1) continue;
       mean.x /= mean.w;
       mean.y /= mean.w;
       mean.t /= mean.w;
@@ -431,7 +423,24 @@ Pose2D ParticleFilter::kmeans() {
       error += distance(old_means[j], means[j]);
     }
 
+    if (error < threshold) break;
   }
+
+  // Find the best mean
+  // Compute the mean pose estimate
+  mean_ = Pose2D();
+  using T = decltype(mean_.translation);
+  float m = -1;
+  for(const auto& mean : means) {
+    if (m < mean.w) {
+      mean_.translation = T(mean.x,mean.y);
+      mean_.rotation = mean.t;
+      m = mean.w;
+    }
+  }
+
+  return mean_;
+
 }
 
 // A normalized distance function
