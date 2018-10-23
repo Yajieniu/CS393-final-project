@@ -347,12 +347,10 @@ Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Partic
   // update location
   auto dx = disp.translation.x;
   auto dy = disp.translation.y;
-  auto dtheta = disp.rotation;
-  auto dist = sqrt(dx*dx+dy*dy);
 
 
-  newp.x = p.x + dist * cos(p.t) + Random::inst().sampleN() * 15; // + distribution(generator);
-  newp.y = p.y + dist * sin(p.t) + Random::inst().sampleN() * 15; // + distribution(generator); 
+  newp.x = p.x + dx*cos(p.t) - dy*sin(p.t) + Random::inst().sampleN() * 15; // + distribution(generator);
+  newp.y = p.y + dx*sin(p.t) + dy*cos(p.t) + Random::inst().sampleN() * 15; // + distribution(generator); 
   newp.t = p.t + disp.rotation + Random::inst().sampleN() * 5/RAD_T_DEG; // + distribution(generator); 
   // Assuming theta is between (-180, 180) degree
   while (newp.t <= -M_PI) newp.t += M_2PI;
