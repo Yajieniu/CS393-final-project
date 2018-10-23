@@ -157,7 +157,7 @@ void ParticleFilter::RandomParticleMCL() {
   int counter = 0;  // count how many particles we should resample
   for (int i = 0; i < numOfParticles; i++) {
     randNumber = Random::inst().sampleU();
-    if (randNumber < 0) {//std::max(0.0, 1.0 - w_fast/w_slow)) {
+    if (randNumber <0) {// <= std::max(0.0, 1.0 - w_fast/w_slow)) {
       X1.push_back(ParticleFilter::randPose(tempP, w_avg));
     }
     else {
@@ -277,7 +277,7 @@ float ParticleFilter::getWeight(Particle & p, float w_old) {
     count++;
     float dist = sqrt( (beacon.second.x - p.x)*(beacon.second.x - p.x)
                 + (beacon.second.y - p.y)*(beacon.second.y - p.y) );
-    w *= gaussianPDF ( object.visionDistance, dist, 5000 ); // TODO: may need to change sigma for real robot
+    w *= gaussianPDF ( object.visionDistance, dist, 50); // TODO: may need to change sigma for real robot
 
     /*
       We have to decide what is the best way to work with theta from
@@ -325,7 +325,7 @@ float ParticleFilter::getWeight(Particle & p, float w_old) {
     // cout <<"("<<p.x<<", "<<p.y<<", "<<p.t<<", "<<p.w<<") ";
     // cout << beacon_theta*RAD_T_DEG << ", " << beacon_bearing*RAD_T_DEG << ", " << p.t <<", "<<theta*RAD_T_DEG<< endl;
 
-    w *= gaussianPDF (p.t, theta, 1800/RAD_T_DEG );
+    w *= gaussianPDF (p.t, theta, 180/RAD_T_DEG );
     // if (p.w > 0) cout << "Got a particle with non zero weight "<<"("<<p.x<<", "<<p.y<<", "<<p.t<<", "<<p.w<<")\n";
   }
 
@@ -335,7 +335,7 @@ float ParticleFilter::getWeight(Particle & p, float w_old) {
   return p.w;
 }
 
-inline float ParticleFilter::gaussianPDF( float x, float mu, float sigma = 100) {
+inline float ParticleFilter::gaussianPDF( float x, float mu, float sigma = 10) {
   return (1. / sqrt(2*M_PI*sigma*sigma)) * exp(- ((x-mu)*(x-mu)) / (2*sigma*sigma));
 }
 
