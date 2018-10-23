@@ -63,9 +63,9 @@ void ParticleFilter::processFrame() {
       // cout << getName(beacon.first) << " not seen.\n\n";
     }
     else {
-      cout << getName(beacon.first) << " seen.\n";
-      cout << "At distance : " << object.visionDistance << endl;
-      cout << "At bearing : " << object.visionBearing << endl;
+      // cout << getName(beacon.first) << " seen.\n";
+      // cout << "At distance : " << object.visionDistance << endl;
+      // cout << "At bearing : " << object.visionBearing << endl;
     }
   }
   // We have a fixed number of particles.
@@ -80,7 +80,7 @@ void ParticleFilter::processFrame() {
       p.t = Random::inst().sampleU() * M_2PI - M_PI;
       // p.x = Random::inst().sampleU() * 500-250; // For debugging. Use above 
       // p.y = Random::inst().sampleU() * 500-250; // For debugging. Use above 
-      // p.t = 0;                              // For debugging. Use above 
+      // p.t = 0;                                  // For debugging. Use above 
       p.w = 1;
     }
     backToRandom = false;
@@ -157,16 +157,16 @@ void ParticleFilter::RandomParticleMCL() {
   int counter = 0;  // count how many particles we should resample
   for (int i = 0; i < numOfParticles; i++) {
     randNumber = Random::inst().sampleU();
-    if (randNumber <0) {// <= std::max(0.0, 1.0 - w_fast/w_slow)) {
+    if (randNumber <= std::max(0.0, std::min(1.0 - w_fast/w_slow, 0.02))) {
       X1.push_back(ParticleFilter::randPose(tempP, w_avg));
     }
     else {
-      counter += 1;   
+      counter += 1;
     }
   }
 
-  cout << "resample: " << counter << endl;
-  cout << "Wavg: " << w_avg << " , Wfast: " << w_fast << " , Wslow: " << w_slow <<  endl;
+  // cout << "resample: " << counter << endl;
+  // cout << "Wavg: " << w_avg << " , Wfast: " << w_fast << " , Wslow: " << w_slow <<  endl;
 
   // 1: Roulette wheel, resample according to random number
   // 2: Systematic resampling, low variance
@@ -307,8 +307,6 @@ float ParticleFilter::getWeight(Particle & p, float w_old) {
 
     float theta = beacon_theta - beacon_bearing;
 
-    // while (theta - p.t <= -M_PI) theta += M_
-
     if (beacon.second.x - p.x < 0 && beacon.second.y - p.y < 0) {
       theta -= M_PI;
     }
@@ -320,17 +318,13 @@ float ParticleFilter::getWeight(Particle & p, float w_old) {
     if (theta >= M_PI) theta -= M_2PI;
     if (theta <= -M_PI) theta += M_2PI;
 
-    // Print check
-    // cout << atan(beacon.second.y / (beacon.second.x + 0.1) ) * RAD_T_DEG << ", " << endl;
-    // cout <<"("<<p.x<<", "<<p.y<<", "<<p.t<<", "<<p.w<<") ";
-    // cout << beacon_theta*RAD_T_DEG << ", " << beacon_bearing*RAD_T_DEG << ", " << p.t <<", "<<theta*RAD_T_DEG<< endl;
-
     w *= gaussianPDF (p.t, theta, 180/RAD_T_DEG );
-    // if (p.w > 0) cout << "Got a particle with non zero weight "<<"("<<p.x<<", "<<p.y<<", "<<p.t<<", "<<p.w<<")\n";
+
   }
 
+
   if (count > 0) p.w = w;
-  else p.w = 1; //w_old;
+  else p.w = 1;             //w_old;
   // If no beacon seen, then everyone gets weight 1
   return p.w;
 }
@@ -369,7 +363,7 @@ Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Partic
   return newp;
 }
 
-const Pose2D& ParticleFilter::pose() const {
+const Pose2D& ParticleFilter::pose() const { // TODO: Implement K-Means here
   if(dirty_) {
     // Compute the mean pose estimate
     mean_ = Pose2D();

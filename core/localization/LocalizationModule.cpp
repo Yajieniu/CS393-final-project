@@ -93,7 +93,7 @@ void LocalizationModule::processFrame() {
   self.orientation = pfilter_->pose().rotation;
   log(40, "Localization Update: x=%2.f, y=%2.f, theta=%2.2f", self.loc.x, self.loc.y, self.orientation * RAD_T_DEG);
     
-  cout << "Localization Update: x=" << self.loc.x << ", y=" << self.loc.y << "theta= " << self.orientation * RAD_T_DEG << endl;
+  // cout << "Localization Update: x=" << self.loc.x << ", y=" << self.loc.y << "theta= " << self.orientation * RAD_T_DEG << endl;
 
   //TODO: modify this block to use your Kalman filter implementation
   if(ball.seen) {
