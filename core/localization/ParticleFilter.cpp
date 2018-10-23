@@ -380,3 +380,65 @@ const Pose2D& ParticleFilter::pose() const { // TODO: Implement K-Means here
   }
   return mean_;
 }
+
+Pose2D ParticleFilter::kmeans() {
+  vector<Particle> &P = particles(); // for easier implementation
+  static vector<Particle> means(K), old_means(K);
+  static vector<int> Near(numOfParticles);
+  const float threshold = 100; // to stop k-means early
+
+  // init: randomly select some means;
+  for (auto &mean : means) {
+    mean = P[int(Random::inst().sampleU() * P.size())];
+  }
+
+  // run k-means for atmost 10 cycles
+  for (int run = 0; run < 10; ++run) {
+    old_means = means;
+
+    // setting count for each mean to 0
+    for (auto &mean : means) mean.w = 0;
+
+    // finding nearest mean / assignment
+    for (int i = 0; i < numOfParticles; ++i) {
+      int n = -1; float m = INT_MAX; // temp variables to find minimum.
+      for (int j = 0; j < K; j++) {
+        if (distance (means[j], P[i]) < m) {
+          m = distance (means[j], P[i]);
+          n = j;
+        }
+      }
+      Near[i] = n;
+      means[n].w += 1;
+    }
+
+    // finding new means
+    for (auto &mean : means) { mean.x = mean.y = mean.t = 0; }
+    for (int i = 0; i < numOfParticles; ++i) {
+      means[Near[i]].x += P[i].x;
+      means[Near[i]].y += P[i].y;
+      means[Near[i]].t += P[i].t;
+    }
+
+    for (auto &mean : means) {
+      mean.x /= mean.w;
+      mean.y /= mean.w;
+      mean.t /= mean.w;
+    }
+
+    float error = 0;
+    for (int j = 0; j < K; j++) {
+      error += distance(old_means[j], means[j]);
+    }
+
+  }
+}
+
+// A normalized distance function
+float ParticleFilter::distance (Particle a, Particle b) {
+  float ret = 0;
+  ret += ((a.x - b.x)*(a.x - b.x)) / (X_MAX*X_MAX);
+  ret += ((a.y - b.y)*(a.y - b.y)) / (Y_MAX*Y_MAX);
+  ret += ((a.t - b.t)*(a.t - b.t)) / (M_PI*M_PI);
+  return ret;
+}
