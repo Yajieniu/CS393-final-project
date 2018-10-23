@@ -23,10 +23,10 @@ class ParticleFilter {
   private:
     void RandomParticleMCL();
     Particle& sample_motion_model(Particle& xtm, auto& disp, Particle& xm);
-    Particle& randPose(Particle& p);
+    Particle& randPose(Particle& p, float);
     Particle& resampling(Particle& newP, std::vector<Particle>& particles, 
                 float *, float, int, int);
-    float getWeight(Particle & x); 
+    float getWeight(Particle & x, float); 
     inline float gaussianPDF(float, float, float);
     inline float gaussianNoiseInSampleMotionModel();
 
@@ -39,7 +39,7 @@ class ParticleFilter {
     mutable bool backToRandom = false;
     mutable bool needToUpdate;
     // const int numOfParticles = 3000;
-    const int numOfParticles = 300; // Use 300 for debugging; it's faster
+    const int numOfParticles = 3000; // Use 300 for debugging; it's faster
     float w_slow;
     float w_fast;
     float a_slow;

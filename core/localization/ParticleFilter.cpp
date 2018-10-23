@@ -75,12 +75,12 @@ void ParticleFilter::processFrame() {
     particles().resize(numOfParticles); 
     auto frame = cache_.frame_info->frame_id;
     for(auto& p : particles()) {
-      // p.x = Random::inst().sampleU() * X_MAX * 2 - X_MAX ;
-      // p.y = Random::inst().sampleU() * Y_MAX * 2 - Y_MAX;
-      // p.t = Random::inst().sampleU() * 360 - 180;
-      p.x = Random::inst().sampleU() * 500-250; // For debugging. Use above 
-      p.y = Random::inst().sampleU() * 500-250; // For debugging. Use above 
-      p.t = 0;                              // For debugging. Use above 
+      p.x = Random::inst().sampleU() * X_MAX * 2 - X_MAX ;
+      p.y = Random::inst().sampleU() * Y_MAX * 2 - Y_MAX;
+      p.t = Random::inst().sampleU() * M_2PI - M_PI;
+      // p.x = Random::inst().sampleU() * 500-250; // For debugging. Use above 
+      // p.y = Random::inst().sampleU() * 500-250; // For debugging. Use above 
+      // p.t = 0;                              // For debugging. Use above 
       p.w = 1;
     }
     backToRandom = false;
@@ -106,6 +106,7 @@ void ParticleFilter::RandomParticleMCL() {
   Particle tempP;
   float weights[numOfParticles] = {};
   float totalWeight = 0.0;
+  float w_old = 0.0;
   float w_avg = 0.0;
   float randNumber;
 
@@ -122,12 +123,14 @@ void ParticleFilter::RandomParticleMCL() {
             disp.translation.y, disp.rotation * RAD_T_DEG); 
 
   // First part of the algorithm
+  for (auto p : particles) w_old += p.w / numOfParticles;
+
   for (int i = 0; i < numOfParticles; i++) {
     tempP = sample_motion_model(tempP, disp, particles[i]); 
     assert(weights[i] == 0);
-    totalWeight += getWeight(tempP);
+    totalWeight += getWeight(tempP, w_old);
     X0.push_back(tempP);
-    w_avg = w_avg + 1/numOfParticles * tempP.w;
+    w_avg = w_avg + 1./numOfParticles * tempP.w;
   }
 
   // Debug:
@@ -154,8 +157,8 @@ void ParticleFilter::RandomParticleMCL() {
   int counter = 0;  // count how many particles we should resample
   for (int i = 0; i < numOfParticles; i++) {
     randNumber = Random::inst().sampleU();
-    if (randNumber <= std::max(0.0, 1.0 - w_fast/w_slow)) {
-      X1.push_back(ParticleFilter::randPose(tempP));
+    if (randNumber < 0) {//std::max(0.0, 1.0 - w_fast/w_slow)) {
+      X1.push_back(ParticleFilter::randPose(tempP, w_avg));
     }
     else {
       counter += 1;   
@@ -163,6 +166,7 @@ void ParticleFilter::RandomParticleMCL() {
   }
 
   cout << "resample: " << counter << endl;
+  cout << "Wavg: " << w_avg << " , Wfast: " << w_fast << " , Wslow: " << w_slow <<  endl;
 
   // 1: Roulette wheel, resample according to random number
   // 2: Systematic resampling, low variance
@@ -185,10 +189,10 @@ void ParticleFilter::RandomParticleMCL() {
  * random x, random y, and random theta.
  * weight is 0 since it will not be used anywhere.
  */
-Particle& ParticleFilter::randPose(Particle& p) {
+Particle& ParticleFilter::randPose(Particle& p, float w_avg) {
   p.x = Random::inst().sampleU() * X_MAX * 2 - X_MAX;
   p.y = Random::inst().sampleU() * Y_MAX * 2 - Y_MAX;
-  p.t = Random::inst().sampleU() * 360 - 180;
+  p.t = Random::inst().sampleU() * M_2PI - M_PI;
   p.w = 0;  // will not be used
 
   return p;
@@ -258,8 +262,10 @@ Particle& ParticleFilter::resampling(Particle& newP, std::vector<Particle>& part
 }
 
 /* Algorithm line 6. Get weights for each new sample. */
-float ParticleFilter::getWeight(Particle & p) {
-  p.w = 1;
+float ParticleFilter::getWeight(Particle & p, float w_old) {
+  auto w = 1.0;
+
+  int count = 0;
 
   // TODO: set variance for gaussian, and may need to debug to adjust signs.
   // Also haven't compiled because other parts not complete. May have error.
@@ -268,9 +274,10 @@ float ParticleFilter::getWeight(Particle & p) {
     if ( object.seen == false )
       continue;
 
+    count++;
     float dist = sqrt( (beacon.second.x - p.x)*(beacon.second.x - p.x)
                 + (beacon.second.y - p.y)*(beacon.second.y - p.y) );
-    p.w *= gaussianPDF ( object.visionDistance, dist, 100 ); // TODO: may need to change sigma for real robot
+    w *= gaussianPDF ( object.visionDistance, dist, 5000 ); // TODO: may need to change sigma for real robot
 
     /*
       We have to decide what is the best way to work with theta from
@@ -310,15 +317,20 @@ float ParticleFilter::getWeight(Particle & p) {
       theta += M_PI;
     }
 
+    if (theta >= M_PI) theta -= M_2PI;
+    if (theta <= -M_PI) theta += M_2PI;
+
     // Print check
     // cout << atan(beacon.second.y / (beacon.second.x + 0.1) ) * RAD_T_DEG << ", " << endl;
     // cout <<"("<<p.x<<", "<<p.y<<", "<<p.t<<", "<<p.w<<") ";
     // cout << beacon_theta*RAD_T_DEG << ", " << beacon_bearing*RAD_T_DEG << ", " << p.t <<", "<<theta*RAD_T_DEG<< endl;
 
-    p.w *= gaussianPDF (p.t, theta, 25/RAD_T_DEG );
+    w *= gaussianPDF (p.t, theta, 1800/RAD_T_DEG );
     // if (p.w > 0) cout << "Got a particle with non zero weight "<<"("<<p.x<<", "<<p.y<<", "<<p.t<<", "<<p.w<<")\n";
   }
 
+  if (count > 0) p.w = w;
+  else p.w = 1; //w_old;
   // If no beacon seen, then everyone gets weight 1
   return p.w;
 }
