@@ -106,6 +106,7 @@ void ParticleFilter::RandomParticleMCL() {
   Particle tempP;
   float weights[numOfParticles] = {};
   float totalWeight = 0.0;
+  float w_old = 0.0;
   float w_avg = 0.0;
   float randNumber;
 
@@ -121,13 +122,14 @@ void ParticleFilter::RandomParticleMCL() {
   log(41, "Updating particles from odometry: %2.f,%2.f @ %2.2f", disp.translation.x, 
             disp.translation.y, disp.rotation * RAD_T_DEG); 
 
-  for (auto p: particles) w_avg += 1./numOfParticles * p.w;
+  for (auto p: particles) w_old += 1./numOfParticles * p.w;
 
   for (int i = 0; i < numOfParticles; i++) {
     tempP = sample_motion_model(tempP, disp, particles[i]); 
     assert(weights[i] == 0);
-    totalWeight += getWeight(tempP, w_avg);
+    totalWeight += getWeight(tempP, w_old);
     X0.push_back(tempP);
+    w_avg = w_avg + 1./numOfParticles * tempP.w;
   }
 
 
