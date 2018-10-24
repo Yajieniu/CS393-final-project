@@ -166,8 +166,8 @@ void ParticleFilter::RandomParticleMCL() {
     }
   }
 
-  cout << "resample: " << counter << endl;
-  cout << "Wavg: " << w_avg << " , Wfast: " << w_fast << " , Wslow: " << w_slow <<  endl;
+  // cout << "resample: " << counter << endl;
+  // cout << "Wavg: " << w_avg << " , Wfast: " << w_fast << " , Wslow: " << w_slow <<  endl;
 
   // 1: Roulette wheel, resample according to random number
   // 2: Systematic resampling, low variance
