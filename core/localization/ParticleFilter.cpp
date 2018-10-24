@@ -78,9 +78,6 @@ void ParticleFilter::processFrame() {
       p.x = Random::inst().sampleU() * X_MAX * 2 - X_MAX ;
       p.y = Random::inst().sampleU() * Y_MAX * 2 - Y_MAX;
       p.t = Random::inst().sampleU() * M_2PI - M_PI;
-      // p.x = Random::inst().sampleU() * 500-250; // For debugging. Use above 
-      // p.y = Random::inst().sampleU() * 500-250; // For debugging. Use above 
-      // p.t = 0;                                  // For debugging. Use above 
       p.w = 1e-8;
     }
     backToRandom = false;
@@ -189,9 +186,12 @@ void ParticleFilter::RandomParticleMCL() {
  * weight is 0 since it will not be used anywhere.
  */
 Particle& ParticleFilter::randPose(Particle& p, float w_avg) {
-  p.x = Random::inst().sampleU() * X_MAX * 2 - X_MAX;
-  p.y = Random::inst().sampleU() * Y_MAX * 2 - Y_MAX;
-  p.t = Random::inst().sampleU() * M_2PI - M_PI;
+  // p.x = Random::inst().sampleU() * X_MAX * 2 - X_MAX;
+  // p.y = Random::inst().sampleU() * Y_MAX * 2 - Y_MAX;
+  // p.t = Random::inst().sampleU() * M_2PI - M_PI;
+  p.x = mean_.translation.x + Random::inst().sampleN() * X_MAX/4;
+  p.y = mean_.translation.y + Random::inst().sampleN() * Y_MAX/4;
+  p.t = mean_.rotation + Random::inst().sampleN() * M_PI/4;
   p.w = w_avg;
 
   return p;
