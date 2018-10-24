@@ -33,8 +33,8 @@ ParticleFilter::ParticleFilter(MemoryCache& cache, TextLogger*& tlogger)
   backToRandom(true){
     w_slow = 0;
     w_fast = 0;
-    a_slow = 0.01;
-    a_fast = 0.1;
+    a_slow = 0.05;
+    a_fast = 0.5;
 
 }
 
@@ -81,7 +81,7 @@ void ParticleFilter::processFrame() {
       // p.x = Random::inst().sampleU() * 500-250; // For debugging. Use above 
       // p.y = Random::inst().sampleU() * 500-250; // For debugging. Use above 
       // p.t = 0;                                  // For debugging. Use above 
-      p.w = 1;
+      p.w = 1e-8;
     }
     backToRandom = false;
   }
@@ -106,7 +106,6 @@ void ParticleFilter::RandomParticleMCL() {
   Particle tempP;
   float weights[numOfParticles] = {};
   float totalWeight = 0.0;
-  float w_old = 0.0;
   float w_avg = 0.0;
   float randNumber;
 
@@ -122,43 +121,40 @@ void ParticleFilter::RandomParticleMCL() {
   log(41, "Updating particles from odometry: %2.f,%2.f @ %2.2f", disp.translation.x, 
             disp.translation.y, disp.rotation * RAD_T_DEG); 
 
-  // First part of the algorithm
-  for (auto p : particles) w_old += p.w / numOfParticles;
+  for (auto p: particles) w_avg += 1./numOfParticles * p.w;
 
   for (int i = 0; i < numOfParticles; i++) {
     tempP = sample_motion_model(tempP, disp, particles[i]); 
     assert(weights[i] == 0);
-    totalWeight += getWeight(tempP, w_old);
+    totalWeight += getWeight(tempP, w_avg);
     X0.push_back(tempP);
-    w_avg = w_avg + 1./numOfParticles * tempP.w;
   }
 
+
+  w_slow = w_slow + a_slow * (w_avg - w_slow);
+  w_fast = w_fast + a_fast * (w_avg - w_fast);
   // Debug:
   // cache_.localization_mem->particles = X; // Uncomment this two line to debug motion model
   // return;                                 // Uncomment this two line to debug motion model
 
 
-
-  w_slow = w_slow + a_slow * (w_avg - w_slow);
-  w_fast = w_fast + a_fast * (w_avg - w_fast);
-
   // Instead of normalizing the weight, here is getting 
   // the sum of all weights
-  weights[0] = X0[0].w;
-  for (int i = 1; i < numOfParticles; i++) {
-    assert(X0[i].w >= 0);
-    weights[i] = weights[i-1] + X0[i].w;
+  for (int i = 0; i < numOfParticles; i++) {
+    if (i > 0) {
+      weights[i] = weights[i-1] + X0[i].w;
+    } else {
+      weights[i] = X0[i].w;
+    }
   }
-
-  assert (weights[numOfParticles-1] == totalWeight);
   // Second part of the algorithm
 
   
   int counter = 0;  // count how many particles we should resample
   for (int i = 0; i < numOfParticles; i++) {
     randNumber = Random::inst().sampleU();
-    // if (randNumber <= std::max(0.0, std::min(1.0 - w_fast/w_slow, 0.02))) {
-    if (randNumber < 0) {
+    if (randNumber <= std::max(0.0, std::min(1.0 - w_fast/w_slow, 0.1))) {
+    // if (randNumber < 0) {
       X1.push_back(ParticleFilter::randPose(tempP, w_avg));
     }
     else {
@@ -177,7 +173,7 @@ void ParticleFilter::RandomParticleMCL() {
 
   for (int i = 0; i < counter; i++) {
     newParticleIndex = floor(i * counter / numOfParticles);  // not used if resample_version is 1
-    X1.push_back(resampling(tempP, X0, weights, totalWeight, resample_version, newParticleIndex));
+    X1.push_back(resampling(tempP, X0, weights, weights[numOfParticles-1], resample_version, newParticleIndex));
   }
   
   // store the result back into memory
@@ -194,7 +190,7 @@ Particle& ParticleFilter::randPose(Particle& p, float w_avg) {
   p.x = Random::inst().sampleU() * X_MAX * 2 - X_MAX;
   p.y = Random::inst().sampleU() * Y_MAX * 2 - Y_MAX;
   p.t = Random::inst().sampleU() * M_2PI - M_PI;
-  p.w = 0;  // will not be used
+  p.w = w_avg;
 
   return p;
 }
@@ -324,8 +320,8 @@ float ParticleFilter::getWeight(Particle & p, float w_old) {
   }
 
 
-  if (count > 0) p.w = w;
-  else p.w = 1; // w_old;             //1;
+  if (count > 0) p.w = w + 1e-8;
+  else p.w = w_old;            
 
   // If no beacon seen, then everyone gets weight 1
   return p.w;
@@ -352,14 +348,14 @@ Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Partic
   auto dist = sqrt(dx*dx+dy*dy);
 
 
-  // newp.x = p.x + dx*cos(p.t) - dy*sin(p.t) + Random::inst().sampleN() * 15; 
-  // newp.y = p.y + dx*sin(p.t) + dy*cos(p.t) + Random::inst().sampleN() * 15;
-  // newp.t = p.t + disp.rotation + Random::inst().sampleN() * 5/RAD_T_DEG; 
+  newp.x = p.x + dx*cos(p.t) - dy*sin(p.t) + Random::inst().sampleN() * 15; 
+  newp.y = p.y + dx*sin(p.t) + dy*cos(p.t) + Random::inst().sampleN() * 15;
+  newp.t = p.t + disp.rotation + Random::inst().sampleN() * 5/RAD_T_DEG; 
 
 
-  newp.x = p.x + dx*cos(p.t) - dy*sin(p.t) + Random::inst().sampleN() * 30;     
-  newp.y = p.y + dx*sin(p.t) + dy*cos(p.t) + Random::inst().sampleN() * 30;
-  newp.t = p.t + disp.rotation + Random::inst().sampleN() * 10/RAD_T_DEG; 
+  // newp.x = p.x + dx*cos(p.t) - dy*sin(p.t) + Random::inst().sampleN() * 30;     
+  // newp.y = p.y + dx*sin(p.t) + dy*cos(p.t) + Random::inst().sampleN() * 30;
+  // newp.t = p.t + disp.rotation + Random::inst().sampleN() * 10/RAD_T_DEG; 
 
 
 
