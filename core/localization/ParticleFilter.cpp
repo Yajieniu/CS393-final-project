@@ -157,7 +157,8 @@ void ParticleFilter::RandomParticleMCL() {
   int counter = 0;  // count how many particles we should resample
   for (int i = 0; i < numOfParticles; i++) {
     randNumber = Random::inst().sampleU();
-    if (randNumber <= std::max(0.0, std::min(1.0 - w_fast/w_slow, 0.02))) {
+    // if (randNumber <= std::max(0.0, std::min(1.0 - w_fast/w_slow, 0.02))) {
+    if (randNumber < 0) {
       X1.push_back(ParticleFilter::randPose(tempP, w_avg));
     }
     else {
@@ -165,8 +166,8 @@ void ParticleFilter::RandomParticleMCL() {
     }
   }
 
-  // cout << "resample: " << counter << endl;
-  // cout << "Wavg: " << w_avg << " , Wfast: " << w_fast << " , Wslow: " << w_slow <<  endl;
+  cout << "resample: " << counter << endl;
+  cout << "Wavg: " << w_avg << " , Wfast: " << w_fast << " , Wslow: " << w_slow <<  endl;
 
   // 1: Roulette wheel, resample according to random number
   // 2: Systematic resampling, low variance
@@ -324,7 +325,8 @@ float ParticleFilter::getWeight(Particle & p, float w_old) {
 
 
   if (count > 0) p.w = w;
-  else p.w = 1;             //w_old;
+  else p.w = 1; // w_old;             //1;
+
   // If no beacon seen, then everyone gets weight 1
   return p.w;
 }
@@ -347,11 +349,20 @@ Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Partic
   // update location
   auto dx = disp.translation.x;
   auto dy = disp.translation.y;
+  auto dist = sqrt(dx*dx+dy*dy);
 
 
-  newp.x = p.x + dx*cos(p.t) - dy*sin(p.t) + Random::inst().sampleN() * 15; // + distribution(generator);
-  newp.y = p.y + dx*sin(p.t) + dy*cos(p.t) + Random::inst().sampleN() * 15; // + distribution(generator); 
-  newp.t = p.t + disp.rotation + Random::inst().sampleN() * 5/RAD_T_DEG; // + distribution(generator); 
+  // newp.x = p.x + dx*cos(p.t) - dy*sin(p.t) + Random::inst().sampleN() * 15; 
+  // newp.y = p.y + dx*sin(p.t) + dy*cos(p.t) + Random::inst().sampleN() * 15;
+  // newp.t = p.t + disp.rotation + Random::inst().sampleN() * 5/RAD_T_DEG; 
+
+
+  newp.x = p.x + dx*cos(p.t) - dy*sin(p.t) + Random::inst().sampleN() * 30;     
+  newp.y = p.y + dx*sin(p.t) + dy*cos(p.t) + Random::inst().sampleN() * 30;
+  newp.t = p.t + disp.rotation + Random::inst().sampleN() * 10/RAD_T_DEG; 
+
+
+
   // Assuming theta is between (-180, 180) degree
   while (newp.t <= -M_PI) newp.t += M_2PI;
   while (newp.t >= M_PI) newp.t -= M_2PI;
@@ -361,10 +372,26 @@ Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Partic
   return newp;
 }
 
-const Pose2D& ParticleFilter::pose() { // TODO: Implement K-Means here
+// const Pose2D& ParticleFilter::pose() { // Our Pose
+//   if(dirty_) {
+//     // Compute the mean pose estimate
+//     mean_ = kMeans();
+//     dirty_ = false;
+//   }
+//   return mean_;
+// }
+
+const Pose2D& ParticleFilter::pose() { // Josiah Pose
   if(dirty_) {
     // Compute the mean pose estimate
-    mean_ = kMeans();
+    mean_ = Pose2D();
+    using T = decltype(mean_.translation);
+    for(const auto& p : particles()) {
+      mean_.translation += T(p.x,p.y);
+      mean_.rotation += p.t;
+    }
+    if(particles().size() > 0)
+      mean_ /= static_cast<float>(particles().size());
     dirty_ = false;
   }
   return mean_;

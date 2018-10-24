@@ -41,7 +41,7 @@ class ParticleFilter {
     mutable bool backToRandom = false;
     mutable bool needToUpdate;
     // const int numOfParticles = 3000;
-    const int numOfParticles = 1000; // Use 300 for debugging; it's faster
+    const int numOfParticles = 300; // Use 300 for debugging; it's faster
     const int K = 5; // for k-means clustering
     float w_slow;
     float w_fast;

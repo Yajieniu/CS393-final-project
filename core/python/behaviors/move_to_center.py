@@ -32,12 +32,12 @@ seen_counter = 0.0
 
 class Turner(Node):
 	def run(self):
-		commands.setHeadPan(0, 0.0)
+		commands.setHeadPanTilt(pan=0, tilt=0, time=0.3)
 		commands.setWalkVelocity(0.1, 0.0, 0.3)
 
 class Mover(Node):
 	def run(self):
-		commands.setHeadPan(0, 0.0)
+		commands.setHeadPanTilt(pan=0, tilt=0, time=0.3)
 		commands.setWalkVelocity(vx, vy, 0.0)
 
 class Localizer(Node):
@@ -50,7 +50,7 @@ class Localizer(Node):
 				BEACONS[beacon_name] = max(1, BEACONS[beacon_name])
 
 		print ("\n\n\nTotal beacons seen: %d\n\n\n"%sum(BEACONS.values()))
-		if sum(BEACONS.values()) >= 2:
+		if sum(BEACONS.values()) >= 3:
 			seen_counter = 10
 			for beacon_name in BEACONS:
 				BEACONS[beacon_name] = 0
@@ -71,8 +71,8 @@ class Localizer(Node):
 			if dist > DIST_THRESHOLD:
 
 				theta = target_theta - robot_theta
-				vx = -1.5 * math.cos(theta)
-				vy = -1.5 * math.sin(theta)
+				vx = -0.8 * math.cos(theta)
+				vy = -0.8 * math.sin(theta)
 
 				self.postSignal('move')
 
