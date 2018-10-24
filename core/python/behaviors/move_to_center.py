@@ -35,24 +35,38 @@ single_beacon_turn_and_walk_mode = 0
 beacon_last_seen = 0
 beacon_now_seen = -1
 
+# For head movement
+head_bearing = 0
+head_move_side = 1
+
 
 class Turner(Node):
 	def run(self):
 		global turning_counter
 		turning_counter += 1
 		# print("tuning once**********\t", turning_counter, beacon_last_seen, beacon_now_seen, "\n")
-		commands.setHeadPanTilt(pan=0, tilt=0, time=0.3)
+		commands.setHeadPanTilt(pan=head_bearing, tilt=0, time=0.3)
 		commands.setWalkVelocity(0.1, 0.0, 0.3)
 
 class Mover(Node):
 	def run(self):
-		commands.setHeadPanTilt(pan=0, tilt=0, time=0.3)
+		commands.setHeadPanTilt(pan=head_bearing, tilt=0, time=0.3)
 		commands.setWalkVelocity(vx, vy, 0.0)
 
 class Localizer(Node):
 	def run(self):
 		global vx, vy, vtheta, seen_counter, turning_counter
 		global beacon_now_seen, beacon_last_seen
+
+		# head movement code. start
+		global head_bearing, head_move_side
+		if head_bearing < -2:
+			head_move_side = 1
+		elif head_bearing > 2:
+			head_move_side = -1
+		head_bearing += head_move_side*0.1
+		# head movement ends
+
 
 		beacons = []
 		num_beacons_seen = 0
