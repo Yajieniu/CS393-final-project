@@ -4,7 +4,7 @@
 
 #define extended_kalman_n 4 // number of states
 #define extended_kalman_m 1 // number of controls // 0 may not work
-#define extended_kalman_k 4 // number of measurements
+#define extended_kalman_k 2 // number of measurements
 
 class ExtendedKalmanFilter {
 
@@ -49,7 +49,7 @@ public:
 	void reset();
 	void setwt(Vectornf&);
 	void setCovt(Matrixnnf&);
-	void setConstants(Matrixnnf&, Matrixnmf&, Matrixknf&, Matrixnnf&, Matrixnnf&);
+	void setConstants(Matrixnnf&, Matrixnmf&, Matrixknf&, Matrixnnf&, Matrixkkf&);
 	
 	std::tuple<ExtendedKalmanFilter::Vectornf, ExtendedKalmanFilter::Matrixnnf> algorithm(Vectormf&, Vectorkf&);	
 };
