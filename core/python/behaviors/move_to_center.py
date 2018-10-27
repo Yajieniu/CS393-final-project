@@ -30,17 +30,8 @@ vtheta = 0.0
 
 seen_counter = 0.0
 
-turning_counter = 0  #how many times it has turned since the last time s
-single_beacon_turn_and_walk_mode = 0
-beacon_last_seen = 0
-beacon_now_seen = -1
-
-
 class Turner(Node):
 	def run(self):
-		global turning_counter
-		turning_counter += 1
-		# print("tuning once**********\t", turning_counter, beacon_last_seen, beacon_now_seen, "\n")
 		commands.setHeadPanTilt(pan=0, tilt=0, time=0.3)
 		commands.setWalkVelocity(0.1, 0.0, 0.3)
 
@@ -51,57 +42,18 @@ class Mover(Node):
 
 class Localizer(Node):
 	def run(self):
-		global vx, vy, vtheta, seen_counter, turning_counter
-		global beacon_now_seen, beacon_last_seen
-
+		global vx, vy, vtheta, seen_counter
 		beacons = []
-		num_beacons_seen = 0
-		beacon_now_seen = -1
-
-		# BlockWrapper blockWrapper = memory.BlockWrapper()
-		# odo = blockWrapper.odometry().displacement.rotation;
-
 		for beacon_name in BEACONS:
 			beacon = mem_objects.world_objects[beacon_name]
 			if beacon.seen:
-				num_beacons_seen += 1
-				beacon_now_seen = beacon
 				BEACONS[beacon_name] = max(1, BEACONS[beacon_name])
 
-
-		# -------- walk towards a beacon start --------#
-
-		# walk towards a beacon if no other beacons can be seen
-		if num_beacons_seen == 1:
-
-			# start of looking_for_the_second_beacon mode
-			# this is a flag, 1 is on, 0 is off
-			# this flag can be set to 1 repeatly
-			single_beacon_turn_and_walk_mode = 1
-
-			# after turning a circle (turn 182 times), if only see one beacon
-			# end of looking_for_the_second_beacon mode
-			if beacon_last_seen == beacon_now_seen: # the robot turns a circle after turning 192 times
-				if turning_counter >= 165:
-					# print("*****************", )
-					single_beacon_turn_and_walk_mode = 0
-					turning_counter = 0
-					self.postSignal('walk_towards_beacon')
-
-		if num_beacons_seen >=2:
-			single_beacon_turn_and_walk_mode = 0
-
-		beacon_last_seen = beacon_now_seen
-
-		# ------- walks towards a beacon end -----------#
-
-
-		# print ("\n\n\nTotal beacons seen: %d\n\n\n"%sum(BEACONS.values()))
+		print ("\n\n\nTotal beacons seen: %d\n\n\n"%sum(BEACONS.values()))
 		if sum(BEACONS.values()) >= 3:
 			seen_counter = 10
 			for beacon_name in BEACONS:
 				BEACONS[beacon_name] = 0
-
 
 		seen_counter -= 1
 		if seen_counter <= 0: # Counter
@@ -138,54 +90,17 @@ class Walker(Node):
 		commands.setWalkVelocity(vx, vy, vtheta)
 
 
-# When we can only see one beacon after turning around, we walk towards
-# this beacon
-class WalkTowardsBeacon(Node):
-	def run(self):
-		num_beacons_seen = 0
-		beac = 0
-		start_time = self.getTime()
-
-		for beacon_name in BEACONS:
-			beacon = mem_objects.world_objects[beacon_name]
-			if beacon.seen:
-				num_beacons_seen += 1
-				beac = beacon
-
-		if num_beacons_seen > 1:
-			print("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ More than One Beacon is Seen\n\n\n")
-			self.finish()
-
-		beacon = beac  # the only beacon we can see
-		theta = beacon.bearing
-		dist = beacon.distance # assume this is the distance from robot to beacon, not sure
-		stop_distance = 500    # assume it's 50 cm
-
-		if dist < stop_distance:
-			print("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ dist smaller than stop distance ")
-			self.finish()
-
-		commands.setWalkVelocity(vx, vy, vtheta)
-
-		# after this function executing 1.5 seconds
-		if self.getTime() - start_time > 1.5:  
-			walkTowardsBeacon = WalkTowardsBeacon()
-			walkTowardsBeacon.run()
-            
-
 class Playing(LoopingStateMachine):
 	def setup(self):
 		turner = Turner()
 		localizer = Localizer()
 		walker = Walker()
 		sitter = pose.Sit()
-		walkTowardsBeacon = WalkTowardsBeacon()
 
 		nodes = {
 			'turn' : turner,
 			'move' : walker,
 			'sit'  : sitter,
-			'walk_towards_beacon' : walkTowardsBeacon,
 		}
 
 		# self.add_transition(, C, localizer)
@@ -193,9 +108,6 @@ class Playing(LoopingStateMachine):
 		for signal, node in nodes.iteritems():
 			if signal == 'sit':
 				self.add_transition(localizer, S(signal), node, T(10), localizer)
-			elif signal == 'walk_towards_beacon':
-				self.add_transition(localizer, S(signal), node, C, localizer)
 			else:
 				self.add_transition(localizer, S(signal), node, T(0.5), localizer)
-
 

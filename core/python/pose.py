@@ -266,6 +266,26 @@ class SittingPose(Task):
     ))
 
 
+# class BlockRight(Task):
+#   def __init__(self, time = 3.0):
+#     super(BlockRight, self).__init__(time=time)
+#     self.setSubtask(PoseSequence(
+#       cfgpose.blockright, 2.0,
+#       cfgpose.diveLeftTwo, 2.0,
+#       cfgpose.crabPose, 2.0
+#       cfgpose.KeeperDiveGoingDown0, 2.0,
+#       cfgpose.KeeperDiveGoingDown0Right, 2.0,
+#       cfgpose.KeeperDiveOnSide, 2.0,
+#       cfgpose.KeeperDiveOnSideRight, 2.0,
+#       cfgpose.GoalieLeftSplayInter1, 2.0,
+#       cfgpose.GoalieLeftSplayFinalV3, 2.0,
+#       cfgpose.GoalieLeftSplayGetup4, 2.0,
+#       cfgpose.diveLeftTwo, 2.0,
+#       cfgpose.diveLeftTwo, 2.0,
+#     ))
+
+
+
 class BlockRight(Task):
   def __init__(self, time = 3.0):
     super(BlockRight, self).__init__(time=time)

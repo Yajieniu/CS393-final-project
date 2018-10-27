@@ -152,11 +152,15 @@ class RaiseArms(Node):
 
 		self.postSignal(choice)
 		
+class TryPose(Node):
+	def run(self):
+		self.poseSignal("try")
 
 class Playing(LoopingStateMachine):
 	def setup(self):
 		raiseArm = RaiseArms()
 		sit = pose.SittingPose()
+		# tryPose = TryPose()
 		wait = Wait
 		arms = {
 			"left": pose.RaiseLeftArm(time=1.),
@@ -164,6 +168,7 @@ class Playing(LoopingStateMachine):
 			"center": pose.RaiseBothArms(time=1.),
 			"unseen": pose.SittingPose(time=0.3),
 			"nomove": pose.SittingPose(time=0.3),
+			# "try": pose.TryPose(time=30.0)
 		}
 
 		for direction in arms:
@@ -172,4 +177,8 @@ class Playing(LoopingStateMachine):
 				self.add_transition(raiseArm, S(direction), arm, T(1.2), raiseArm)
 			else:
 				self.add_transition(raiseArm, S(direction), arm, T(0.1), raiseArm)
+			# if direction is "try":
+			# 	self.add_transition(tryPose, S(direction), arm, C)
+
+
 
