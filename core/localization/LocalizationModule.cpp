@@ -93,8 +93,6 @@ void LocalizationModule::processFrame() {
   self.orientation = pfilter_->pose().rotation;
   log(40, "Localization Update: x=%2.f, y=%2.f, theta=%2.2f", self.loc.x, self.loc.y, self.orientation * RAD_T_DEG);
     
-  // cout << "Localization Update: x=" << self.loc.x << ", y=" << self.loc.y << "theta= " << self.orientation * RAD_T_DEG << endl;
-
   //TODO: modify this block to use your Kalman filter implementation
   if(ball.seen) {
     // Compute the relative position of the ball from vision readings
@@ -119,14 +117,7 @@ void LocalizationModule::processFrame() {
     lastBallX = ball.loc.x;
     lastBallY = ball.loc.y;
 
-    // std::cout << "\nRaw output\n( ";
-    // std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
-
     updateState(ball.seen);
-
-
-    // std::cout << "\nKalman output\n( ";
-    // std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
 
     // Update the localization memory objects with localization calculations
     // so that they are drawn in the World window
@@ -140,10 +131,6 @@ void LocalizationModule::processFrame() {
     // cout << "RESET" << endl;
     ball.distance = 10000.0f;
     ball.bearing = 0.0f;
-
-    // // Increase variance
-    // updateState(ball.seen);
-
   }
 }
 
