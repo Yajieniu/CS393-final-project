@@ -43,4 +43,4 @@ class Playing(StateMachine):
     def setup(self):
         commands.setStiffness(cfgstiff.One)
         self.trans(self.Stand(), C, self.Kick(), C, self.Stand(),
-                   C, pose.Sit(), C, self.Off())
+                   C, pose.Sit())

@@ -976,7 +976,7 @@
     joints:
 
 			ourSittingPose[core.HeadYaw: 0.09
-			ourSittingPose[core.HeadPitch: -1.0*22
+			ourSittingPose[core.HeadPitch: -22
 			ourSittingPose[core.LShoulderPitch: -90
 			ourSittingPose[core.LShoulderRoll: 10
 			ourSittingPose[core.LElbowYaw: 0
