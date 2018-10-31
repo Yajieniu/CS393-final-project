@@ -76,7 +76,7 @@ keyframes:
       RElbowYaw: 24.9999994308176
       RElbowRoll: -52.9999988616352
   - name: kick
-    frames: 5
+    frames: 3
     joints:
       HeadYaw: 0.34915926065481
       HeadPitch: -0.612831876036623
