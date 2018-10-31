@@ -61,6 +61,7 @@ void LocalizationModule::initFromWorld() {
 // Reinitialize from scratch
 void LocalizationModule::reInit() {
   pfilter_->init(Point2D(-750,0), 0.0f);
+  cache_.localization_mem->player_ = Point2D(-750,0);
   cache_.localization_mem->state = decltype(cache_.localization_mem->state)::Zero();
   cache_.localization_mem->covariance = decltype(cache_.localization_mem->covariance)::Identity();
 }
