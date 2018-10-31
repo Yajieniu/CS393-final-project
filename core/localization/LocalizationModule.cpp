@@ -7,7 +7,7 @@
 #include <localization/Logging.h>
 
 
-#define T 30.0
+#define T 1./30;
 
 // Boilerplate
 LocalizationModule::LocalizationModule() : tlogger_(textlogger), pfilter_(new ParticleFilter(cache_, tlogger_)) {
@@ -69,7 +69,7 @@ void LocalizationModule::reInit() {
   cache_.localization_mem->covariance = decltype(cache_.localization_mem->covariance)::Identity();
 
   KF_ = new KalmanFilter();
-  // KF_ = new KalmanFilter();
+  // KF_ = new ExtendedKalmanFilter();
 }
 
 void LocalizationModule::moveBall(const Point2D& position) {
@@ -86,10 +86,12 @@ void LocalizationModule::processFrame() {
   auto& ball = cache_.world_object->objects_[WO_BALL];
   auto& self = cache_.world_object->objects_[cache_.robot_state->WO_SELF];
 
-  // Retrieve the robot's current location from localization memory
-  // and store it back into world objects
-  auto sloc = cache_.localization_mem->player_;
-  self.loc = sloc;
+  // Process the current frame and retrieve our location/orientation estimate
+  // from the particle filter
+  pfilter_->processFrame();
+  self.loc = pfilter_->pose().translation;
+  self.orientation = pfilter_->pose().rotation;
+  log(40, "Localization Update: x=%2.f, y=%2.f, theta=%2.2f", self.loc.x, self.loc.y, self.orientation * RAD_T_DEG);
     
   //TODO: modify this block to use your Kalman filter implementation
   if(ball.seen) {
@@ -101,12 +103,8 @@ void LocalizationModule::processFrame() {
 
     // Update the ball in the WorldObject block so that it can be accessed in python
     ball.loc = relBall;
-    // ball.
     ball.distance = ball.visionDistance;
     ball.bearing = ball.visionBearing;
-
-    // ball.absVel = fill this in
-    // std::cout << ball.absVel.x << " " << ball.absVel.y << endl;
 
     if (lastBallX == -1. && lastBallY == -1) {
       ball.absVel.x = 0;
@@ -119,14 +117,7 @@ void LocalizationModule::processFrame() {
     lastBallX = ball.loc.x;
     lastBallY = ball.loc.y;
 
-    // std::cout << "\nRaw output\n( ";
-    // std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
-
     updateState(ball.seen);
-
-
-    // std::cout << "\nKalman output\n( ";
-    // std::cout << ball.loc.x << " , "<< ball.loc.y << " , "<< ball.absVel.x << " , "<< ball.absVel.y << " )\n";
 
     // Update the localization memory objects with localization calculations
     // so that they are drawn in the World window
@@ -140,10 +131,6 @@ void LocalizationModule::processFrame() {
     // cout << "RESET" << endl;
     ball.distance = 10000.0f;
     ball.bearing = 0.0f;
-
-    // // Increase variance
-    // updateState(ball.seen);
-
   }
 }
 
@@ -152,7 +139,6 @@ void LocalizationModule::processFrame() {
 void LocalizationModule::updateState(bool ballSeen) {
 
   auto& ball = cache_.world_object->objects_[WO_BALL];
-
 
   //states, pay attention to the first frame!! NOT handled !! 
   // Was automatically handeled earlier because wt, Covt was sent as parameter which was given default value
@@ -164,23 +150,21 @@ void LocalizationModule::updateState(bool ballSeen) {
     KalmanFilter::Matrixnnf initCovt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 100.0f;
     KF_->setCovt(initCovt);
 
-    // Define Kalman filter parameters
+    // Define (Extended) Kalman filter parameters
     static KalmanFilter::Matrixnnf At = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n());
-    At(0,2) = 1; // Delta T
-    At(1,3) = 1; // Delta T
-
-    // cout << At << endl;
+    At(0,2) = T; // Delta T
+    At(1,3) = T; // Delta T
 
     static KalmanFilter::Matrixnmf Bt = Eigen::MatrixXf::Zero(KF_->get_n(), KF_->get_m());
-    static KalmanFilter::Matrixknf Ct = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_n());
-    static KalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 1.0f; // Rt: Transition variance
-    // Rt(2,2) = 20.0f; 
-    // Rt(3,3) = 20.0f;
+    static KalmanFilter::Matrixknf Ct = Eigen::MatrixXf::Zero(KF_->get_k(), KF_->get_n());
+    Ct(0,0) = 1;
+    Ct(1,1) = 1;
+
+
+    static KalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 1.0f; // Rt: Transition variance. Should be LOW
+    // Rt(2,2) = 30;
+    // Rt(3,3) = 30;
     static KalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 100.0f; // Qt: Measurement variance
-    Qt(2,2) = 200.0f;
-    Qt(3,3) = 200.0f;
-    // Qt(0,2) = 100.0f;
-    // Qt(1,3) = 100.0f;
 
     KF_->setConstants(At, Bt, Ct, Rt, Qt);
   }
