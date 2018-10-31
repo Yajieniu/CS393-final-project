@@ -35,7 +35,7 @@ class Playing(StateMachine):
 
     class Off(Node):
         def run(self):
-            commands.setStiffness(cfgstiff.Zero)
+            # commands.setStiffness(cfgstiff.Zero)
             if self.getTime() > 2.0:
                 memory.speech.say("turned off stiffness")
                 self.finish()
