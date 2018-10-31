@@ -40,13 +40,13 @@ void ExtendedKalmanFilter::setCovt(Matrixnnf& Covt) {
 }
 
 void ExtendedKalmanFilter::setConstants(Matrixnnf &At, Matrixnmf &Bt, Matrixknf &Ct, 
- 	Matrixnnf &Rt, Matrixnnf &Qt) {
+ 	Matrixnnf &Rt, Matrixkkf &Qt) {
 	
 	this->At = Matrixnnf(At);
 	this->Bt = Matrixnmf(Bt);
 	this->Ct = Matrixknf(Ct);
 	this->Rt = Matrixnnf(Rt);
-	this->Qt = Matrixnnf(Qt);
+	this->Qt = Matrixkkf(Qt);
 }
 
 std::tuple<ExtendedKalmanFilter::Vectornf, ExtendedKalmanFilter::Matrixnnf> ExtendedKalmanFilter::algorithm
@@ -64,7 +64,7 @@ std::tuple<ExtendedKalmanFilter::Vectornf, ExtendedKalmanFilter::Matrixnnf> Exte
 
 	auto Kt = predictedCovt * Ht.transpose() * 
 				(Ht * predictedCovt * Ht.transpose() + Qt).inverse();
-
+		
 	// update state
 	this->wt = predictedWt + Kt * (zt - h(predictedWt));
 

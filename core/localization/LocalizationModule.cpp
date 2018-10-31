@@ -7,7 +7,7 @@
 #include <localization/Logging.h>
 
 
-#define T 30.0
+#define T 1./30;
 
 // Boilerplate
 LocalizationModule::LocalizationModule() : tlogger_(textlogger), pfilter_(new ParticleFilter(cache_, tlogger_)) {
@@ -140,7 +140,6 @@ void LocalizationModule::updateState(bool ballSeen) {
 
   auto& ball = cache_.world_object->objects_[WO_BALL];
 
-
   //states, pay attention to the first frame!! NOT handled !! 
   // Was automatically handeled earlier because wt, Covt was sent as parameter which was given default value
   if (!KF_->isInitialized()) {
@@ -153,17 +152,19 @@ void LocalizationModule::updateState(bool ballSeen) {
 
     // Define (Extended) Kalman filter parameters
     static ExtendedKalmanFilter::Matrixnnf At = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n());
-    At(0,2) = 1; // Delta T
-    At(1,3) = 1; // Delta T
-
-    // cout << At << endl;
+    At(0,2) = T; // Delta T
+    At(1,3) = T; // Delta T
 
     static ExtendedKalmanFilter::Matrixnmf Bt = Eigen::MatrixXf::Zero(KF_->get_n(), KF_->get_m());
-    static ExtendedKalmanFilter::Matrixknf Ct = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_n());
-    static ExtendedKalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 1.0f; // Rt: Transition variance. Should be LOW
-    static ExtendedKalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 89.0f; // Qt: Measurement variance
-    Qt(2,2) = 158.0f;
-    Qt(3,3) = 158.0f;
+    static ExtendedKalmanFilter::Matrixknf Ct = Eigen::MatrixXf::Zero(KF_->get_k(), KF_->get_n());
+    Ct(0,0) = 1;
+    Ct(1,1) = 1;
+
+
+    static ExtendedKalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 0.01f; // Rt: Transition variance. Should be LOW
+    // Rt(2,2) = 30;
+    // Rt(3,3) = 30;
+    static ExtendedKalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 2500.0f; // Qt: Measurement variance
 
     KF_->setConstants(At, Bt, Ct, Rt, Qt);
   }
@@ -179,7 +180,7 @@ void LocalizationModule::updateState(bool ballSeen) {
 
     // Sensor measurements
     static ExtendedKalmanFilter::Vectorkf zt = Eigen::VectorXf::Zero(KF_->get_k());
-    zt << ball.loc.x, ball.loc.y, ball.absVel.x, ball.absVel.y;
+    zt << ball.loc.x, ball.loc.y;
 
     std::tie(wt, cov) = KF_->algorithm(ut, zt);
 
