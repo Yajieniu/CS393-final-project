@@ -33,7 +33,6 @@ X_THRESHOLD = 600
 
 running_vx = 0.0
 running_vy = 0.0
-FACTOR = 0.4
 
 unseen_count = 0
 

@@ -63,7 +63,7 @@ void ParticleFilter::processFrame() {
     backToRandom = false;
   }
   else {
-    RandomParticleMCL();
+    //RandomParticleMCL();
   }
 }
 
