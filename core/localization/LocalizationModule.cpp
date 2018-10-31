@@ -88,9 +88,9 @@ void LocalizationModule::processFrame() {
 
   // Process the current frame and retrieve our location/orientation estimate
   // from the particle filter
-  pfilter_->processFrame();
-  self.loc = pfilter_->pose().translation;
-  self.orientation = pfilter_->pose().rotation;
+  // pfilter_->processFrame();
+  // self.loc = pfilter_->pose().translation;
+  // self.orientation = pfilter_->pose().rotation;
   log(40, "Localization Update: x=%2.f, y=%2.f, theta=%2.2f", self.loc.x, self.loc.y, self.orientation * RAD_T_DEG);
     
   //TODO: modify this block to use your Kalman filter implementation
@@ -152,8 +152,8 @@ void LocalizationModule::updateState(bool ballSeen) {
 
     // Define (Extended) Kalman filter parameters
     static KalmanFilter::Matrixnnf At = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n());
-    At(0,2) = T; // Delta T
-    At(1,3) = T; // Delta T
+    At(0,2) = 1; // Delta T
+    At(1,3) = 1; // Delta T
 
     static KalmanFilter::Matrixnmf Bt = Eigen::MatrixXf::Zero(KF_->get_n(), KF_->get_m());
     static KalmanFilter::Matrixknf Ct = Eigen::MatrixXf::Zero(KF_->get_k(), KF_->get_n());
@@ -164,7 +164,7 @@ void LocalizationModule::updateState(bool ballSeen) {
     static KalmanFilter::Matrixnnf Rt = Eigen::MatrixXf::Identity(KF_->get_n(), KF_->get_n()) * 1.0f; // Rt: Transition variance. Should be LOW
     // Rt(2,2) = 30;
     // Rt(3,3) = 30;
-    static KalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 100.0f; // Qt: Measurement variance
+    static KalmanFilter::Matrixkkf Qt = Eigen::MatrixXf::Identity(KF_->get_k(), KF_->get_k()) * 25.0f; // Qt: Measurement variance
 
     KF_->setConstants(At, Bt, Ct, Rt, Qt);
   }

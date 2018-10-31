@@ -411,14 +411,7 @@ DECLARE_INTERNAL_SCHEMA(class WorldObject {
 
     SCHEMA_FIELD(bool fromTopCamera); ///< True if observed from top cam, false if from bottom
 
-    // NEW Occluded beacon parameter
-    SCHEMA_FIELD(bool occluded);
-
-    // // NEW Ball Kalman Filter
-    // SCHEMA_FIELD(float worldX);
-    // SCHEMA_FIELD(float worldY);
-    // SCHEMA_FIELD(float veloX);
-    // SCHEMA_FIELD(float veloY);
+    SCHEMA_FIELD(bool occluded); ///< This is only used for detecting occluded beacons
 });
 
 typedef std::vector<WorldObject> ObjectSet;

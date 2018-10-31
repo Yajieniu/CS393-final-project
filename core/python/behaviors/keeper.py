@@ -27,13 +27,15 @@ import time
 # visionDistance
 
 CENTER_MIN_THRESHOLD = 200
-CENTER_MAX_THRESHOLD = 800
+CENTER_MAX_THRESHOLD = 200
 V_THRESHOLD = 35
 X_THRESHOLD = 600
 
 running_vx = 0.0
 running_vy = 0.0
 FACTOR = 0.4
+
+unseen_count = 0
 
 class RaiseLeft(Node):
 	# raise left arm 
@@ -83,7 +85,7 @@ class Wait(Node):
 class RaiseArms(Node):
 	def run(self):
 
-		global running_vx, running_vy
+		global running_vx, running_vy, unseen_count
 		# get predicted location and velocity
 		ball = mem_objects.world_objects[core.WO_BALL]
 
@@ -96,8 +98,8 @@ class RaiseArms(Node):
 		vx = ball.absVel.x
 		vy = ball.absVel.y
 
-		running_vx = (1-FACTOR)*running_vx + FACTOR * vx
-		running_vy = (1-FACTOR)*running_vy + FACTOR * vy
+		# running_vx = (1-FACTOR)*running_vx + FACTOR * vx
+		# running_vy = (1-FACTOR)*running_vy + FACTOR * vy
 
 		# v = math.sqrt(running_vx*running_vx+running_vy*running_vy)
 		v = math.sqrt(vx*vx+vy*vy)
@@ -106,43 +108,44 @@ class RaiseArms(Node):
 		
 		# y += 100
 
-		if v > V_THRESHOLD:
-			# end_y = y + x * running_vy/running_vx
-			end_y = y + x * running_vy/running_vx
-		else:
-			end_y = y
-
-
 		# print ("\n\n\n\n End y: ", end_y)
-		print ("\n\n\n\n Vx: ", vx, "vy: ", vy, "End y: ", end_y, "V: ", v, "X: ", x)
+		# print ("\n\n\n\n Vx: ", vx, "vy: ", vy, "End y: ", end_y, "V: ", v, "X: ", x)
 		# print ("\n\n\n\n bearing: ", ball.bearing)
 
 
 		if not ball.seen:
-			print ("\n\n\nball not seen!\n\n\n")
-			commands.setHeadPan(0, 0.05)
-			choice = "unseen"
+			# print ("\n\n\nball not seen!\n\n\n")
+			# commands.setHeadPan(0, 0.1)
+			unseen_count += 1
+			choice = "nomove"
 			# running_vx = 0.0
 			# running_vy = 0.0
 			# print ("\n\n\n\n Ball moving!!! \n\n\n\n")
 		elif v < V_THRESHOLD:
 			commands.setHeadPan(ball.bearing, 0.05)
-			print ("\n\n\nball steady\n\n\n")
+			# print ("\n\n\nball steady\n\n\n")
 			choice = "nomove"
 		else:
 			commands.setHeadPan(ball.bearing, 0.05)
-			print ("\n\n\n ball moving!!!\n\n\n")
+			# print ("\n\n\n ball moving!!!\n\n\n")
 
 			head_angle = core.joint_values[core.HeadPan]
-			print ("head angllllle!", head_angle)
+			# print ("head angllllle!", head_angle)
+
+			t = 5.0
+
+			end_x = x + t * vx
+			end_y = y + t * vy
+
+
 
 
 			# if v > V_THRESHOLD and running_vx < 0 and (X_THRESHOLD - 100) <= x and (x <= X_THRESHOLD+ 100):
-			if v > V_THRESHOLD and running_vx < -15 and x <= X_THRESHOLD:
+			if end_x <= X_THRESHOLD:
 
-				if head_angle < -0.3 and end_y < CENTER_MAX_THRESHOLD:
+				if end_y <= -CENTER_MAX_THRESHOLD:
 					choice = "right"
-				elif head_angle > 0.3 and end_y > -CENTER_MAX_THRESHOLD:
+				elif end_y >= CENTER_MAX_THRESHOLD:
 					choice = "left"
 				elif end_y < CENTER_MAX_THRESHOLD and end_y > -CENTER_MAX_THRESHOLD:
 					choice = "center"
@@ -163,10 +166,12 @@ class RaiseArms(Node):
 				# 	choice = "nomove"
 
 			else:
-				print ("\n\n\n\nno move\n\n\n\n")
+				# print ("\n\n\n\nno move\n\n\n\n")
 				choice = "nomove"
 
-
+		if unseen_count >= 3:
+			unseen_count = 0
+			choice = "unseen"
 			# else:
 			# 	print ("\n\n\n\nno move\n\n\n\n")
 			# 	choice = "nomove"
@@ -183,7 +188,7 @@ class Playing(LoopingStateMachine):
 			"left": pose.RaiseLeftArm(time=1.),
 			"right": pose.RaiseRightArm(time=1.),
 			"center": pose.RaiseBothArms(time=1.),
-			"unseen": pose.SittingPose(time=0.3),
+			"unseen": NotSeen(),
 			"nomove": pose.SittingPose(time=0.3),
 		}
 
@@ -198,7 +203,7 @@ class Playing(LoopingStateMachine):
 		for direction in arms:
 			arm = arms[direction]
 			if direction in ["left", "right", "center"]:
-				self.add_transition(raiseArm, S(direction), arm, T(1.2), raiseArm)
+				self.add_transition(raiseArm, S(direction), arm, T(0.1), raiseArm)
 			else:
 				self.add_transition(raiseArm, S(direction), arm, T(0.1), raiseArm)
 

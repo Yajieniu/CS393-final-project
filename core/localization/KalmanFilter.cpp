@@ -82,7 +82,7 @@ std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> KalmanFilter::algori
 	// std::cout << "old wt: \n" << wt << sep;
 
 	// predict state
-	Vectornf predictedWt = At * wt + Bt * ut; 
+	Vectornf predictedWt = At * wt + Bt * ut;
 
 	// cout << "predictedWt: \n" << predictedWt << sep;
 	// wt = predictedWt;
@@ -119,7 +119,7 @@ std::tuple<KalmanFilter::Vectornf, KalmanFilter::Matrixnnf> KalmanFilter::algori
 	// 	cout << "Covt not PSD" << endl;
 	// };
 
-	return std::make_tuple(predictedWt, Covt);
+	return std::make_tuple(this->wt, this->Covt);
 
 }
 

@@ -267,30 +267,30 @@ Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Partic
   return newp;
 }
 
-const Pose2D& ParticleFilter::pose() { // Our Pose
-  if(dirty_) {
-    // Compute the mean pose estimate
-    mean_ = kMeans();
-    dirty_ = false;
-  }
-  return mean_;
-}
-
-// const Pose2D& ParticleFilter::pose() { // Josiah's code
+// const Pose2D& ParticleFilter::pose() { // Our Pose
 //   if(dirty_) {
 //     // Compute the mean pose estimate
-//     mean_ = Pose2D();
-//     using T = decltype(mean_.translation);
-//     for(const auto& p : particles()) {
-//       mean_.translation += T(p.x,p.y);
-//       mean_.rotation += p.t;
-//     }
-//     if(particles().size() > 0)
-//       mean_ /= static_cast<float>(particles().size());
-//     dirty_ = false;
-//   }
-//   return mean_;
+//    mean_ = kMeans();
+//    dirty_ = false;
+//  }
+//  return mean_;
 // }
+
+const Pose2D& ParticleFilter::pose() { // Josiah's code
+   if(dirty_) {
+     // Compute the mean pose estimate
+     mean_ = Pose2D();
+     using T = decltype(mean_.translation);
+     for(const auto& p : particles()) {
+       mean_.translation += T(p.x,p.y);
+       mean_.rotation += p.t;
+     }
+     if(particles().size() > 0)
+       mean_ /= static_cast<float>(particles().size());
+     dirty_ = false;
+   }
+   return mean_;
+}
 
 const Pose2D& ParticleFilter::kMeans() {
   auto &P = particles(); // for easier implementation

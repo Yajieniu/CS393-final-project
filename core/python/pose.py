@@ -192,11 +192,11 @@ totalContTime = 0.4
 class RaiseRightArm(Task):
   def __init__(self, time = totalContTime):
     super(RaiseRightArm, self).__init__(time=time)
-    self.setSubtask(PoseSequence(
-      cfgpose.raiseRightArmPose, 0.2,
-      # cfgpose.raiseRightArmPose, 0.6,
-      cfgpose.ourSittingPose, 0.2
-    ))
+    # self.setSubtask(PoseSequence(
+    #   cfgpose.raiseRightArmPose, 0.2,
+    #   # cfgpose.raiseRightArmPose, 0.6,
+    #   cfgpose.ourSittingPose, 0.2
+    # ))
 
   def run(self):
     self.setSubtask(PoseSequence(
@@ -214,11 +214,11 @@ class RaiseRightArm(Task):
 class RaiseLeftArm(Task):
   def __init__(self, time = totalContTime):
     super(RaiseLeftArm, self).__init__(time=time)
-    self.setSubtask(PoseSequence(
-      cfgpose.raiseLeftArmPose, 0.2,
-      # cfgpose.raiseLeftArmPose, 0.6,
-      cfgpose.ourSittingPose, 0.2
-      ))
+    # self.setSubtask(PoseSequence(
+    #   cfgpose.raiseLeftArmPose, 0.2,
+    #   # cfgpose.raiseLeftArmPose, 0.6,
+    #   cfgpose.ourSittingPose, 0.2
+    #   ))
     
   def run(self):
     self.setSubtask(PoseSequence(
@@ -234,11 +234,11 @@ class RaiseLeftArm(Task):
 class RaiseBothArms(Task):
   def __init__(self, time = totalContTime):
     super(RaiseBothArms, self).__init__(time=time)
-    self.setSubtask(PoseSequence(
-      cfgpose.raiseBothArmsPose, 0.2,
-      # cfgpose.raiseBothArmsPose, 0.6,
-      cfgpose.ourSittingPose, 0.2
-    ))
+    # self.setSubtask(PoseSequence(
+    #   cfgpose.raiseBothArmsPose, 0.2,
+    #   # cfgpose.raiseBothArmsPose, 0.6,
+    #   cfgpose.ourSittingPose, 0.2
+    # ))
 
   def run(self):
     self.setSubtask(PoseSequence(
