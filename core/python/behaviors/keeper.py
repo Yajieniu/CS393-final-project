@@ -128,12 +128,12 @@ class Goalie(Node):
 		if not ball.seen:
 			unseen_count += 1
 			choice = "nomove"
-		elif True: #v < V_THRESHOLD:
+		elif v < V_THRESHOLD:
 			commands.setHeadPan(ball.bearing, 0.1)
-			if ball.bearing < -0.3 and self.count > -5:
+			if ball.bearing < -0.2 and self.count > -5:
 				choice = "walk_right"
 				self.count -= 1
-			elif ball.bearing > 0.3 and self.count < 5:
+			elif ball.bearing > 0.2 and self.count < 5:
 				choice = "walk_left"
 				self.count += 1
 			else:

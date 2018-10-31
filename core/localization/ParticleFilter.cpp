@@ -15,12 +15,12 @@ i.e.,, robot's back towards the goal.
 
 // Beacons World Locations
 static map<WorldObjectType, Point2D> beaconLocation = {
-  { WO_BEACON_BLUE_YELLOW,    {1500, 1000} },
-  { WO_BEACON_YELLOW_BLUE,    {1500, -1000} },
-  { WO_BEACON_BLUE_PINK,      {0, 1000} },
-  { WO_BEACON_PINK_BLUE,      {0, -1000} },
-  { WO_BEACON_PINK_YELLOW,    {-1500, 1000} },
-  { WO_BEACON_YELLOW_PINK,    {-1500, -1000} }
+  { WO_BEACON_BLUE_YELLOW,    {2000, 1250} },
+  { WO_BEACON_YELLOW_BLUE,    {2000, 1250} },
+  { WO_BEACON_BLUE_PINK,      {1500, -1250} },
+  { WO_BEACON_PINK_BLUE,      {1500, -1250} },
+  { WO_BEACON_PINK_YELLOW,    {1000, 1250} },
+  { WO_BEACON_YELLOW_PINK,    {1000, 1250} }
 };
 
 ParticleFilter::ParticleFilter(MemoryCache& cache, TextLogger*& tlogger) 
@@ -38,8 +38,8 @@ ParticleFilter::ParticleFilter(MemoryCache& cache, TextLogger*& tlogger)
  * Location and orientation are given.
  */
 void ParticleFilter::init(Point2D loc, float orientation) {
-  mean_.translation = loc;
-  mean_.rotation = orientation;
+  mean_.translation.x = 2000;
+  mean_.rotation = M_PI/2;
 }
 
 /* 
@@ -63,7 +63,7 @@ void ParticleFilter::processFrame() {
     backToRandom = false;
   }
   else {
-    //RandomParticleMCL();
+    RandomParticleMCL();
   }
 }
 
@@ -169,9 +169,10 @@ Particle& ParticleFilter::resampling(Particle& newP, std::vector<Particle>& part
     assert(randNumber <= weights[numOfParticles-1]);
     
     // resampled particle should be close to particles[i-1]
-    while(randNumber > weights[i]) {
-      i++;
-    }
+    i = std::upper_bound(weights, weights + numOfParticles, randNumber) - weights;
+    // while(randNumber > weights[i]) {
+    //   i++;
+    // }
   }
   else {  
     // version 2, Systematic resampling
@@ -254,9 +255,9 @@ Particle& ParticleFilter::sample_motion_model(Particle& newp, auto& disp, Partic
   auto dx = disp.translation.x;
   auto dy = disp.translation.y;
 
-  newp.x = p.x + dx*cos(p.t) - dy*sin(p.t) + Random::inst().sampleN() * 15; 
-  newp.y = p.y + dx*sin(p.t) + dy*cos(p.t) + Random::inst().sampleN() * 15;
-  newp.t = p.t + disp.rotation + Random::inst().sampleN() * 5/RAD_T_DEG; 
+  newp.x = p.x + dx*cos(p.t) - dy*sin(p.t) + Random::inst().sampleN() * 10; 
+  newp.y = p.y + dx*sin(p.t) + dy*cos(p.t) + Random::inst().sampleN() * 10;
+  newp.t = p.t + disp.rotation + Random::inst().sampleN() * 3/RAD_T_DEG; 
 
   // Assuming theta is between -pi, pi degree
   while (newp.t <= -M_PI) newp.t += M_2PI;

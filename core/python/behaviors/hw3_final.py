@@ -16,12 +16,12 @@ from state_machine import Node, S, C, T, LoopingStateMachine
 import UTdebug
 
 THETA_THRESHOLD = 0.05
-RIGHT_FOOT_OFFSET = -0.25
+RIGHT_FOOT_OFFSET = -0.35
 
 DELAY = 0.05
 BALL_MIN_PHASE1 = 250
 BALL_MIN_PHASE2 = 170
-GOAL_MIN = 1500
+GOAL_MIN = 1200
 
 VX_MIN = 0.1
 VX_MAX = 1
@@ -48,8 +48,6 @@ play_mode = 1
 dribble = 0.
 kick_mode = False
 kick_waiting = 3.0
-
-left_offset = 0.
 
 
 class Controller(object):
@@ -126,7 +124,6 @@ class FindBall(Node):
         global goal_side
         global ball_side
         global dribble
-        global left_offset
         global play_mode
         global kick_mode
         global kick_waiting
@@ -141,7 +138,7 @@ class FindBall(Node):
         ball_x = ball.visionDistance
 
         goal_theta = goal.visionBearing
-        goal_x = goal.visionDistance
+        goal_x = mem_objects.world_objects[memory.robot_state.WO_SELF].loc.x
 
         print
 
@@ -166,13 +163,13 @@ class FindBall(Node):
                 vtheta = ball_side* 0.5
             elif ball.fromTopCamera or ball_x > BALL_MIN_PHASE1:
                 print ('\n\n\n\nBall seen far away.\n\n\n\n')
-                vx = self.controller( (ball_x - BALL_MIN_PHASE1) * SCALE)
+                vx = self.controller( (ball_x - BALL_MIN_PHASE1) * SCALE + 0.2)
                 vtheta = ball_theta
             else:
                 play_mode = 2
 
         elif play_mode == 2:
-            if not ball.seen or (ball.fromTopCamera or ball_x > 2*BALL_MIN_PHASE1):
+            if not ball.seen or (ball.fromTopCamera or ball_x > 1.5*BALL_MIN_PHASE1):
                 play_mode = 1
 
             vx = 0.
@@ -199,28 +196,25 @@ class FindBall(Node):
                     play_mode = 3
                 else:
                     play_mode = 5
-                    dribble = 1.
+                    dribble = 1.5
 
         elif play_mode == 3:
             if not ball.seen or (ball.fromTopCamera or ball_x > 2*BALL_MIN_PHASE1):
-            # if not ball.seen or (ball.fromTopCamera or ball_x > 1.5*BALL_MIN_PHASE2):
                 play_mode = 1
             # Stop and transfer to kick
             FACTOR = 1.
             print ('\n\n\nPreparing for kick.\n\n\n\n')
             print ('\n\tball distance: %.3f\n'%ball_x)
             # vx = self.controller( (ball_x - BALL_MIN_PHASE2) * SCALE) + VX_OFFSET
-            vx = 0.2
+            vx = 0.1
             vy = 0
             vtheta = 0
             if ball_x >= BALL_MIN_PHASE2:
                 vx = 0.35
             if abs(ball_theta - RIGHT_FOOT_OFFSET) >= 0.7:
-                vy = ball_theta - RIGHT_FOOT_OFFSET
-
-            if ball_x < BALL_MIN_PHASE2 and abs(vy) < 0.7:
+                vy = (ball_theta - RIGHT_FOOT_OFFSET) * 2
+            elif ball_x < BALL_MIN_PHASE2:
                 play_mode = 4
-                left_offset = 0.5
 
         elif play_mode == 4:
             print ("\n\n\n\n\tkick!!\n\n\n\n")
@@ -232,14 +226,14 @@ class FindBall(Node):
                 play_mode = 3
                 kick_mode = True
             else:
+                pass
                 # sleep(0.5)
-
 
         elif play_mode == 5:
             if dribble > 0:
                 print ("\n\n\n\ndribble\n\n\n\n")
                 dribble -= DELAY
-                vx = 0.75
+                vx = 0.5
                 if ball.seen and goal.seen:
                     vtheta = ball_theta
                 else:
@@ -277,7 +271,6 @@ class Playing(LoopingStateMachine):
         global goal_side
         global ball_side
         global dribble
-        global left_offset
         global play_mode
         global FACTOR
 
@@ -289,8 +282,6 @@ class Playing(LoopingStateMachine):
         ball_side = 1
         play_mode = 1
         dribble = 0.
-
-        left_offset = 0.
         
         findball = FindBall()
         followball = FollowBall()
