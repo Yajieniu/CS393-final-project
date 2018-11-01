@@ -171,7 +171,7 @@ class StandStraight(Task):
 
 class Squat(Task):
   def __init__(self, time = 3.0):
-    super(Squat, self).__init__(self, time=time)
+    super(Squat, self).__init__(time=time)
     self.setChain([ 
       PoseSequence(
         cfgpose.goalieSquatPart1, 0.4,
@@ -202,7 +202,7 @@ class RaiseRightArm(Task):
     self.setSubtask(PoseSequence(
       cfgpose.raiseRightArmPose, 0.2,
       # cfgpose.raiseRightArmPose, 0.6,
-      cfgpose.ourSittingPose, 0.2
+      cfgpose.standingPose, 0.2
     ))
 
     # super(RaiseRightArm, self).run()
@@ -224,7 +224,7 @@ class RaiseLeftArm(Task):
     self.setSubtask(PoseSequence(
       cfgpose.raiseLeftArmPose, 0.2,
       # cfgpose.raiseLeftArmPose, 0.6,
-      cfgpose.ourSittingPose, 0.2
+      cfgpose.standingPose, 0.2
     ))
 
     # super(RaiseLeftArm, self).run()
@@ -244,7 +244,7 @@ class RaiseBothArms(Task):
     self.setSubtask(PoseSequence(
       cfgpose.raiseBothArmsPose, 0.2,
       # cfgpose.raiseBothArmsPose, 0.6,      
-      cfgpose.ourSittingPose, 0.2
+      cfgpose.standingPose, 0.2
     ))
 
     # super(RaiseBothArms, self).run()
@@ -267,22 +267,48 @@ class SittingPose(Task):
 
 
 class BlockRight(Task):
-  def __init__(self, time = 3.0):
-    super(BlockRight, self).__init__(time=time)
+  def run(self):
     self.setSubtask(PoseSequence(
-      cfgpose.blockright, 1.0,
-      cfgpose.blockright, self.time, 
-      cfgpose.sittingPoseNoArms, 2.0,
-      cfgpose.standingPose, 2.0
+      cfgpose.Assign6_block_right, 0.4,
+      cfgpose.Assign6_block_right, 2, 
+      cfgpose.Assign6_block_right_return, 0.2, 
+      cfgpose.sittingPoseNoArms, 0.2,
+      cfgpose.standingPose, 0.2
     ))
 
 class BlockLeft(Task):
-  def __init__(self, time = 3.0):
-    super(BlockLeft, self).__init__(time=time)
+  def run(self):
     self.setSubtask(PoseSequence(
-      cfgpose.blockleft, 1.0,
-      cfgpose.blockleft, self.time, 
-      cfgpose.sittingPoseNoArms, 2.0,
-      cfgpose.standingPose, 2.0
+      cfgpose.Assign6_block_left, 0.4,
+      cfgpose.Assign6_block_left, 2, 
+      cfgpose.Assign6_block_left_return, 0.2, 
+      cfgpose.sittingPoseNoArms, 0.2,
+      cfgpose.standingPose, 0.2
     ))
 
+class BlockCenter(Task):
+  def run(self):
+    self.setSubtask(PoseSequence(
+      cfgpose.Assign6_block_center, 0.4,
+      cfgpose.Assign6_block_center, 2, 
+      cfgpose.sittingPoseNoArms, 0.3,
+      cfgpose.standingPose, 0.3
+    ))
+
+class OurBlockRight(Task):
+  def reset(self):
+    super(OurBlockRight, self).reset()
+    self.state = state_machine.SimpleStateMachine('requested', 'running')
+
+  def run(self):
+    finished = walk_response.finished_standing_
+    received = walk_response.received_
+    kick_request.setNoKick()
+    walk_request.stand()
+    if received and self.state.inState('requested'):
+      self.state.transition('running')
+    elif self.state.inState('running') and finished:
+      self.finish()
+
+    if self.getTime() > 4:
+      self.finish()

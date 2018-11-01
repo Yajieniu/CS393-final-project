@@ -395,17 +395,18 @@ class Goalie(Node):
 		v = math.sqrt(vx*vx+vy*vy)
 
 		print ("\n\n\n\nVx: ", vx, "vy: ", vy, "V: ", v, "X: ", x, "Y: ", y)
-		print ("bearing: ", ball.bearing, "\n\n\n\n")
+		print ("distance %f bearing: %f \n\n\n\n" % (ball.distance, ball.bearing) )
 
 		if not ball.seen:
 			unseen_count += 1
 			choice = "nomove"
+			clear_global_variables()
 		elif v < V_THRESHOLD:
 			commands.setHeadPan(ball.bearing, 0.1)
-			if ball.bearing < -0.2 and goalie_walk_count > -5:
+			if ball.bearing < -0.1 and goalie_walk_count > -5:
 				choice = "walk_right"
 				goalie_walk_count -= 1
-			elif ball.bearing > 0.2 and goalie_walk_count < 5:
+			elif ball.bearing > 0.1 and goalie_walk_count < 5:
 				choice = "walk_left"
 				goalie_walk_count += 1
 			else:
@@ -484,9 +485,9 @@ class Playing(LoopingStateMachine):
 		# Goalie setup
 
 		arms = {
-			"left": pose.RaiseLeftArm(time=1.),
-			"right": pose.RaiseRightArm(time=1.),
-			"center": pose.RaiseBothArms(time=1.),
+			"left": pose.BlockLeft(time=3.),
+			"right": pose.BlockRight(time=3.),
+			"center": pose.BlockCenter(time=3.),
 			"unseen": NotSeen(),
 			"nomove": TakeRest(),
 		}
@@ -500,11 +501,11 @@ class Playing(LoopingStateMachine):
 		for direction in arms:
 			arm = arms[direction]
 			if direction in ["left", "right", "center"]:
-				self.add_transition(goalie, S(direction), arm, T(0.1), switcher)
+				self.add_transition(goalie, S(direction), arm, T(3), switcher)
 			else:
 				self.add_transition(goalie, S(direction), arm, T(0.1), switcher)
 
 		for signal, node in nodes.iteritems():
-			self.add_transition(goalie, S(signal), node, T(1), nodes['take_rest'], T(0.5), switcher)
+			self.add_transition(goalie, S(signal), node, T(0.1), switcher)
 
 

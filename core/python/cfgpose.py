@@ -8,6 +8,137 @@ from __future__ import absolute_import
 import core
 from memory import robot_state
 import UTdebug
+
+Assign6_block_right = dict()
+
+Assign6_block_right[core.HeadYaw] = 0
+Assign6_block_right[core.HeadPitch] = 0
+Assign6_block_right[core.RHipYawPitch] = 0
+Assign6_block_right[core.RHipRoll] = -33.9999943081759
+Assign6_block_right[core.RHipPitch] = -58.9999988616352
+Assign6_block_right[core.RKneePitch] = 124.999998861635
+Assign6_block_right[core.RAnklePitch] = -69.9999977232703
+Assign6_block_right[core.RAnkleRoll] = -4.99999928852198
+Assign6_block_right[core.LHipYawPitch] = 0
+Assign6_block_right[core.LHipRoll] = 19.9999971540879
+Assign6_block_right[core.LHipPitch] = -42
+Assign6_block_right[core.LKneePitch] = 75.9999977232703
+Assign6_block_right[core.LAnklePitch] = -39.9999943081759
+Assign6_block_right[core.LAnkleRoll] = 16.9999971540879
+Assign6_block_right[core.RShoulderPitch] = -90.9999874779869
+Assign6_block_right[core.RShoulderRoll] = 26.9999965849055
+Assign6_block_right[core.RElbowYaw] = -0.999992031446
+Assign6_block_right[core.RElbowRoll] = -3.99999943081759
+Assign6_block_right[core.LShoulderPitch] = -96.9999874779869
+Assign6_block_right[core.LShoulderRoll] = 6.9999998577044
+Assign6_block_right[core.LElbowYaw] = -1
+Assign6_block_right[core.LElbowRoll] = -0.999999857704396
+
+Assign6_block_left = dict()
+
+Assign6_block_left[core.HeadYaw] = 0
+Assign6_block_left[core.HeadPitch] = 0
+Assign6_block_left[core.LHipYawPitch] = 0
+Assign6_block_left[core.LHipRoll] = -33.9999943081759
+Assign6_block_left[core.LHipPitch] = -48.9999943081759
+Assign6_block_left[core.LKneePitch] = 124.999998861635
+Assign6_block_left[core.LAnklePitch] = -69.9999977232703
+Assign6_block_left[core.LAnkleRoll] = -4.99999928852198
+Assign6_block_left[core.RHipYawPitch] = 0
+Assign6_block_left[core.RHipRoll] = 19.9999971540879
+Assign6_block_left[core.RHipPitch] = -31.9999954465407
+Assign6_block_left[core.RKneePitch] = 75.9999977232703
+Assign6_block_left[core.RAnklePitch] = -39.9999943081759
+Assign6_block_left[core.RAnkleRoll] = 16.9999971540879
+Assign6_block_left[core.LShoulderPitch] = -90.9999874779869
+Assign6_block_left[core.LShoulderRoll] = 26.9999965849055
+Assign6_block_left[core.LElbowYaw] = -0.999992031446
+Assign6_block_left[core.LElbowRoll] = -3.99999943081759
+Assign6_block_left[core.RShoulderPitch] = -96.9999874779869
+Assign6_block_left[core.RShoulderRoll] = 6.9999998577044
+Assign6_block_left[core.RElbowYaw] = -1
+Assign6_block_left[core.RElbowRoll] = -0.999999857704396
+
+
+Assign6_block_center = dict()
+
+Assign6_block_center[core.HeadYaw] = 0
+Assign6_block_center[core.HeadPitch] = -19.9999971540879
+Assign6_block_center[core.LHipYawPitch] = -53
+Assign6_block_center[core.LHipRoll] = -32.9999971540879
+Assign6_block_center[core.LHipPitch] = -23.9999988616352
+Assign6_block_center[core.LKneePitch] = 122.999996584906
+Assign6_block_center[core.LAnklePitch] = -61.9999908930814
+Assign6_block_center[core.LAnkleRoll] = 8.999998577044
+Assign6_block_center[core.RHipYawPitch] = -53
+Assign6_block_center[core.RHipRoll] = -18.9999988616352
+Assign6_block_center[core.RHipPitch] = -15.9999988616352
+Assign6_block_center[core.RKneePitch] = 122.999996584906
+Assign6_block_center[core.RAnklePitch] = -69.0000011383648
+Assign6_block_center[core.RAnkleRoll] = 1
+Assign6_block_center[core.LShoulderPitch] = -101.999998861635
+Assign6_block_center[core.LShoulderRoll] = -28.99999928852198
+Assign6_block_center[core.LElbowYaw] = -109.199999857704396
+Assign6_block_center[core.LElbowRoll] = -14
+Assign6_block_center[core.RShoulderPitch] = -95.9999874779869
+Assign6_block_center[core.RShoulderRoll] = 29
+Assign6_block_center[core.RElbowYaw] = -1.9999943081759
+Assign6_block_center[core.RElbowRoll] = -2
+
+
+Assign6_block_right_return = dict()
+
+Assign6_block_right_return[core.HeadYaw] = 0
+Assign6_block_right_return[core.HeadPitch] = 0
+Assign6_block_right_return[core.RHipYawPitch] = 0
+Assign6_block_right_return[core.RHipRoll] = -3.9999943081759
+Assign6_block_right_return[core.RHipPitch] = -58.9999988616352
+Assign6_block_right_return[core.RKneePitch] = 124.999998861635
+Assign6_block_right_return[core.RAnklePitch] = -69.9999977232703
+Assign6_block_right_return[core.RAnkleRoll] = -4.99999928852198
+Assign6_block_right_return[core.LHipYawPitch] = 0
+Assign6_block_right_return[core.LHipRoll] = -19.9999971540879
+Assign6_block_right_return[core.LHipPitch] = -42
+Assign6_block_right_return[core.LKneePitch] = 100.9999977232703
+Assign6_block_right_return[core.LAnklePitch] = -66.9999943081759
+Assign6_block_right_return[core.LAnkleRoll] = 36.9999971540879
+Assign6_block_right_return[core.RShoulderPitch] = -90.9999874779869
+Assign6_block_right_return[core.RShoulderRoll] = 26.9999965849055
+Assign6_block_right_return[core.RElbowYaw] = -0.999992031446
+Assign6_block_right_return[core.RElbowRoll] = -3.99999943081759
+Assign6_block_right_return[core.LShoulderPitch] = -96.9999874779869
+Assign6_block_right_return[core.LShoulderRoll] = 6.9999998577044
+Assign6_block_right_return[core.LElbowYaw] = -1
+Assign6_block_right_return[core.LElbowRoll] = -0.999999857704396
+
+
+Assign6_block_left_return = dict()
+
+Assign6_block_left_return[core.HeadYaw] = 0
+Assign6_block_left_return[core.HeadPitch] = 0
+Assign6_block_left_return[core.LHipYawPitch] = 0
+Assign6_block_left_return[core.LHipRoll] = -3.9999943081759
+Assign6_block_left_return[core.LHipPitch] = -58.9999988616352
+Assign6_block_left_return[core.LKneePitch] = 124.999998861635
+Assign6_block_left_return[core.LAnklePitch] = -69.9999977232703
+Assign6_block_left_return[core.LAnkleRoll] = -4.99999928852198
+Assign6_block_left_return[core.RHipYawPitch] = 0
+Assign6_block_left_return[core.RHipRoll] = -19.9999971540879
+Assign6_block_left_return[core.RHipPitch] = -42
+Assign6_block_left_return[core.RKneePitch] = 100.9999977232703
+Assign6_block_left_return[core.RAnklePitch] = -66.9999943081759
+Assign6_block_left_return[core.RAnkleRoll] = 36.9999971540879
+Assign6_block_left_return[core.LShoulderPitch] = -90.9999874779869
+Assign6_block_left_return[core.LShoulderRoll] = 26.9999965849055
+Assign6_block_left_return[core.LElbowYaw] = -0.999992031446
+Assign6_block_left_return[core.LElbowRoll] = -3.99999943081759
+Assign6_block_left_return[core.RShoulderPitch] = -96.9999874779869
+Assign6_block_left_return[core.RShoulderRoll] = 6.9999998577044
+Assign6_block_left_return[core.RElbowYaw] = -1
+Assign6_block_left_return[core.RElbowRoll] = -0.999999857704396
+
+
+
 diveRightTwo = dict()
 
 diveRightTwo[core.HeadYaw] = 0.0
@@ -2143,7 +2274,7 @@ blockright[core.LAnkleRoll] = 17
 
 blockright[core.RHipYawPitch] = 0
 blockright[core.RHipRoll] = -34
-blockright[core.RHipPitch] = -49
+blockright[core.RHipPitch] = -59
 blockright[core.RKneePitch] = 125
 blockright[core.RAnklePitch] = -70
 blockright[core.RAnkleRoll] = -5
@@ -2170,7 +2301,7 @@ blockleft[core.RAnkleRoll] = 17
 
 blockleft[core.LHipYawPitch] = 0
 blockleft[core.LHipRoll] = -34
-blockleft[core.LHipPitch] = -49
+blockleft[core.LHipPitch] = -59
 blockleft[core.LKneePitch] = 125
 blockleft[core.LAnklePitch] = -70
 blockleft[core.LAnkleRoll] = -5

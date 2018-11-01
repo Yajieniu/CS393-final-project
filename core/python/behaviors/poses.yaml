@@ -1,0 +1,2565 @@
+
+			diveRightTwo
+    frames: 50
+    joints:
+
+			HeadYaw: 0.0
+			HeadPitch: -0.0
+			LShoulderPitch: -100
+			LShoulderRoll: 20
+			LElbowYaw: -50  # -80
+			LElbowRoll: -56  # -45
+			LHipYawPitch: -2
+			LHipRoll: 2  # 35  #  lhip roll
+			LHipPitch: 0  # -5
+			LKneePitch: 0  # 7
+			LAnklePitch: 0  # -3
+			LAnkleRoll: -0  # -25  #  left ankle roll
+			RHipYawPitch: -2
+			RHipRoll: 9  # 45  #  rhip roll
+			RHipPitch: -34  # -5
+			RKneePitch: 95  # 7
+			RAnklePitch: -67  # -3
+			RAnkleRoll: 0  # -25  #  r ankle roll
+			RShoulderPitch: 87  #  r sh p
+			RShoulderRoll: 9   # r sh r
+			RElbowYaw: 8.5
+			RElbowRoll: -2
+
+
+			diveLeftTwo
+    frames: 50
+    joints:
+
+			HeadYaw: 0.0
+			HeadPitch: -0.0
+			LShoulderPitch: 87  # 100   #  l shoulderpitch
+			LShoulderRoll: -9   # 20
+			LElbowYaw: -8.5  # -50  # -80
+			LElbowRoll: 2     # -56  # -45
+			LHipYawPitch: -2  # 6.5
+			LHipRoll: 9  # -45  #  lhip roll
+			LHipPitch: -34  # -5
+			LKneePitch: 95  # 7
+			LAnklePitch: -67  # -3
+			LAnkleRoll: -0 # left ankle roll
+			RHipYawPitch: -2
+			RHipRoll: 2  # rhip roll
+			RHipPitch: 0 # -34-5
+			RKneePitch: 0  # 7
+			RAnklePitch: 0  # -3
+			RAnkleRoll: 0  # 25  #  r ankle roll
+			RShoulderPitch: -100     # r shoulder pitch
+			RShoulderRoll: -20  # r s r
+			RElbowYaw: 50  # r e y
+			RElbowRoll: 56      #  r e r
+
+
+
+			diveLeftTwoB
+    frames: 50
+    joints:
+			HeadYaw: 0.0
+			HeadPitch: -0.0
+			LShoulderPitch: 87  # 100   #  l shoulderpitch
+			LShoulderRoll: -9   # 20
+			LElbowYaw: -8.5  # -50  # -80
+			LElbowRoll: 2     # -56  # -45
+			LHipYawPitch: -2  # 6.5
+			LHipRoll: -0  # -9  # -45  #  lhip roll
+			LHipPitch: 0  # -34  # -5
+			LKneePitch: 0  # 95  # 7
+			LAnklePitch: 90  # -3
+			LAnkleRoll: -0  # left ankle roll
+			RHipYawPitch: -2
+			RHipRoll: 2  # rhip roll
+			RHipPitch: 0 # -34-5
+			RKneePitch: 0  # 7
+			RAnklePitch: 0  # -3
+			RAnkleRoll: 0  # 25  #  r ankle roll
+			RShoulderPitch: -100     # r shoulder pitch
+			RShoulderRoll: -20     # r s r
+			RElbowYaw: 50    # r e y
+			RElbowRoll: 56      #  r e r
+
+
+			# possible goalie dive
+			diveRightTwoB
+    frames: 50
+    joints:
+
+			diveRightTwoB[core.HeadYaw: 0.0
+			diveRightTwoB[core.HeadPitch: -0.0
+			diveRightTwoB[core.LShoulderPitch: -100
+			diveRightTwoB[core.LShoulderRoll: 20
+			diveRightTwoB[core.LElbowYaw: -50  # -80
+			diveRightTwoB[core.LElbowRoll: -56  # -45
+			diveRightTwoB[core.LHipYawPitch: -2
+			diveRightTwoB[core.LHipRoll: 2  # 35  #  lhip roll
+			diveRightTwoB[core.LHipPitch: 0  # -5
+			diveRightTwoB[core.LKneePitch: 0  # 7
+			diveRightTwoB[core.LAnklePitch: 0  # -3
+			diveRightTwoB[core.LAnkleRoll: -0  # -25  #  left ankle roll
+			diveRightTwoB[core.RHipYawPitch: -2
+			diveRightTwoB[core.RHipRoll: 9  # 45  #  rhip roll
+			diveRightTwoB[core.RHipPitch: 0  # -5
+			diveRightTwoB[core.RKneePitch: 0  # 7
+			diveRightTwoB[core.RAnklePitch: 90  # -3
+			diveRightTwoB[core.RAnkleRoll: 0  # -25  #  r ankle roll
+			diveRightTwoB[core.RShoulderPitch: 87   # r sh p
+			diveRightTwoB[core.RShoulderRoll: 9    # r sh r
+			diveRightTwoB[core.RElbowYaw: 8.5
+			diveRightTwoB[core.RElbowRoll: -2
+
+
+			crabPose
+    frames: 50
+    joints:
+
+			HeadYaw: 0.0
+			HeadPitch: -10.0
+			LShoulderPitch: -36
+			LShoulderRoll: 0
+			LElbowYaw: -100
+			LElbowRoll: -60
+			LHipYawPitch: -68  # hip yaw pitch
+			LHipRoll: -44
+			LHipPitch: -79
+			LKneePitch: 9
+			LAnklePitch: 44
+			LAnkleRoll: -9
+			RHipYawPitch: -68
+			RHipRoll: -44
+			RHipPitch: -79
+			RKneePitch: -9
+			RAnklePitch: 44
+			RAnkleRoll: -9
+			RShoulderPitch: -36
+			RShoulderRoll: -0
+			RElbowYaw: -100
+			RElbowRoll: -60
+
+			KeeperDiveGoingDown0
+    frames: 50
+    joints:
+			KeeperDiveGoingDown0[core.HeadYaw: 4.2815668335855
+			KeeperDiveGoingDown0[core.HeadPitch: 31.028183361534
+			KeeperDiveGoingDown0[core.LShoulderPitch: 78.226
+			KeeperDiveGoingDown0[core.LShoulderRoll: 6.150
+			KeeperDiveGoingDown0[core.LElbowYaw: 25.6619
+			KeeperDiveGoingDown0[core.LElbowRoll: -6.50158
+			KeeperDiveGoingDown0[core.LHipYawPitch: 0
+			KeeperDiveGoingDown0[core.LHipPitch: -30
+			KeeperDiveGoingDown0[core.LHipRoll: 0
+			KeeperDiveGoingDown0[core.LKneePitch: 65
+			KeeperDiveGoingDown0[core.LAnklePitch: -35
+			KeeperDiveGoingDown0[core.LAnkleRoll: 0
+			KeeperDiveGoingDown0[core.RHipYawPitch: 0
+			KeeperDiveGoingDown0[core.RHipPitch: -30
+			KeeperDiveGoingDown0[core.RHipRoll: 0
+			KeeperDiveGoingDown0[core.RKneePitch: 65
+			KeeperDiveGoingDown0[core.RAnklePitch: -35
+			KeeperDiveGoingDown0[core.RAnkleRoll: 0
+			KeeperDiveGoingDown0[core.RShoulderPitch: -104.76934401853
+			KeeperDiveGoingDown0[core.RShoulderRoll: 10.988870228259
+			KeeperDiveGoingDown0[core.RElbowYaw: -79.627499645978
+			KeeperDiveGoingDown0[core.RElbowRoll: -30.852401613054
+
+			KeeperDiveGoingDown0Right
+    frames: 50
+    joints:
+			KeeperDiveGoingDown0Right[core.HeadYaw: 4.2815668335855
+			KeeperDiveGoingDown0Right[core.HeadPitch: 31.028183361534
+			KeeperDiveGoingDown0Right[core.RShoulderPitch: 78.226
+			KeeperDiveGoingDown0Right[core.RShoulderRoll: -6.150
+			KeeperDiveGoingDown0Right[core.RElbowYaw: -25.6619
+			KeeperDiveGoingDown0Right[core.RElbowRoll: 6.50158
+			KeeperDiveGoingDown0Right[core.RHipYawPitch: 0
+			KeeperDiveGoingDown0Right[core.RHipPitch: -30
+			KeeperDiveGoingDown0Right[core.RHipRoll: 0
+			KeeperDiveGoingDown0Right[core.RKneePitch: 65
+			KeeperDiveGoingDown0Right[core.RAnklePitch: -35
+			KeeperDiveGoingDown0Right[core.RAnkleRoll: 0
+			KeeperDiveGoingDown0Right[core.LHipYawPitch: 0
+			KeeperDiveGoingDown0Right[core.LHipPitch: -30
+			KeeperDiveGoingDown0Right[core.LHipRoll: 0
+			KeeperDiveGoingDown0Right[core.LKneePitch: 65
+			KeeperDiveGoingDown0Right[core.LAnklePitch: -35
+			KeeperDiveGoingDown0Right[core.LAnkleRoll: 0
+			KeeperDiveGoingDown0Right[core.LShoulderPitch: -104.76934401853
+			KeeperDiveGoingDown0Right[core.LShoulderRoll: -10.988870228259
+			KeeperDiveGoingDown0Right[core.LElbowYaw: 79.627499645978
+			KeeperDiveGoingDown0Right[core.LElbowRoll: 30.852401613054
+
+			KeeperDiveGoingDown1
+    frames: 50
+    joints:
+			KeeperDiveGoingDown1[core.HeadYaw: 4.2815668335855
+			KeeperDiveGoingDown1[core.HeadPitch: 31.028183361534
+			KeeperDiveGoingDown1[core.LShoulderPitch: 97.825896651695
+			KeeperDiveGoingDown1[core.LShoulderRoll: 14.236055711578
+			KeeperDiveGoingDown1[core.LElbowYaw: 2.7222393418266
+			KeeperDiveGoingDown1[core.LElbowRoll: -4.0406152620272
+			KeeperDiveGoingDown1[core.LHipYawPitch: -1.4917551496395
+			KeeperDiveGoingDown1[core.LHipRoll: -3.6938568031494
+			KeeperDiveGoingDown1[core.LHipPitch: -33.044885506439
+			KeeperDiveGoingDown1[core.LKneePitch: 82.352144068167
+			KeeperDiveGoingDown1[core.LAnklePitch: -44.827187220954
+			KeeperDiveGoingDown1[core.LAnkleRoll: -12.04357096442
+			KeeperDiveGoingDown1[core.RHipYawPitch: 0
+			KeeperDiveGoingDown1[core.RHipRoll: 6.7700672836174
+			KeeperDiveGoingDown1[core.RHipPitch: -25.051545856625
+			KeeperDiveGoingDown1[core.RKneePitch: 58.098839004747
+			KeeperDiveGoingDown1[core.RAnklePitch: -29.177649473851
+			KeeperDiveGoingDown1[core.RAnkleRoll: 9.055252211965
+			KeeperDiveGoingDown1[core.RShoulderPitch: -104.76934401853
+			KeeperDiveGoingDown1[core.RShoulderRoll: 10.988870228259
+			KeeperDiveGoingDown1[core.RElbowYaw: -79.627499645978
+			KeeperDiveGoingDown1[core.RElbowRoll: -30.852401613054
+
+			KeeperDiveGoingDown1Right
+    frames: 50
+    joints:
+			KeeperDiveGoingDown1Right[core.HeadYaw: 4.2815668335855
+			KeeperDiveGoingDown1Right[core.HeadPitch: 31.028183361534
+			KeeperDiveGoingDown1Right[core.RShoulderPitch: 97.825896651695
+			KeeperDiveGoingDown1Right[core.RShoulderRoll: -14.236055711578
+			KeeperDiveGoingDown1Right[core.RElbowYaw: -2.7222393418266
+			KeeperDiveGoingDown1Right[core.RElbowRoll: 4.0406152620272
+			KeeperDiveGoingDown1Right[core.RHipYawPitch: -1.4917551496395
+			KeeperDiveGoingDown1Right[core.RHipRoll: 3.6938568031494
+			KeeperDiveGoingDown1Right[core.RHipPitch: -33.044885506439
+			KeeperDiveGoingDown1Right[core.RKneePitch: 82.352144068167
+			KeeperDiveGoingDown1Right[core.RAnklePitch: -44.827187220954
+			KeeperDiveGoingDown1Right[core.RAnkleRoll: 12.04357096442
+			KeeperDiveGoingDown1Right[core.LHipYawPitch: 0
+			KeeperDiveGoingDown1Right[core.LHipRoll: -6.7700672836174
+			KeeperDiveGoingDown1Right[core.LHipPitch: -25.051545856625
+			KeeperDiveGoingDown1Right[core.LKneePitch: 58.098839004747
+			KeeperDiveGoingDown1Right[core.LAnklePitch: -29.177649473851
+			KeeperDiveGoingDown1Right[core.LAnkleRoll: -9.055252211965
+			KeeperDiveGoingDown1Right[core.LShoulderPitch: -104.76934401853
+			KeeperDiveGoingDown1Right[core.LShoulderRoll: -10.988870228259
+			KeeperDiveGoingDown1Right[core.LElbowYaw: 79.627499645978
+			KeeperDiveGoingDown1Right[core.LElbowRoll: 30.852401613054
+
+			KeeperDiveGoingDown2
+    frames: 50
+    joints:
+			KeeperDiveGoingDown2[core.HeadYaw: 3.7542164655053
+			KeeperDiveGoingDown2[core.LShoulderPitch: 97.825896651695
+			KeeperDiveGoingDown2[core.LShoulderRoll: 14.236055711578
+			KeeperDiveGoingDown2[core.LElbowYaw: 2.7222393418266
+			KeeperDiveGoingDown2[core.LElbowRoll: -4.0406152620272
+			KeeperDiveGoingDown2[core.LHipYawPitch: -5.0074242701743
+			KeeperDiveGoingDown2[core.LHipRoll: 19.245885062114
+			KeeperDiveGoingDown2[core.LHipPitch: -46.492319038711
+			KeeperDiveGoingDown2[core.LKneePitch: 120.14558199127
+			KeeperDiveGoingDown2[core.LAnklePitch: -65.130177245816
+			KeeperDiveGoingDown2[core.LAnkleRoll: -5.6274748194435
+			KeeperDiveGoingDown2[core.RHipYawPitch: 0
+			KeeperDiveGoingDown2[core.RHipRoll: -7.7320678385887
+			KeeperDiveGoingDown2[core.RHipPitch: -29.62191571332
+			KeeperDiveGoingDown2[core.RKneePitch: 71.018920461391
+			KeeperDiveGoingDown2[core.RAnklePitch: -32.9569946322
+			KeeperDiveGoingDown2[core.RAnkleRoll: -5.183207726201
+			KeeperDiveGoingDown2[core.RShoulderPitch: -105.20880521991
+			KeeperDiveGoingDown2[core.RShoulderRoll: 8.7915770279249
+			KeeperDiveGoingDown2[core.RElbowYaw: -80.330633470085
+			KeeperDiveGoingDown2[core.RElbowRoll: -30.852401613054
+
+			KeeperDiveGoingDown2Right
+    frames: 50
+    joints:
+			HeadYaw: 3.7542164655053
+			RShoulderPitch: 97.825896651695
+			RShoulderRoll: -14.236055711578
+			RElbowYaw: -2.7222393418266
+			RElbowRoll: 4.0406152620272
+			RHipYawPitch: -5.0074242701743
+			RHipRoll: -19.245885062114
+			RHipPitch: -46.492319038711
+			RKneePitch: 120.14558199127
+			RAnklePitch: -65.130177245816
+			RAnkleRoll: 5.6274748194435
+			LHipYawPitch: 0
+			LHipRoll: 7.7320678385887
+			LHipPitch: -29.62191571332
+			LKneePitch: 71.018920461391
+			LAnklePitch: -32.9569946322
+			LAnkleRoll: 5.183207726201
+			LShoulderPitch: -105.20880521991
+			LShoulderRoll: -8.7915770279249
+			LElbowYaw: 80.330633470085
+			LElbowRoll: 30.852401613054
+
+			KeeperDiveGoingDown3
+    frames: 50
+    joints:
+			KeeperDiveGoingDown3[core.HeadYaw: 3.6663247374919
+			KeeperDiveGoingDown3[core.HeadPitch: 30.412940411667
+			KeeperDiveGoingDown3[core.LShoulderPitch: 97.825896651695
+			KeeperDiveGoingDown3[core.LShoulderRoll: 14.236055711578
+			KeeperDiveGoingDown3[core.LElbowYaw: 2.7222393418266
+			KeeperDiveGoingDown3[core.LElbowRoll: -4.0406152620272
+			KeeperDiveGoingDown3[core.LHipYawPitch: -13.708705343498
+			KeeperDiveGoingDown3[core.LHipRoll: 20.212693216487
+			KeeperDiveGoingDown3[core.LHipPitch: -46.668104202285
+			KeeperDiveGoingDown3[core.LKneePitch: 121.55184963949
+			KeeperDiveGoingDown3[core.LAnklePitch: -64.778606918668
+			KeeperDiveGoingDown3[core.LAnkleRoll: -6.4185003715639
+			KeeperDiveGoingDown3[core.RHipYawPitch: 0
+			KeeperDiveGoingDown3[core.RHipRoll: -7.2047174705085
+			KeeperDiveGoingDown3[core.RHipPitch: 5.5347746382545
+			KeeperDiveGoingDown3[core.RKneePitch: 0.17818768261459
+			KeeperDiveGoingDown3[core.RAnklePitch: -15.202863865952
+			KeeperDiveGoingDown3[core.RAnkleRoll: -8.8746603027626
+			KeeperDiveGoingDown3[core.RShoulderPitch: -106.17561166674
+			KeeperDiveGoingDown3[core.RShoulderRoll: 8.7915770279249
+			KeeperDiveGoingDown3[core.RElbowYaw: -80.154851721606
+			KeeperDiveGoingDown3[core.RElbowRoll: -30.764510738815
+
+			KeeperDiveGoingDown3Right
+    frames: 50
+    joints:
+			KeeperDiveGoingDown3Right[core.HeadYaw: 3.6663247374919
+			KeeperDiveGoingDown3Right[core.HeadPitch: 30.412940411667
+			KeeperDiveGoingDown3Right[core.RShoulderPitch: 97.825896651695
+			KeeperDiveGoingDown3Right[core.RShoulderRoll: -14.236055711578
+			KeeperDiveGoingDown3Right[core.RElbowYaw: -2.7222393418266
+			KeeperDiveGoingDown3Right[core.RElbowRoll: 4.0406152620272
+			KeeperDiveGoingDown3Right[core.RHipYawPitch: -13.708705343498
+			KeeperDiveGoingDown3Right[core.RHipRoll: -20.212693216487
+			KeeperDiveGoingDown3Right[core.RHipPitch: -46.668104202285
+			KeeperDiveGoingDown3Right[core.RKneePitch: 121.55184963949
+			KeeperDiveGoingDown3Right[core.RAnklePitch: -64.778606918668
+			KeeperDiveGoingDown3Right[core.RAnkleRoll: 6.4185003715639
+			KeeperDiveGoingDown3Right[core.LHipYawPitch: 0
+			KeeperDiveGoingDown3Right[core.LHipRoll: 7.2047174705085
+			KeeperDiveGoingDown3Right[core.LHipPitch: 5.5347746382545
+			KeeperDiveGoingDown3Right[core.LKneePitch: 0.17818768261459
+			KeeperDiveGoingDown3Right[core.LAnklePitch: -15.202863865952
+			KeeperDiveGoingDown3Right[core.LAnkleRoll: 8.8746603027626
+			KeeperDiveGoingDown3Right[core.LShoulderPitch: -106.17561166674
+			KeeperDiveGoingDown3Right[core.LShoulderRoll: -8.7915770279249
+			KeeperDiveGoingDown3Right[core.LElbowYaw: 80.154851721606
+			KeeperDiveGoingDown3Right[core.LElbowRoll: 30.764510738815
+
+
+
+
+
+			KeeperDiveOnSide
+    frames: 50
+    joints:
+			HeadYaw: 3.6663247374919
+			HeadPitch: 30.412940411667
+			LShoulderPitch: 97.826
+			LShoulderRoll: 1
+			LElbowYaw: 2.7222
+			LElbowRoll: -4.041
+			LHipYawPitch: -13.708705343498
+			LHipRoll: 0
+			LHipPitch: 5.53 
+			LKneePitch: 0.178
+			LAnklePitch: -15.203
+			LAnkleRoll: -8.875
+			RHipYawPitch: 0
+			RHipRoll: 0
+			RHipPitch: 5.53
+			RKneePitch: 0.178
+			RAnklePitch: -15.203
+			RAnkleRoll: -8.875
+			RShoulderPitch: 97.826
+			RShoulderRoll: 1
+			RElbowYaw: 2.7222
+			RElbowRoll: -4.041
+
+			KeeperDiveOnSideRight
+    frames: 50
+    joints:
+			KeeperDiveOnSideRight[core.HeadYaw: 3.6663247374919
+			KeeperDiveOnSideRight[core.HeadPitch: 30.412940411667
+			KeeperDiveOnSideRight[core.RShoulderPitch: 97.826
+			KeeperDiveOnSideRight[core.RShoulderRoll: -1
+			KeeperDiveOnSideRight[core.RElbowYaw: -2.7222
+			KeeperDiveOnSideRight[core.RElbowRoll: 4.041
+			KeeperDiveOnSideRight[core.RHipYawPitch: 0
+			KeeperDiveOnSideRight[core.RHipRoll: 0
+			KeeperDiveOnSideRight[core.RHipPitch: 5.53 
+			KeeperDiveOnSideRight[core.RKneePitch: 0.178
+			KeeperDiveOnSideRight[core.RAnklePitch: -15.203
+			KeeperDiveOnSideRight[core.RAnkleRoll: 8.875
+			KeeperDiveOnSideRight[core.LHipYawPitch: -13.708705343498
+			KeeperDiveOnSideRight[core.LHipRoll: 0
+			KeeperDiveOnSideRight[core.LHipPitch: 5.53
+			KeeperDiveOnSideRight[core.LKneePitch: 0.178
+			KeeperDiveOnSideRight[core.LAnklePitch: -15.203
+			KeeperDiveOnSideRight[core.LAnkleRoll: 8.875
+			KeeperDiveOnSideRight[core.LShoulderPitch: 97.826
+			KeeperDiveOnSideRight[core.LShoulderRoll: -1
+			KeeperDiveOnSideRight[core.LElbowYaw: -2.7222
+			KeeperDiveOnSideRight[core.LElbowRoll: 4.041
+
+
+			GoalieLeftSplayInter1
+    frames: 50
+    joints:
+			GoalieLeftSplayInter1[core.HeadYaw: 1.4917551496395
+			GoalieLeftSplayInter1[core.HeadPitch: 25.930464844306
+			GoalieLeftSplayInter1[core.LShoulderPitch: -69.432062611522
+			GoalieLeftSplayInter1[core.LShoulderRoll: 14.939189535685
+			GoalieLeftSplayInter1[core.LElbowYaw: -51.067497348582
+			GoalieLeftSplayInter1[core.LElbowRoll: 1.6723470588419
+			GoalieLeftSplayInter1[core.LHipYawPitch: -31.726508732465
+			GoalieLeftSplayInter1[core.LHipRoll: -21.096418949797
+			GoalieLeftSplayInter1[core.LHipPitch: -20.300585798274
+			GoalieLeftSplayInter1[core.LKneePitch: 89.383482309236
+			GoalieLeftSplayInter1[core.LAnklePitch: -45.969778831354
+			GoalieLeftSplayInter1[core.LAnkleRoll: 12.478221151311
+			GoalieLeftSplayInter1[core.RHipYawPitch: 0
+			GoalieLeftSplayInter1[core.RHipRoll: -8.0836347506422
+			GoalieLeftSplayInter1[core.RHipPitch: -4.0454237152029
+			GoalieLeftSplayInter1[core.RKneePitch: 87.45467103857
+			GoalieLeftSplayInter1[core.RAnklePitch: -59.236618746876
+			GoalieLeftSplayInter1[core.RAnkleRoll: 1.4965636028151
+			GoalieLeftSplayInter1[core.RShoulderPitch: -110.83387581277
+			GoalieLeftSplayInter1[core.RShoulderRoll: 13.801405524687
+			GoalieLeftSplayInter1[core.RElbowYaw: -78.748584073392
+			GoalieLeftSplayInter1[core.RElbowRoll: -28.743000140734
+
+			GoalieLeftSplayInter1[core.LShoulderPitch: 5.6274748194435
+			GoalieLeftSplayInter1[core.LShoulderRoll: 14.70072959751912
+			GoalieLeftSplayInter1[core.LElbowYaw: 97.293736122892
+			GoalieLeftSplayInter1[core.LElbowRoll: -9.8414693109096
+			GoalieLeftSplayInter1[core.RShoulderPitch: -1.6723470588419
+			GoalieLeftSplayInter1[core.RShoulderRoll: 14.70553805069481
+			GoalieLeftSplayInter1[core.RElbowYaw: 48.606528964208
+			GoalieLeftSplayInter1[core.RElbowRoll: 1.5796468776528
+
+			GoalieLeftSplayInter1[core.LShoulderPitch: -45.525512591885
+			GoalieLeftSplayInter1[core.LShoulderRoll: 14.1383354868027
+			GoalieLeftSplayInter1[core.LElbowYaw: -2.4633726109622
+			GoalieLeftSplayInter1[core.LElbowRoll: -49.480639498713
+			GoalieLeftSplayInter1[core.RShoulderPitch: -41.311518100419
+			GoalieLeftSplayInter1[core.RShoulderRoll: -0.1733792294389
+			GoalieLeftSplayInter1[core.RElbowYaw: -4.7437490861342
+			GoalieLeftSplayInter1[core.RElbowRoll: -38.85054630095
+
+			GoalieLeftSplayInter2
+    frames: 50
+    joints:
+			HeadYaw: 1.2280799655993
+			HeadPitch: 25.930464844306
+			LShoulderPitch: -68.992601410134
+			LShoulderRoll: 22.937335931128
+			LElbowYaw: -51.155391637917
+			LElbowRoll: 1.7602387868553
+			LHipYawPitch: -37.966822275188
+			LHipRoll: -34.983313683457
+			LHipPitch: -28.122948737691
+			LKneePitch: 45.613403466125
+			LAnklePitch: 14.675515205419
+			LAnkleRoll: 21.970527776755
+			RHipYawPitch: 0
+			RHipRoll: -15.905997690059
+			RHipPitch: 1.4038634216261
+			RKneePitch: 88.245702567106
+			RAnklePitch: -58.797164375678
+			RAnkleRoll: 5.1880161793767
+			RShoulderPitch: -110.83387581277
+			RShoulderRoll: 13.801405524687
+			RElbowYaw: -78.836474947632
+			RElbowRoll: -28.830891014973
+
+
+
+			GoalieLeftSplayGetup1
+    frames: 50
+    joints:
+			HeadYaw: -46.936588693275
+			HeadPitch: -25.398304315503
+			LShoulderPitch: -49.12907258666
+			LShoulderRoll: 57.21511156389
+			LElbowYaw: -52.297983248317
+			LElbowRoll: 1.232888418775
+			LHipYawPitch: -66.267956987946
+			LHipRoll: -19.690151301583
+			LHipPitch: -70.398869058348
+			LKneePitch: 25.310413441263
+			LAnklePitch: 58.35770317429
+			LAnkleRoll: 3.8648318060005
+			RHipYawPitch: 0
+			RHipRoll: 19.778042175823
+			RHipPitch: -13.8892972527
+			RKneePitch: 122.25979874696
+			RAnklePitch: -69.607844360001
+			RAnkleRoll: -4.3042904460673
+			RShoulderPitch: -104.50567139581
+			RShoulderRoll: 12.395137876473
+			RElbowYaw: -77.605989047897
+			RElbowRoll: -28.830891014973
+			 # [[
+			LShoulderPitch: 5.6274748194435
+			LShoulderRoll: 5.70072959751912
+			LElbowYaw: 97.293736122892
+			LElbowRoll: -9.8414693109096
+			RShoulderPitch: -1.6723470588419
+			RShoulderRoll: 5.70553805069481
+			RElbowYaw: 48.606528964208
+			RElbowRoll: 1.5796468776528
+			 # ]]
+
+			GoalieLeftSplayGetup2
+    frames: 50
+    joints:
+			GoalieLeftSplayGetup2[core.HeadYaw: -46.936588693275
+			GoalieLeftSplayGetup2[core.HeadPitch: -25.398304315503
+			GoalieLeftSplayGetup2[core.LShoulderPitch: -49.12907258666
+			GoalieLeftSplayGetup2[core.LShoulderRoll: 57.039326400316
+			GoalieLeftSplayGetup2[core.LElbowYaw: -52.297983248317
+			GoalieLeftSplayGetup2[core.LElbowRoll: 1.232888418775
+			GoalieLeftSplayGetup2[core.LHipYawPitch: -53.875224191835
+			GoalieLeftSplayGetup2[core.LHipRoll: -19.074908351716
+			GoalieLeftSplayGetup2[core.LHipPitch: -29.265540348091
+			GoalieLeftSplayGetup2[core.LKneePitch: 14.499730041845
+			GoalieLeftSplayGetup2[core.LAnklePitch: 52.468956543621
+			GoalieLeftSplayGetup2[core.LAnkleRoll: 9.4899023988562
+			GoalieLeftSplayGetup2[core.RHipYawPitch: 0
+			GoalieLeftSplayGetup2[core.RHipRoll: -9.0504437587893
+			GoalieLeftSplayGetup2[core.RHipPitch: -26.194139174572
+			GoalieLeftSplayGetup2[core.RKneePitch: 124.36919338909
+			GoalieLeftSplayGetup2[core.RAnklePitch: -69.695735234241
+			GoalieLeftSplayGetup2[core.RAnkleRoll: -6.1500167343481
+			GoalieLeftSplayGetup2[core.RShoulderPitch: -109.60338991303
+			GoalieLeftSplayGetup2[core.RShoulderRoll: 14.680323658594
+			GoalieLeftSplayGetup2[core.RElbowYaw: -77.781777626566
+			GoalieLeftSplayGetup2[core.RElbowRoll: -28.655109266494
+
+			GoalieLeftSplayGetup3
+    frames: 50
+    joints:
+			HeadYaw: -46.848694403941
+			HeadPitch: -25.398304315503
+			LShoulderPitch: -49.12907258666
+			LShoulderRoll: 57.039326400316
+			LElbowYaw: -52.297983248317
+			LElbowRoll: 1.232888418775
+			LHipYawPitch: -50.623231109113
+			LHipRoll: -18.547559691183
+			LHipPitch: 1.3207801467884
+			LKneePitch: 3.6890483499737
+			LAnklePitch: 31.902293896039
+			LAnkleRoll: 9.6656858548829
+			RHipYawPitch: 0
+			RHipRoll: -17.400157920059
+			RHipPitch: -1.232888418775
+			RKneePitch: 75.589293733181
+			RAnklePitch: -44.646593604204
+			RAnkleRoll: -0.34916268546564
+			RShoulderPitch: -111.53700963688
+			RShoulderRoll: 14.328756746541
+			RElbowYaw: -77.430207299418
+			RElbowRoll: -28.743000140734
+
+			GoalieLeftSplayFinalV2
+    frames: 50
+    joints:
+			HeadYaw: -8.4400101158714
+			HeadPitch: -0.96440478155923
+			LShoulderPitch: -46.316537290232
+			LShoulderRoll: 9.7535775828963
+			LElbowYaw: -5.6274748194435
+			LElbowRoll: -52.644741707195
+			LHipYawPitch: -58.709273501438
+			LHipRoll: -23.293711296357
+			LHipPitch: -48.777505674606
+			LKneePitch: -5.1880161793767
+			LAnklePitch: 60.467104646611
+			LAnkleRoll: 2.9859145258667
+			RHipYawPitch: 0
+			RHipRoll: 12.5709213325
+			RHipPitch: -13.010379972567
+			RKneePitch: 124.10552076637
+			RAnklePitch: -69.607844360001
+			RAnkleRoll: -6.7652588304417
+			RShoulderPitch: -101.69313609938
+			RShoulderRoll: 13.449838612634
+			RElbowYaw: -77.518098173657
+			RElbowRoll: -28.743000140734
+
+			LShoulderPitch: 5.6274748194435
+			LShoulderRoll: 5.70072959751912
+			LElbowYaw: 97.293736122892
+			LElbowRoll: -9.8414693109096
+			RShoulderPitch: -1.6723470588419
+			RShoulderRoll: 5.70553805069481
+			RElbowYaw: 48.606528964208
+			RElbowRoll: 1.5796468776528
+
+			LShoulderPitch: -45.525512591885
+			LShoulderRoll: 9.1383354868027
+			LElbowYaw: -2.4633726109622
+			LElbowRoll: -49.480639498713
+			RShoulderPitch: -41.311518100419
+			RShoulderRoll: -0.1733792294389
+			RElbowYaw: -4.7437490861342
+			RElbowRoll: -38.85054630095
+
+
+			GoalieLeftSplayFinalV3
+    frames: 50
+    joints:
+			HeadYaw: -5.2759079073901
+			HeadPitch: 26.897272998679
+			LShoulderPitch: -49.304854335139
+			LShoulderRoll: 11.15984523111
+			LElbowYaw: -1.8481305148686
+			LElbowRoll: -48.162262724739
+			LHipYawPitch: -64.773798465492
+			LHipRoll: -21.53587673609
+			LHipPitch: -49.656421247193
+			LKneePitch: -5.979041731497
+			LAnklePitch: 64.334344094294
+			LAnkleRoll: 4.0406152620272
+			RHipYawPitch: 0
+			RHipRoll: 18.723341439662
+			RHipPitch: -14.15297243674
+			RKneePitch: 124.63287967219
+			RAnklePitch: -69.519953485762
+			RAnkleRoll: -6.9410422864684
+			RShoulderPitch: -43.860377359033
+			RShoulderRoll: 1.0571049627483
+			RElbowYaw: -5.0074242701743
+			RElbowRoll: -37.70795469055
+
+			GoalieLeftSplayGetup3V2
+    frames: 50
+    joints:
+			HeadYaw: 118.12407822338
+			HeadPitch: 29.094567052787
+			LShoulderPitch: -73.299295229016
+			LShoulderRoll: 23.992036667289
+			LElbowYaw: -53.089007946664
+			LElbowRoll: -1.7554303336796
+			LHipYawPitch: -50.711121983353
+			LHipRoll: -12.83459651654
+			LHipPitch: 21.97533622993
+			LKneePitch: 4.5679656301074
+			LAnklePitch: 13.269246703431
+			LAnkleRoll: 10.984061775083
+			RHipYawPitch: 0
+			RHipRoll: -17.751724832113
+			RHipPitch: -0.26607941062796
+			RKneePitch: 62.669205446347
+			RAnklePitch: -37.878931400948
+			RAnkleRoll: -3.4253731659336
+			RShoulderPitch: -110.92176668701
+			RShoulderRoll: 13.713513796674
+			RElbowYaw: -78.221231997764
+			RElbowRoll: -28.918781889213
+
+			GoalieLeftSplayGetup4
+    frames: 50
+    joints:
+			GoalieLeftSplayGetup4[core.HeadYaw: 118.73931434306
+			GoalieLeftSplayGetup4[core.HeadPitch: 29.270348801267
+			GoalieLeftSplayGetup4[core.LShoulderPitch: -74.70556287723
+			GoalieLeftSplayGetup4[core.LShoulderRoll: 22.322094688808
+			GoalieLeftSplayGetup4[core.LElbowYaw: -53.704250896531
+			GoalieLeftSplayGetup4[core.LElbowRoll: -2.81013106984
+			GoalieLeftSplayGetup4[core.LHipYawPitch: -54.578358015941
+			GoalieLeftSplayGetup4[core.LHipRoll: 1.7554303336796
+			GoalieLeftSplayGetup4[core.LHipPitch: 23.469496459931
+			GoalieLeftSplayGetup4[core.LKneePitch: 6.5894753744149
+			GoalieLeftSplayGetup4[core.LAnklePitch: 15.554430778005
+			GoalieLeftSplayGetup4[core.LAnkleRoll: -7.0337424676575
+			GoalieLeftSplayGetup4[core.RHipYawPitch: 0
+			GoalieLeftSplayGetup4[core.RHipRoll: -16.78491667774
+			GoalieLeftSplayGetup4[core.RHipPitch: 11.862979055217
+			GoalieLeftSplayGetup4[core.RKneePitch: 57.132025727731
+			GoalieLeftSplayGetup4[core.RAnklePitch: -38.757846973535
+			GoalieLeftSplayGetup4[core.RAnkleRoll: -9.8414693109096
+			GoalieLeftSplayGetup4[core.RShoulderPitch: -110.6580872341
+			GoalieLeftSplayGetup4[core.RShoulderRoll: 13.449838612634
+			GoalieLeftSplayGetup4[core.RElbowYaw: -78.836474947632
+			GoalieLeftSplayGetup4[core.RElbowRoll: -28.47932410292
+
+
+			GoalieLeftSplayFinalV4
+    frames: 50
+    joints:
+			HeadYaw: -0.26607941062796
+			HeadPitch: -27.771381825637
+			LShoulderPitch: -57.21511156389
+			LShoulderRoll: 11.42352041515
+			LElbowYaw: -1.4086718748018
+			LElbowRoll: -48.425938762553
+			LHipYawPitch: -60.115541149652
+			LHipRoll: -24.260521158278
+			LHipPitch: -48.689611385272
+			LKneePitch: -4.3969906272564
+			LAnklePitch: 62.488615244692
+			LAnkleRoll: 3.6890483499737
+			RHipYawPitch: 0
+			RHipRoll: 12.658813060513
+			RHipPitch: -13.713513796674
+			RKneePitch: 124.45708426333
+			RAnklePitch: -66.267956987946
+			RAnkleRoll: -7.6441761105754
+			RShoulderPitch: -45.618211919301
+			RShoulderRoll: 1.4086718748018
+			RElbowYaw: -5.0074242701743
+			RElbowRoll: -36.741144828629
+
+			GoalieLeftSplayGetup4V2
+    frames: 50
+    joints:
+			GoalieLeftSplayGetup4V2[core.HeadYaw: -119.27148170205
+			GoalieLeftSplayGetup4V2[core.HeadPitch: 16.174482181048
+			GoalieLeftSplayGetup4V2[core.LShoulderPitch: -75.145024078617
+			GoalieLeftSplayGetup4V2[core.LShoulderRoll: 22.146311232781
+			GoalieLeftSplayGetup4V2[core.LElbowYaw: -53.704250896531
+			GoalieLeftSplayGetup4V2[core.LElbowRoll: -2.8980227978534
+			GoalieLeftSplayGetup4V2[core.LHipYawPitch: -52.732632581434
+			GoalieLeftSplayGetup4V2[core.LHipRoll: -0.61764632268144
+			GoalieLeftSplayGetup4V2[core.LHipPitch: 23.117929547878
+			GoalieLeftSplayGetup4V2[core.LKneePitch: 6.6773671024283
+			GoalieLeftSplayGetup4V2[core.LAnklePitch: 8.9625520307759
+			GoalieLeftSplayGetup4V2[core.LAnkleRoll: -2.9028312510291
+			GoalieLeftSplayGetup4V2[core.RHipYawPitch: 0
+			GoalieLeftSplayGetup4V2[core.RHipRoll: -18.279075200193
+			GoalieLeftSplayGetup4V2[core.RHipPitch: 11.511412143164
+			GoalieLeftSplayGetup4V2[core.RKneePitch: 47.991286014341
+			GoalieLeftSplayGetup4V2[core.RAnklePitch: -31.902293896039
+			GoalieLeftSplayGetup4V2[core.RAnkleRoll: -2.0191055177197
+			GoalieLeftSplayGetup4V2[core.RShoulderPitch: -109.86706253575
+			GoalieLeftSplayGetup4V2[core.RShoulderRoll: 13.62562206866
+			GoalieLeftSplayGetup4V2[core.RElbowYaw: -78.924365821871
+			GoalieLeftSplayGetup4V2[core.RElbowRoll: -28.918781889213
+
+			GoalieLeftSplayGetup3V3
+    frames: 50
+    joints:
+			GoalieLeftSplayGetup3V3[core.HeadYaw: -119.27148170205
+			GoalieLeftSplayGetup3V3[core.HeadPitch: 16.174482181048
+			GoalieLeftSplayGetup3V3[core.LShoulderPitch: -75.057133204378
+			GoalieLeftSplayGetup3V3[core.LShoulderRoll: 22.146311232781
+			GoalieLeftSplayGetup3V3[core.LElbowYaw: -53.704250896531
+			GoalieLeftSplayGetup3V3[core.LElbowRoll: -2.8980227978534
+			GoalieLeftSplayGetup3V3[core.LHipYawPitch: -52.117389631567
+			GoalieLeftSplayGetup3V3[core.LHipRoll: -9.5826025800452
+			GoalieLeftSplayGetup3V3[core.LHipPitch: 22.151119685957
+			GoalieLeftSplayGetup3V3[core.LKneePitch: 4.9195325421609
+			GoalieLeftSplayGetup3V3[core.LAnklePitch: 9.4899023988562
+			GoalieLeftSplayGetup3V3[core.LAnkleRoll: 3.3374814379202
+			GoalieLeftSplayGetup3V3[core.RHipYawPitch: 0
+			GoalieLeftSplayGetup3V3[core.RHipRoll: -17.663832250326
+			GoalieLeftSplayGetup3V3[core.RHipPitch: 5.0953159981876
+			GoalieLeftSplayGetup3V3[core.RKneePitch: 44.73929293162
+			GoalieLeftSplayGetup3V3[core.RAnklePitch: -21.794744320728
+			GoalieLeftSplayGetup3V3[core.RAnkleRoll: -2.7222393418266
+			GoalieLeftSplayGetup3V3[core.RShoulderPitch: -109.95495340999
+			GoalieLeftSplayGetup3V3[core.RShoulderRoll: 13.62562206866
+			GoalieLeftSplayGetup3V3[core.RElbowYaw: -78.924365821871
+			GoalieLeftSplayGetup3V3[core.RElbowRoll: -28.918781889213
+
+			GoalieLeftSplayGetup3V4
+    frames: 50
+    joints:
+			GoalieLeftSplayGetup3V4[core.HeadYaw: -119.97460869597
+			GoalieLeftSplayGetup3V4[core.HeadPitch: 16.174482181048
+			GoalieLeftSplayGetup3V4[core.LShoulderPitch: -76.463400852592
+			GoalieLeftSplayGetup3V4[core.LShoulderRoll: 18.9822090243
+			GoalieLeftSplayGetup3V4[core.LElbowYaw: -54.055817808584
+			GoalieLeftSplayGetup3V4[core.LElbowRoll: -3.8648318060005
+			GoalieLeftSplayGetup3V4[core.LHipYawPitch: -51.32636493322
+			GoalieLeftSplayGetup3V4[core.LHipRoll: -7.9126597477912
+			GoalieLeftSplayGetup3V4[core.LHipPitch: 23.381603878144
+			GoalieLeftSplayGetup3V4[core.LKneePitch: 6.6773671024283
+			GoalieLeftSplayGetup3V4[core.LAnklePitch: 4.3921821740807
+			GoalieLeftSplayGetup3V4[core.LAnkleRoll: 4.6558573581208
+			GoalieLeftSplayGetup3V4[core.RHipYawPitch: 0
+			GoalieLeftSplayGetup3V4[core.RHipRoll: -17.663832250326
+			GoalieLeftSplayGetup3V4[core.RHipPitch: 7.9078512946155
+			GoalieLeftSplayGetup3V4[core.RKneePitch: 43.860377359033
+			GoalieLeftSplayGetup3V4[core.RAnklePitch: -27.06824800153
+			GoalieLeftSplayGetup3V4[core.RAnkleRoll: 0.0024042265878445
+			GoalieLeftSplayGetup3V4[core.RShoulderPitch: -109.51549903879
+			GoalieLeftSplayGetup3V4[core.RShoulderRoll: 13.537730340647
+			GoalieLeftSplayGetup3V4[core.RElbowYaw: -79.539608771739
+			GoalieLeftSplayGetup3V4[core.RElbowRoll: -28.918781889213
+
+			GoalieLeftSplayGetup3V5
+    frames: 50
+    joints:
+			GoalieLeftSplayGetup3V5[core.HeadYaw: 118.8272052173
+			GoalieLeftSplayGetup3V5[core.HeadPitch: 28.918781889213
+			GoalieLeftSplayGetup3V5[core.LShoulderPitch: -77.693879922137
+			GoalieLeftSplayGetup3V5[core.LShoulderRoll: 17.575941376086
+			GoalieLeftSplayGetup3V5[core.LElbowYaw: -54.495275594877
+			GoalieLeftSplayGetup3V5[core.LElbowRoll: -4.8316408141475
+			GoalieLeftSplayGetup3V5[core.LHipYawPitch: -52.381065669381
+			GoalieLeftSplayGetup3V5[core.LHipRoll: -6.5942838275906
+			GoalieLeftSplayGetup3V5[core.LHipPitch: 11.252545412299
+			GoalieLeftSplayGetup3V5[core.LKneePitch: 46.492319038711
+			GoalieLeftSplayGetup3V5[core.LAnklePitch: -22.063228811717
+			GoalieLeftSplayGetup3V5[core.LAnkleRoll: -0.35397113864133
+			GoalieLeftSplayGetup3V5[core.RHipYawPitch: 0
+			GoalieLeftSplayGetup3V5[core.RHipRoll: -22.146311232781
+			GoalieLeftSplayGetup3V5[core.RHipPitch: 3.7769400779871
+			GoalieLeftSplayGetup3V5[core.RKneePitch: 56.692567941438
+			GoalieLeftSplayGetup3V5[core.RAnklePitch: -31.814399606705
+			GoalieLeftSplayGetup3V5[core.RAnkleRoll: 5.2759079073901
+			GoalieLeftSplayGetup3V5[core.RShoulderPitch: -108.98814696317
+			GoalieLeftSplayGetup3V5[core.RShoulderRoll: 15.647131812968
+			GoalieLeftSplayGetup3V5[core.RElbowYaw: -80.154851721606
+			GoalieLeftSplayGetup3V5[core.RElbowRoll: -28.830891014973
+
+			GoalieLeftSplayGetup4V3
+    frames: 50
+    joints:
+			GoalieLeftSplayGetup4V3[core.HeadYaw: -11.779895780379
+			GoalieLeftSplayGetup4V3[core.HeadPitch: 8.4400101158714
+			GoalieLeftSplayGetup4V3[core.LShoulderPitch: -79.275936149019
+			GoalieLeftSplayGetup4V3[core.LShoulderRoll: 16.081782853633
+			GoalieLeftSplayGetup4V3[core.LElbowYaw: -55.110518544745
+			GoalieLeftSplayGetup4V3[core.LElbowRoll: -5.9742332783213
+			GoalieLeftSplayGetup4V3[core.LHipYawPitch: -56.07251995349
+			GoalieLeftSplayGetup4V3[core.LHipRoll: 0.52494614149238
+			GoalieLeftSplayGetup4V3[core.LHipPitch: -0.61283786950575
+			GoalieLeftSplayGetup4V3[core.LKneePitch: 61.346020219197
+			GoalieLeftSplayGetup4V3[core.LAnklePitch: -23.381603878144
+			GoalieLeftSplayGetup4V3[core.LAnkleRoll: -7.385309379711
+			GoalieLeftSplayGetup4V3[core.RHipYawPitch: 0
+			GoalieLeftSplayGetup4V3[core.RHipRoll: -23.376795424969
+			GoalieLeftSplayGetup4V3[core.RHipPitch: 7.2926091985219
+			GoalieLeftSplayGetup4V3[core.RKneePitch: 69.348980190458
+			GoalieLeftSplayGetup4V3[core.RAnklePitch: -46.404428164472
+			GoalieLeftSplayGetup4V3[core.RAnkleRoll: 4.8364492673232
+			GoalieLeftSplayGetup4V3[core.RShoulderPitch: -108.46079488754
+			GoalieLeftSplayGetup4V3[core.RShoulderRoll: 15.471348356941
+			GoalieLeftSplayGetup4V3[core.RElbowYaw: -80.418524344325
+			GoalieLeftSplayGetup4V3[core.RElbowRoll: -29.006672763453
+
+
+			GoalieLeftSplayGetup5
+    frames: 50
+    joints:
+			GoalieLeftSplayGetup5[core.HeadYaw: -39.817356162871
+			GoalieLeftSplayGetup5[core.HeadPitch: 33.577046035243
+			GoalieLeftSplayGetup5[core.LShoulderPitch: -104.58875381687
+			GoalieLeftSplayGetup5[core.LShoulderRoll: 12.478221151311
+			GoalieLeftSplayGetup5[core.LElbowYaw: -80.423332797501
+			GoalieLeftSplayGetup5[core.LElbowRoll: -29.001864310277
+			GoalieLeftSplayGetup5[core.LHipYawPitch: -0.70072959751912
+			GoalieLeftSplayGetup5[core.LHipRoll: -0.26607941062796
+			GoalieLeftSplayGetup5[core.LHipPitch: -29.704998134384
+			GoalieLeftSplayGetup5[core.LKneePitch: 55.017815802235
+			GoalieLeftSplayGetup5[core.LAnklePitch: -29.973482625373
+			GoalieLeftSplayGetup5[core.LAnkleRoll: -0.0024042265878445
+			GoalieLeftSplayGetup5[core.RHipYawPitch: 0
+			GoalieLeftSplayGetup5[core.RHipRoll: 0.090295954601215
+			GoalieLeftSplayGetup5[core.RHipPitch: -29.973482625373
+			GoalieLeftSplayGetup5[core.RKneePitch: 55.02262425541
+			GoalieLeftSplayGetup5[core.RAnklePitch: -29.792892423718
+			GoalieLeftSplayGetup5[core.RAnkleRoll: -0.26127095745227
+			GoalieLeftSplayGetup5[core.RShoulderPitch: -104.2419919429
+			GoalieLeftSplayGetup5[core.RShoulderRoll: 12.395137876473
+			GoalieLeftSplayGetup5[core.RElbowYaw: -80.066960847366
+			GoalieLeftSplayGetup5[core.RElbowRoll: -30.764510738815
+
+			GoalieLeftSplayGetup3V6
+    frames: 50
+    joints:
+			GoalieLeftSplayGetup3V6[core.HeadYaw: -0.0024042265878445
+			GoalieLeftSplayGetup3V6[core.HeadPitch: -0.34916268546564
+			GoalieLeftSplayGetup3V6[core.LShoulderPitch: -79.363827023259
+			GoalieLeftSplayGetup3V6[core.LShoulderRoll: 16.169673727872
+			GoalieLeftSplayGetup3V6[core.LElbowYaw: -54.758951632691
+			GoalieLeftSplayGetup3V6[core.LElbowRoll: -5.886341550308
+			GoalieLeftSplayGetup3V6[core.LHipYawPitch: -49.12907258666
+			GoalieLeftSplayGetup3V6[core.LHipRoll: -7.0337424676575
+			GoalieLeftSplayGetup3V6[core.LHipPitch: 8.0884432038179
+			GoalieLeftSplayGetup3V6[core.LKneePitch: 59.588189074025
+			GoalieLeftSplayGetup3V6[core.LAnklePitch: -31.731317185641
+			GoalieLeftSplayGetup3V6[core.LAnkleRoll: -1.232888418775
+			GoalieLeftSplayGetup3V6[core.RHipYawPitch: 0
+			GoalieLeftSplayGetup3V6[core.RHipRoll: -32.9569946322
+			GoalieLeftSplayGetup3V6[core.RHipPitch: -0.26607941062796
+			GoalieLeftSplayGetup3V6[core.RKneePitch: 63.636011893173
+			GoalieLeftSplayGetup3V6[core.RAnklePitch: -31.638617858225
+			GoalieLeftSplayGetup3V6[core.RAnkleRoll: 14.240864164754
+			GoalieLeftSplayGetup3V6[core.RShoulderPitch: -109.95495340999
+			GoalieLeftSplayGetup3V6[core.RShoulderRoll: 14.856105407074
+			GoalieLeftSplayGetup3V6[core.RElbowYaw: -80.506415218565
+			GoalieLeftSplayGetup3V6[core.RElbowRoll: -28.303540646893
+
+			GoalieLeftSplayFinalV5
+    frames: 50
+    joints:
+			GoalieLeftSplayFinalV5[core.HeadYaw: 20.564260128541
+			GoalieLeftSplayFinalV5[core.HeadPitch: -12.390329423297
+			GoalieLeftSplayFinalV5[core.LShoulderPitch: -54.490467141702
+			GoalieLeftSplayFinalV5[core.LShoulderRoll: 12.566112879324
+			GoalieLeftSplayFinalV5[core.LElbowYaw: -1.936022242882
+			GoalieLeftSplayFinalV5[core.LElbowRoll: -47.283343737058
+			GoalieLeftSplayFinalV5[core.LHipYawPitch: -59.851861696744
+			GoalieLeftSplayFinalV5[core.LHipRoll: -24.348412032518
+			GoalieLeftSplayFinalV5[core.LHipPitch: -53.523657279781
+			GoalieLeftSplayFinalV5[core.LKneePitch: -4.4848823552697
+			GoalieLeftSplayFinalV5[core.LAnklePitch: 57.654569350183
+			GoalieLeftSplayFinalV5[core.LAnkleRoll: 2.2827807017598
+			GoalieLeftSplayFinalV5[core.RHipYawPitch: 0
+			GoalieLeftSplayFinalV5[core.RHipRoll: 12.83459651654
+			GoalieLeftSplayFinalV5[core.RHipPitch: -11.252545412299
+			GoalieLeftSplayFinalV5[core.RKneePitch: 122.87503486664
+			GoalieLeftSplayFinalV5[core.RAnklePitch: -68.728928787415
+			GoalieLeftSplayFinalV5[core.RAnkleRoll: -4.9195325421609
+			GoalieLeftSplayFinalV5[core.RShoulderPitch: -47.815504265861
+			GoalieLeftSplayFinalV5[core.RShoulderRoll: 3.4301816191093
+			GoalieLeftSplayFinalV5[core.RElbowYaw: -5.0074242701743
+			GoalieLeftSplayFinalV5[core.RElbowRoll: -35.686447507563
+
+
+			sittingPoseV3
+    frames: 50
+    joints:
+			sittingPoseV3[core.HeadYaw: 0.0
+			sittingPoseV3[core.HeadPitch: 0
+			sittingPoseV3[core.LShoulderPitch: -90
+			sittingPoseV3[core.LShoulderRoll: 0
+			sittingPoseV3[core.LElbowYaw: 0
+			sittingPoseV3[core.LElbowRoll: 0
+			sittingPoseV3[core.LHipYawPitch: -5
+			sittingPoseV3[core.LHipPitch: -46.5
+			sittingPoseV3[core.LHipRoll: -0
+			sittingPoseV3[core.LKneePitch: 125
+			sittingPoseV3[core.LAnklePitch: -70
+			sittingPoseV3[core.LAnkleRoll: -0
+			sittingPoseV3[core.RHipYawPitch: -5
+			sittingPoseV3[core.RHipPitch: -46.5
+			sittingPoseV3[core.RHipRoll: 0
+			sittingPoseV3[core.RKneePitch: 125
+			sittingPoseV3[core.RAnklePitch: -70
+			sittingPoseV3[core.RAnkleRoll: 0
+			sittingPoseV3[core.RShoulderPitch: -90
+			sittingPoseV3[core.RShoulderRoll: 0
+			sittingPoseV3[core.RElbowYaw: 0
+			sittingPoseV3[core.RElbowRoll: 0
+
+
+			sittingPoseNoArms
+    frames: 50
+    joints:
+
+			sittingPoseNoArms[core.HeadYaw: 0.0
+			sittingPoseNoArms[core.HeadPitch: -10.0
+			sittingPoseNoArms[core.LShoulderRoll: 0
+			sittingPoseNoArms[core.LHipYawPitch: -5
+			sittingPoseNoArms[core.LHipPitch: -46.5
+			sittingPoseNoArms[core.LHipRoll: -0
+			sittingPoseNoArms[core.LKneePitch: 125  #  lkneepitch 120  # 110  # 120
+			sittingPoseNoArms[core.LAnklePitch: -70
+			sittingPoseNoArms[core.LAnkleRoll: -0
+			sittingPoseNoArms[core.RShoulderRoll: 0
+			sittingPoseNoArms[core.RHipYawPitch: -5
+			sittingPoseNoArms[core.RHipPitch: -46.5
+			sittingPoseNoArms[core.RHipRoll: 0
+			sittingPoseNoArms[core.RKneePitch: 125  #  rkneepitch 120  # 110  # 120
+			sittingPoseNoArms[core.RAnklePitch: -70
+			sittingPoseNoArms[core.RAnkleRoll: 0
+
+
+			ourSittingPose
+    frames: 50
+    joints:
+
+			ourSittingPose[core.HeadYaw: 0.09
+			ourSittingPose[core.HeadPitch: -22
+			ourSittingPose[core.LShoulderPitch: -90
+			ourSittingPose[core.LShoulderRoll: 10
+			ourSittingPose[core.LElbowYaw: 0
+			ourSittingPose[core.LElbowRoll: 0
+			ourSittingPose[core.LHipYawPitch: -5
+			ourSittingPose[core.LHipPitch: -46.5
+			ourSittingPose[core.LHipRoll: -0
+			ourSittingPose[core.LKneePitch: 123
+			ourSittingPose[core.LAnklePitch: -70
+			ourSittingPose[core.LAnkleRoll: -0
+			ourSittingPose[core.RHipYawPitch: -5
+			ourSittingPose[core.RHipPitch: -46.5
+			ourSittingPose[core.RHipRoll: 0
+			ourSittingPose[core.RKneePitch: 123
+			ourSittingPose[core.RAnklePitch: -70
+			ourSittingPose[core.RAnkleRoll: 0
+			ourSittingPose[core.RShoulderPitch: -90
+			ourSittingPose[core.RShoulderRoll: 10
+			ourSittingPose[core.RElbowYaw: 0
+			ourSittingPose[core.RElbowRoll: 0
+
+
+
+			raiseRightArmPose
+    frames: 50
+    joints:
+
+			raiseRightArmPose[core.HeadYaw: 0.0
+			raiseRightArmPose[core.HeadPitch: 0
+			raiseRightArmPose[core.LShoulderPitch: -90
+			raiseRightArmPose[core.LShoulderRoll: 10
+			raiseRightArmPose[core.LElbowYaw: 0
+			raiseRightArmPose[core.LElbowRoll: 0
+			raiseRightArmPose[core.LHipYawPitch: -5
+			raiseRightArmPose[core.LHipPitch: -46.5
+			raiseRightArmPose[core.LHipRoll: -0
+			raiseRightArmPose[core.LKneePitch: 125
+			raiseRightArmPose[core.LAnklePitch: -70
+			raiseRightArmPose[core.LAnkleRoll: -0
+			raiseRightArmPose[core.RHipYawPitch: -5
+			raiseRightArmPose[core.RHipPitch: -46.5
+			raiseRightArmPose[core.RHipRoll: 0
+			raiseRightArmPose[core.RKneePitch: 125
+			raiseRightArmPose[core.RAnklePitch: -70
+			raiseRightArmPose[core.RAnkleRoll: 0
+			raiseRightArmPose[core.RShoulderPitch: -90
+			raiseRightArmPose[core.RShoulderRoll: 44
+			raiseRightArmPose[core.RElbowYaw: 0
+			raiseRightArmPose[core.RElbowRoll: 0
+
+
+
+
+			raiseLeftArmPose
+    frames: 50
+    joints:
+
+			raiseLeftArmPose[core.HeadYaw: 0.0
+			raiseLeftArmPose[core.HeadPitch: 0
+			raiseLeftArmPose[core.LShoulderPitch: -90
+			raiseLeftArmPose[core.LShoulderRoll: 63
+			raiseLeftArmPose[core.LElbowYaw: 0
+			raiseLeftArmPose[core.LElbowRoll: 0
+			raiseLeftArmPose[core.LHipYawPitch: -5
+			raiseLeftArmPose[core.LHipPitch: -46.5
+			raiseLeftArmPose[core.LHipRoll: -0
+			raiseLeftArmPose[core.LKneePitch: 125
+			raiseLeftArmPose[core.LAnklePitch: -70
+			raiseLeftArmPose[core.LAnkleRoll: -0
+			raiseLeftArmPose[core.RHipYawPitch: -5
+			raiseLeftArmPose[core.RHipPitch: -46.5
+			raiseLeftArmPose[core.RHipRoll: 0
+			raiseLeftArmPose[core.RKneePitch: 125
+			raiseLeftArmPose[core.RAnklePitch: -70
+			raiseLeftArmPose[core.RAnkleRoll: 0
+			raiseLeftArmPose[core.RShoulderPitch: -90
+			raiseLeftArmPose[core.RShoulderRoll: 10
+			raiseLeftArmPose[core.RElbowYaw: 0
+			raiseLeftArmPose[core.RElbowRoll: 0
+
+
+			raiseBothArmsPose
+    frames: 50
+    joints:
+
+			raiseBothArmsPose[core.HeadYaw: 0.0
+			raiseBothArmsPose[core.HeadPitch: 0
+			raiseBothArmsPose[core.LShoulderPitch: -30
+			raiseBothArmsPose[core.LShoulderRoll: 0
+			raiseBothArmsPose[core.LElbowYaw: 0
+			raiseBothArmsPose[core.LElbowRoll: 0
+			raiseBothArmsPose[core.LHipYawPitch: -5
+			raiseBothArmsPose[core.LHipPitch: -46.5
+			raiseBothArmsPose[core.LHipRoll: -0
+			raiseBothArmsPose[core.LKneePitch: 125
+			raiseBothArmsPose[core.LAnklePitch: -70
+			raiseBothArmsPose[core.LAnkleRoll: -0
+			raiseBothArmsPose[core.RHipYawPitch: -5
+			raiseBothArmsPose[core.RHipPitch: -46.5
+			raiseBothArmsPose[core.RHipRoll: 0
+			raiseBothArmsPose[core.RKneePitch: 125
+			raiseBothArmsPose[core.RAnklePitch: -70
+			raiseBothArmsPose[core.RAnkleRoll: 0
+			raiseBothArmsPose[core.RShoulderPitch: -30
+			raiseBothArmsPose[core.RShoulderRoll: 0
+			raiseBothArmsPose[core.RElbowYaw: 0
+			raiseBothArmsPose[core.RElbowRoll: 0
+
+
+			standingPose
+    frames: 50
+    joints:
+
+			standingPose[core.HeadYaw: 0
+			standingPose[core.HeadPitch: 0
+			standingPose[core.LShoulderPitch: -116
+			standingPose[core.LShoulderRoll: 12
+			standingPose[core.LElbowYaw: -85
+			standingPose[core.LElbowRoll: -0
+			standingPose[core.LHipYawPitch: 0
+			standingPose[core.LHipPitch: -30
+			standingPose[core.LHipRoll: 0
+			standingPose[core.LKneePitch: 65
+			standingPose[core.LAnklePitch: -35
+			standingPose[core.LAnkleRoll: 0
+			standingPose[core.RHipYawPitch: 0
+			standingPose[core.RHipPitch: -30
+			standingPose[core.RHipRoll: 0
+			standingPose[core.RKneePitch: 65
+			standingPose[core.RAnklePitch: -35
+			standingPose[core.RAnkleRoll: 0
+			standingPose[core.RShoulderPitch: -116
+			standingPose[core.RShoulderRoll: 12
+			standingPose[core.RElbowYaw: -85
+			standingPose[core.RElbowRoll: -0
+
+			armBehindPose
+    frames: 50
+    joints:
+			armBehindPose[core.LShoulderPitch: -116
+			armBehindPose[core.LShoulderRoll: -2
+			armBehindPose[core.LElbowYaw: 25
+			armBehindPose[core.LElbowRoll: -53
+			armBehindPose[core.RShoulderPitch: -116
+			armBehindPose[core.RShoulderRoll: -2
+			armBehindPose[core.RElbowYaw: 25
+			armBehindPose[core.RElbowRoll: -53
+
+			armBehindKeeperPose
+    frames: 50
+    joints:
+			armBehindKeeperPose[core.LShoulderPitch: -116
+			armBehindKeeperPose[core.LShoulderRoll: -2
+			armBehindKeeperPose[core.LElbowYaw: 0  # 25
+			armBehindKeeperPose[core.LElbowRoll: 0  # -53
+			armBehindKeeperPose[core.RShoulderPitch: -116
+			armBehindKeeperPose[core.RShoulderRoll: -2
+			armBehindKeeperPose[core.RElbowYaw: 0  # 25
+			armBehindKeeperPose[core.RElbowRoll: 0  # -53
+
+
+			armSidePose
+    frames: 50
+    joints:
+			armSidePose[core.LShoulderPitch: -116
+			armSidePose[core.LShoulderRoll: 12
+			armSidePose[core.LElbowYaw: -85
+			armSidePose[core.LElbowRoll: -0
+			armSidePose[core.RShoulderPitch: -116
+			armSidePose[core.RShoulderRoll: 12
+			armSidePose[core.RElbowYaw: -85
+			armSidePose[core.RElbowRoll: -0
+
+
+			standingLeftArmPose
+    frames: 50
+    joints:
+
+			HeadYaw: 0
+			HeadPitch: 0
+			LShoulderPitch: 0
+			LShoulderRoll: 12
+			LElbowYaw: -85
+			LElbowRoll: -0
+			LHipYawPitch: 0
+			LHipPitch: -30
+			LHipRoll: 0
+			LKneePitch: 65
+			LAnklePitch: -35
+			LAnkleRoll: 0
+			RHipYawPitch: 0
+			RHipPitch: -30
+			RHipRoll: 0
+			RKneePitch: 65
+			RAnklePitch: -35
+			RAnkleRoll: 0
+			RShoulderPitch: -116
+			RShoulderRoll: 12
+			RElbowYaw: -85
+			RElbowRoll: -0
+
+			kickAimPose
+    frames: 50
+    joints:
+			HeadYaw: 0
+			HeadPitch: -21  # -40
+			LHipYawPitch: 0
+			LHipRoll: 0.138459
+			LHipPitch: -31.0258
+			LKneePitch: 65.0268
+			LAnklePitch: -34.001
+			LAnkleRoll: -0.13846
+			RHipYawPitch: 0
+			RHipRoll: -0.138457
+			RHipPitch: -31.0258
+			RKneePitch: 65.0268
+			RAnklePitch: -34.001
+			RAnkleRoll: 0.138457
+			LShoulderPitch: -104
+			LShoulderRoll: 12
+			LElbowYaw: -85
+			LElbowRoll: -30
+			RShoulderPitch: -104
+			RShoulderRoll: 12
+			RElbowYaw: -85
+			RElbowRoll: -30
+
+			 #  Bowdoin's goalie squat
+			goalieSquatPart1
+    frames: 50
+    joints:
+			HeadYaw: 0
+			HeadPitch: -21 # -40
+			LHipYawPitch: -76.0
+			LHipRoll: -14.0
+			LHipPitch: -54  #  -54.0
+			LKneePitch: 86.0
+			LAnklePitch: 0.0
+			LAnkleRoll: 11
+			RHipYawPitch: -76.0
+			RHipRoll: -14.0
+			RHipPitch: -54  #  -54
+			RKneePitch: 86.0
+			RAnklePitch: 0
+			RAnkleRoll: 11
+			LShoulderPitch: 0  # -105 # 0
+			LShoulderRoll: 90  # -20 # 90
+			LElbowYaw: 0
+			LElbowRoll: 0  # 
+			RShoulderPitch: 0
+			RShoulderRoll: 90
+			RElbowYaw: 0
+			RElbowRoll: 0  # 
+			 # 0.3, 1, stiff.NORMAL_STIFFNESSES),
+
+			goalieSquatPart2
+    frames: 50
+    joints:
+			goalieSquatPart2[core.HeadYaw: 0
+			goalieSquatPart2[core.HeadPitch: -21
+			goalieSquatPart2[core.LHipYawPitch: -90
+			goalieSquatPart2[core.LHipRoll: -38
+			goalieSquatPart2[core.LHipPitch: -75
+			goalieSquatPart2[core.LKneePitch: 90
+			goalieSquatPart2[core.LAnklePitch: 30
+			goalieSquatPart2[core.LAnkleRoll: 20
+			goalieSquatPart2[core.RHipYawPitch: -90
+			goalieSquatPart2[core.RHipRoll: -38
+			goalieSquatPart2[core.RHipPitch: -75
+			goalieSquatPart2[core.RKneePitch: 90
+			goalieSquatPart2[core.RAnklePitch: 30
+			goalieSquatPart2[core.RAnkleRoll: 20
+			goalieSquatPart2[core.LShoulderPitch: -125  # -105  # -20
+			goalieSquatPart2[core.LShoulderRoll: -10 # 45  # -20  # 45
+			goalieSquatPart2[core.LElbowYaw: 0
+			goalieSquatPart2[core.LElbowRoll: 0  # 
+			goalieSquatPart2[core.RShoulderPitch: -125  # -90 # -15
+			goalieSquatPart2[core.RShoulderRoll: -10 # 45  # -30  #  45
+			goalieSquatPart2[core.RElbowYaw: 0
+			goalieSquatPart2[core.RElbowRoll: 0  # 
+			 # 0.3, 0, stiff.LOW_HEAD_STIFFNESSES),
+
+			goalieSquatRise
+    frames: 50
+    joints:
+			goalieSquatRise[core.HeadYaw: 0
+			goalieSquatRise[core.HeadPitch: -25  #  -21
+			goalieSquatRise[core.LHipYawPitch: -110 # -90
+			goalieSquatRise[core.LHipRoll: -38
+			goalieSquatRise[core.LHipPitch: -75
+			goalieSquatRise[core.LKneePitch: 90
+			goalieSquatRise[core.LAnklePitch: 30
+			goalieSquatRise[core.LAnkleRoll: 30 # 20
+			goalieSquatRise[core.RHipYawPitch: -110  # -90
+			goalieSquatRise[core.RHipRoll: -38
+			goalieSquatRise[core.RHipPitch: -75
+			goalieSquatRise[core.RKneePitch: 90
+			goalieSquatRise[core.RAnklePitch: 30
+			goalieSquatRise[core.RAnkleRoll: 30 # 20
+			goalieSquatRise[core.LShoulderPitch: -105  # -20
+			goalieSquatRise[core.LShoulderRoll: -10  # 45
+			goalieSquatRise[core.LElbowYaw: 0
+			goalieSquatRise[core.LElbowRoll: 75  # 
+			goalieSquatRise[core.RShoulderPitch: -45
+			goalieSquatRise[core.RShoulderRoll: -30  #  45
+			goalieSquatRise[core.RElbowYaw: 0
+			goalieSquatRise[core.RElbowRoll: 75  # 
+
+
+			goalieSquatPart3
+    frames: 50
+    joints:
+			goalieSquatPart3[core.HeadYaw: 0
+			goalieSquatPart3[core.HeadPitch: -21
+			goalieSquatPart3[core.LHipYawPitch: -90
+			goalieSquatPart3[core.LHipRoll: -38
+			goalieSquatPart3[core.LHipPitch: -90
+			goalieSquatPart3[core.LKneePitch: 90
+			goalieSquatPart3[core.LAnklePitch: 30
+			goalieSquatPart3[core.LAnkleRoll: 20
+			goalieSquatPart3[core.RHipYawPitch: -90
+			goalieSquatPart3[core.RHipRoll: -38
+			goalieSquatPart3[core.RHipPitch: -90
+			goalieSquatPart3[core.RKneePitch: 90
+			goalieSquatPart3[core.RAnklePitch: 30
+			goalieSquatPart3[core.RAnkleRoll: 40
+			goalieSquatPart3[core.LShoulderPitch: -30
+			goalieSquatPart3[core.LShoulderRoll: -18
+			goalieSquatPart3[core.LElbowYaw: 0
+			goalieSquatPart3[core.LElbowRoll: 0  # 
+			goalieSquatPart3[core.RShoulderPitch: -30
+			goalieSquatPart3[core.RShoulderRoll: -18
+			goalieSquatPart3[core.RElbowYaw: 0
+			goalieSquatPart3[core.RElbowRoll: 0  # 
+
+			goalieSquatPart4
+    frames: 50
+    joints:
+			goalieSquatPart4[core.HeadYaw: 0
+			goalieSquatPart4[core.HeadPitch: -21
+			goalieSquatPart4[core.LHipYawPitch: -90
+			goalieSquatPart4[core.LHipRoll: -38
+			goalieSquatPart4[core.LHipPitch: -60
+			goalieSquatPart4[core.LKneePitch: 90
+			goalieSquatPart4[core.LAnklePitch: 30
+			goalieSquatPart4[core.LAnkleRoll: 20
+			goalieSquatPart4[core.RHipYawPitch: -90
+			goalieSquatPart4[core.RHipRoll: -38
+			goalieSquatPart4[core.RHipPitch: -60
+			goalieSquatPart4[core.RKneePitch: 90
+			goalieSquatPart4[core.RAnklePitch: 30
+			goalieSquatPart4[core.RAnkleRoll: 40
+			goalieSquatPart4[core.LShoulderPitch: -30
+			goalieSquatPart4[core.LShoulderRoll: -18
+			goalieSquatPart4[core.LElbowYaw: 0
+			goalieSquatPart4[core.LElbowRoll: 0  # 
+			goalieSquatPart4[core.RShoulderPitch: -30
+			goalieSquatPart4[core.RShoulderRoll: -18
+			goalieSquatPart4[core.RElbowYaw: 0
+			goalieSquatPart4[core.RElbowRoll: 0  # 
+
+			goalieSquatGetup1
+    frames: 50
+    joints:
+			goalieSquatGetup1[core.RHipPitch: -75.0
+			goalieSquatGetup1[core.LKneePitch: 125.0
+			goalieSquatGetup1[core.RAnkleRoll: 0
+			 #  time = 0.8
+			goalieSquatGetup1[core.LHipPitch: -75.0
+			goalieSquatGetup1[core.LAnklePitch: -10.7
+			goalieSquatGetup1[core.RHipYawPitch: -76.0
+			goalieSquatGetup1[core.LAnkleRoll: 0
+			goalieSquatGetup1[core.LHipYawPitch: -76.0
+			goalieSquatGetup1[core.RAnklePitch: -10.7
+			goalieSquatGetup1[core.LHipRoll: -10.0
+			goalieSquatGetup1[core.RHipRoll: -10.0
+			goalieSquatGetup1[core.RKneePitch: 125.0
+
+			goalieSquatGetup1[core.LShoulderPitch: 0.0
+			goalieSquatGetup1[core.LShoulderRoll: 45 #  35.0  # 55.0
+			goalieSquatGetup1[core.LElbowYaw: 0.0
+			goalieSquatGetup1[core.LElbowRoll: 0
+			goalieSquatGetup1[core.RShoulderPitch: 0.0
+			goalieSquatGetup1[core.RShoulderRoll: 45  #  55.0
+			goalieSquatGetup1[core.RElbowYaw: -0.0
+			goalieSquatGetup1[core.RElbowRoll: 0
+
+			 # goalieSquatGetup1[core.LHipPitch: -60
+			 # goalieSquatGetup1[core.LAnklePitch: -60
+			 # goalieSquatGetup1[core.LAnkleRoll: 0
+			 # goalieSquatGetup1[core.RAnklePitch: -60
+			 # goalieSquatGetup1[core.LHipRoll: 0
+			 # goalieSquatGetup1[core.RHipRoll: 0
+			 # goalieSquatGetup1[core.RKneePitch: 120
+
+			goalieSquatGetup6
+    frames: 50
+    joints:
+			goalieSquatGetup6[core.RHipPitch: -75.0
+			goalieSquatGetup6[core.LKneePitch: 125.0
+			goalieSquatGetup6[core.RAnkleRoll: 0
+			 #  time = 0.8
+			goalieSquatGetup6[core.LHipPitch: -75.0
+			goalieSquatGetup6[core.LAnklePitch: -10.7
+			goalieSquatGetup6[core.RHipYawPitch: -76.0
+			goalieSquatGetup6[core.LAnkleRoll: 0
+			goalieSquatGetup6[core.LHipYawPitch: -76.0
+			goalieSquatGetup6[core.RAnklePitch: -10.7
+			goalieSquatGetup6[core.LHipRoll: -10.0
+			goalieSquatGetup6[core.RHipRoll: -10.0
+			goalieSquatGetup6[core.RKneePitch: 125.0
+
+			goalieSquatGetup6[core.LShoulderPitch: 0.0
+			goalieSquatGetup6[core.LShoulderRoll: 45 #  35.0  # 55.0
+			goalieSquatGetup6[core.LElbowYaw: 0.0
+			goalieSquatGetup6[core.LElbowRoll: 0
+			goalieSquatGetup6[core.RShoulderPitch: 0.0
+			goalieSquatGetup6[core.RShoulderRoll: 45  #  55.0
+			goalieSquatGetup6[core.RElbowYaw: -0.0
+			goalieSquatGetup6[core.RElbowRoll: 0
+
+			goalieSquatGetup6[core.LHipPitch: -60
+			goalieSquatGetup6[core.LAnklePitch: -60
+			goalieSquatGetup6[core.LAnkleRoll: 0
+			goalieSquatGetup6[core.RAnklePitch: -60
+			goalieSquatGetup6[core.LHipRoll: 0
+			goalieSquatGetup6[core.RHipRoll: 0
+			goalieSquatGetup6[core.RKneePitch: 120
+
+			goalieSquatGetup2
+    frames: 50
+    joints:
+			goalieSquatGetup2[core.RHipPitch: -50.0
+			goalieSquatGetup2[core.LHipPitch: -50.0
+			goalieSquatGetup2[core.LKneePitch: 125.0
+			goalieSquatGetup2[core.RAnkleRoll: 5
+			 #  time = 0.8
+			goalieSquatGetup2[core.LAnklePitch: -45.0
+			goalieSquatGetup2[core.RHipYawPitch: -35.0
+			goalieSquatGetup2[core.LAnkleRoll: 5
+			goalieSquatGetup2[core.LHipYawPitch: -35.0
+			goalieSquatGetup2[core.RAnklePitch: -45.0
+			goalieSquatGetup2[core.LHipRoll: -4.0
+			goalieSquatGetup2[core.RHipRoll: -4.0
+			goalieSquatGetup2[core.RKneePitch: 125.0
+
+			goalieSquatGetup2[core.LShoulderPitch: -80  #  -0.0
+			goalieSquatGetup2[core.LShoulderRoll: 80  #  -12  #  45.0
+			goalieSquatGetup2[core.LElbowYaw: 0.0
+			goalieSquatGetup2[core.LElbowRoll: 0
+
+			goalieSquatGetup2[core.RShoulderPitch: -80.0
+			goalieSquatGetup2[core.RShoulderRoll: 80 #  -12.0
+			goalieSquatGetup2[core.RElbowYaw: -0.0
+			goalieSquatGetup2[core.RElbowRoll: 0
+
+
+			 #  sum to 30
+			goalieSquatGetup2[core.LHipPitch: -50
+			goalieSquatGetup2[core.LAnklePitch: -50
+			goalieSquatGetup2[core.LKneePitch: 130
+			goalieSquatGetup2[core.LAnkleRoll: 0
+			goalieSquatGetup2[core.RAnklePitch: -50
+			goalieSquatGetup2[core.LHipRoll: 0
+			goalieSquatGetup2[core.RHipRoll: 0
+			goalieSquatGetup2[core.RKneePitch: 130
+			goalieSquatGetup2[core.RHipPitch: -50
+			goalieSquatGetup2[core.RAnkleRoll: 0
+
+			goalieSquatGetup3
+    frames: 50
+    joints:
+			goalieSquatGetup3[core.RHipPitch: -61
+			goalieSquatGetup3[core.RElbowYaw: -53
+			goalieSquatGetup3[core.RShoulderPitch: -75
+			goalieSquatGetup3[core.LShoulderPitch: -75
+			goalieSquatGetup3[core.LKneePitch: 124
+			goalieSquatGetup3[core.RAnkleRoll: 6
+			 #  time = 0.6
+			goalieSquatGetup3[core.LShoulderRoll: 10
+			goalieSquatGetup3[core.LHipPitch: -61
+			goalieSquatGetup3[core.LElbowYaw: -53
+			goalieSquatGetup3[core.LAnklePitch: -35
+			goalieSquatGetup3[core.RHipYawPitch: -35.0
+			goalieSquatGetup3[core.LElbowRoll: -74
+			goalieSquatGetup3[core.RShoulderRoll: 10
+			goalieSquatGetup3[core.LAnkleRoll: 6
+			goalieSquatGetup3[core.LHipYawPitch: -35.0
+			goalieSquatGetup3[core.RAnklePitch: -35
+			goalieSquatGetup3[core.LHipRoll: -6
+			goalieSquatGetup3[core.RHipRoll: -6
+			goalieSquatGetup3[core.RElbowRoll: -74
+			goalieSquatGetup3[core.RKneePitch: 124
+
+			goalieSquatGetup4
+    frames: 50
+    joints:
+			goalieSquatGetup4[core.RHipPitch: -19.43
+			goalieSquatGetup4[core.LKneePitch: 123.31
+			goalieSquatGetup4[core.RAnkleRoll: 9.06
+			 #  time = 0.5
+			goalieSquatGetup4[core.LHipPitch: -15.2
+			goalieSquatGetup4[core.LAnklePitch: -69.52
+			goalieSquatGetup4[core.RHipYawPitch: -45.0
+			goalieSquatGetup4[core.LAnkleRoll: 4.48
+			goalieSquatGetup4[core.LHipYawPitch: -45.0
+			goalieSquatGetup4[core.RAnklePitch: -65.3
+			goalieSquatGetup4[core.LHipRoll: -23.56
+			goalieSquatGetup4[core.RHipRoll: -31.11
+			goalieSquatGetup4[core.RKneePitch: 124.54
+			goalieSquatGetup4[core.LShoulderPitch: -76.9
+			goalieSquatGetup4[core.LShoulderRoll: 27.6
+			goalieSquatGetup4[core.LElbowYaw: -104.33
+			goalieSquatGetup4[core.LElbowRoll: 1.58
+			goalieSquatGetup4[core.RShoulderPitch: -82.09
+			goalieSquatGetup4[core.RShoulderRoll: 27.07
+			goalieSquatGetup4[core.RElbowYaw: -84.64
+			goalieSquatGetup4[core.RElbowRoll: -2.81
+
+
+			goalieSquatGetup5
+    frames: 50
+    joints:
+			goalieSquatGetup5[core.RHipPitch: -60
+			goalieSquatGetup5[core.LKneePitch: 120
+			goalieSquatGetup5[core.RAnkleRoll: 0
+			 #  time = 0.6
+			goalieSquatGetup5[core.LHipPitch: -60
+			goalieSquatGetup5[core.LAnklePitch: -60
+			goalieSquatGetup5[core.RHipYawPitch: 0
+			goalieSquatGetup5[core.LAnkleRoll: 0
+			goalieSquatGetup5[core.LHipYawPitch: 0
+			goalieSquatGetup5[core.RAnklePitch: -60
+			goalieSquatGetup5[core.LHipRoll: 0
+			goalieSquatGetup5[core.RHipRoll: 0
+			goalieSquatGetup5[core.RKneePitch: 120
+
+			goalieSquatGetup5[core.LShoulderPitch: -116 #  -93
+			goalieSquatGetup5[core.LShoulderRoll: 12  #  10
+			goalieSquatGetup5[core.LElbowYaw: -85  #  -90
+			goalieSquatGetup5[core.LElbowRoll: -0  #  -80
+			goalieSquatGetup5[core.RShoulderPitch: -116  #  -93
+			goalieSquatGetup5[core.RShoulderRoll: 12  #  10
+			goalieSquatGetup5[core.RElbowYaw: -85  #  -90
+			goalieSquatGetup5[core.RElbowRoll: -0  #  -80
+
+			goalieSquatGetup7
+    frames: 50
+    joints:
+			goalieSquatGetup7[core.RHipPitch: -50.0
+			goalieSquatGetup7[core.LHipPitch: -50.0
+			goalieSquatGetup7[core.LKneePitch: 125.0
+			goalieSquatGetup7[core.RAnkleRoll: 5
+			 #  time = 0.8
+			goalieSquatGetup7[core.LAnklePitch: -45.0
+			goalieSquatGetup7[core.RHipYawPitch: -35.0
+			goalieSquatGetup7[core.LAnkleRoll: 5
+			goalieSquatGetup7[core.LHipYawPitch: -35.0
+			goalieSquatGetup7[core.RAnklePitch: -45.0
+			goalieSquatGetup7[core.LHipRoll: -4.0
+			goalieSquatGetup7[core.RHipRoll: -4.0
+			goalieSquatGetup7[core.RKneePitch: 125.0
+
+			goalieSquatGetup7[core.LShoulderPitch: -80  #  -0.0
+			goalieSquatGetup7[core.LShoulderRoll: 80  #  -12  #  45.0
+			goalieSquatGetup7[core.LElbowYaw: 0.0
+			goalieSquatGetup7[core.LElbowRoll: 0
+
+			goalieSquatGetup7[core.RShoulderPitch: -80.0
+			goalieSquatGetup7[core.RShoulderRoll: 80 #  -12.0
+			goalieSquatGetup7[core.RElbowYaw: -0.0
+			goalieSquatGetup7[core.RElbowRoll: 0
+
+
+			 #  sum to 30
+			goalieSquatGetup7[core.LHipPitch: -50
+			goalieSquatGetup7[core.LAnklePitch: -50
+			goalieSquatGetup7[core.LKneePitch: 130
+			goalieSquatGetup7[core.LAnkleRoll: 0
+			goalieSquatGetup7[core.RAnklePitch: -50
+			goalieSquatGetup7[core.LHipRoll: 0
+			goalieSquatGetup7[core.RKneePitch: 130
+			goalieSquatGetup7[core.RHipPitch: -50
+			goalieSquatGetup7[core.RHipRoll: 20
+			goalieSquatGetup7[core.RAnkleRoll: -27
+
+			goalieSquatGetup8
+    frames: 50
+    joints: 
+			goalieSquatGetup8[core.HeadYaw: 0.08548664765188 
+			goalieSquatGetup8[core.HeadPitch: -23.025223390273 
+			goalieSquatGetup8[core.LHipYawPitch: -65.564823163839 
+			goalieSquatGetup8[core.LHipRoll: -10.90098191534 
+			goalieSquatGetup8[core.LHipPitch: 1.5844536232812 
+			goalieSquatGetup8[core.LKneePitch: 109.95014495682 
+			goalieSquatGetup8[core.LAnklePitch: -59.241427200052 
+			goalieSquatGetup8[core.LAnkleRoll: 6.2379024859459 
+			goalieSquatGetup8[core.RHipYawPitch: -65.564823163839 
+			goalieSquatGetup8[core.RHipRoll: -38.494167520626 
+			goalieSquatGetup8[core.RHipPitch: -70.140004888805 
+			goalieSquatGetup8[core.RKneePitch: 61.790289873761 
+			goalieSquatGetup8[core.RAnklePitch: 30.500838116096 
+			goalieSquatGetup8[core.RAnkleRoll: 11.955672406217 
+			goalieSquatGetup8[core.LShoulderPitch: -38.845744677964 
+			goalieSquatGetup8[core.LShoulderRoll: 43.679783742284 
+			goalieSquatGetup8[core.LElbowYaw: -0.7934357551237 
+			goalieSquatGetup8[core.LElbowRoll: -1.8433177928247 
+			goalieSquatGetup8[core.RShoulderPitch: -23.908954246225 
+			goalieSquatGetup8[core.RShoulderRoll: 44.739296346714 
+			goalieSquatGetup8[core.RElbowYaw: -0.87651817618774 
+			goalieSquatGetup8[core.RElbowRoll: -1.9360171202401 
+
+			goalieSquatGetup9
+    frames: 50
+    joints: 
+			goalieSquatGetup9[core.HeadYaw: -0.35396772354674 
+			goalieSquatGetup9[core.HeadPitch: -23.025223390273 
+			goalieSquatGetup9[core.LHipYawPitch: -55.89673820501 
+			goalieSquatGetup9[core.LHipRoll: -10.022059512565 
+			goalieSquatGetup9[core.LHipPitch: -11.862973078802 
+			goalieSquatGetup9[core.LKneePitch: 124.18860318744 
+			goalieSquatGetup9[core.LAnklePitch: -67.327469592377 
+			goalieSquatGetup9[core.LAnkleRoll: 1.9312086670644 
+			goalieSquatGetup9[core.RHipYawPitch: -55.89673820501 
+			goalieSquatGetup9[core.RHipRoll: -46.580209912951 
+			goalieSquatGetup9[core.RHipPitch: -55.110528790028 
+			goalieSquatGetup9[core.RKneePitch: 49.661239945652 
+			goalieSquatGetup9[core.RAnklePitch: 40.168929905114 
+			goalieSquatGetup9[core.RAnkleRoll: 17.668647533691 
+			goalieSquatGetup9[core.LShoulderPitch: -56.248301701969 
+			goalieSquatGetup9[core.LShoulderRoll: 43.064547622605 
+			goalieSquatGetup9[core.LElbowYaw: -0.7934357551237 
+			goalieSquatGetup9[core.LElbowRoll: -1.8433177928247 
+			goalieSquatGetup9[core.RShoulderPitch: -39.377898376578 
+			goalieSquatGetup9[core.RShoulderRoll: 42.981465201541 
+			goalieSquatGetup9[core.RElbowYaw: -0.87651817618774 
+			goalieSquatGetup9[core.RElbowRoll: -2.0239079944798
+
+			goalieSquatGetup10
+    frames: 50
+    joints: 
+			goalieSquatGetup10[core.HeadYaw: -0.35396772354674 
+			goalieSquatGetup10[core.HeadPitch: -21.179501370861 
+			goalieSquatGetup10[core.LHipYawPitch: -53.69943902826 
+			goalieSquatGetup10[core.LHipRoll: -9.6704960156059 
+			goalieSquatGetup10[core.LHipPitch: -26.101444969799 
+			goalieSquatGetup10[core.LKneePitch: 124.18860318744 
+			goalieSquatGetup10[core.LAnklePitch: -67.766923963575 
+			goalieSquatGetup10[core.LAnkleRoll: 4.2163987180539 
+			goalieSquatGetup10[core.RHipYawPitch: -53.69943902826 
+			goalieSquatGetup10[core.RHipRoll: -27.683494366492 
+			goalieSquatGetup10[core.RHipPitch: -60.384008565169 
+			goalieSquatGetup10[core.RKneePitch: 47.903395140101 
+			goalieSquatGetup10[core.RAnklePitch: 40.168929905114 
+			goalieSquatGetup10[core.RAnkleRoll: 17.93232015641 
+			goalieSquatGetup10[core.LShoulderPitch: -56.863537821647 
+			goalieSquatGetup10[core.LShoulderRoll: 42.976656748366 
+			goalieSquatGetup10[core.LElbowYaw: -0.7934357551237 
+			goalieSquatGetup10[core.LElbowRoll: -1.8433177928247 
+			goalieSquatGetup10[core.RShoulderPitch: -55.549983161227 
+			goalieSquatGetup10[core.RShoulderRoll: 42.893560666923 
+			goalieSquatGetup10[core.RElbowYaw: -0.43705014461078 
+			goalieSquatGetup10[core.RElbowRoll: -2.0239079944798 
+
+			goalieSquatGetup11
+    frames: 50
+    joints: 
+			goalieSquatGetup11[core.HeadYaw: -0.52974947202619 
+			goalieSquatGetup11[core.HeadPitch: -23.64047317033 
+			goalieSquatGetup11[core.LHipYawPitch: -53.172093782822 
+			goalieSquatGetup11[core.LHipRoll: -5.803256567923 
+			goalieSquatGetup11[core.LHipPitch: -31.902297311134 
+			goalieSquatGetup11[core.LKneePitch: 122.43077204226 
+			goalieSquatGetup11[core.LAnklePitch: -70.227895763044 
+			goalieSquatGetup11[core.LAnkleRoll: 4.3042895922937 
+			goalieSquatGetup11[core.RHipYawPitch: -53.172093782822 
+			goalieSquatGetup11[core.RHipRoll: -27.156135460675 
+			goalieSquatGetup11[core.RHipPitch: -59.065645451573 
+			goalieSquatGetup11[core.RKneePitch: 43.59670132122 
+			goalieSquatGetup11[core.RAnklePitch: 39.993134496256 
+			goalieSquatGetup11[core.RAnkleRoll: 8.9673553613097 
+			goalieSquatGetup11[core.LShoulderPitch: -57.918241972902 
+			goalieSquatGetup11[core.LShoulderRoll: 41.394593691294 
+			goalieSquatGetup11[core.LElbowYaw: -0.70553122050564 
+			goalieSquatGetup11[core.LElbowRoll: -1.9312086670644 
+			goalieSquatGetup11[core.RShoulderPitch: -58.801972828854 
+			goalieSquatGetup11[core.RShoulderRoll: 29.70980658756 
+			goalieSquatGetup11[core.RElbowYaw: -0.61283189309022 
+			goalieSquatGetup11[core.RElbowRoll: -2.0239079944798
+
+			goalieSquatGetup12
+    frames: 50
+    joints:
+			goalieSquatGetup12[core.HeadYaw: 0
+			goalieSquatGetup12[core.HeadPitch: -21
+			goalieSquatGetup12[core.LHipYawPitch: -115
+			goalieSquatGetup12[core.LHipRoll: -38
+			goalieSquatGetup12[core.LHipPitch: -75
+			goalieSquatGetup12[core.LKneePitch: 90
+			goalieSquatGetup12[core.LAnklePitch: 30
+			goalieSquatGetup12[core.LAnkleRoll: 20
+			goalieSquatGetup12[core.RHipYawPitch: -115
+			goalieSquatGetup12[core.RHipRoll: -38
+			goalieSquatGetup12[core.RHipPitch: -75
+			goalieSquatGetup12[core.RKneePitch: 90
+			goalieSquatGetup12[core.RAnklePitch: 30
+			goalieSquatGetup12[core.RAnkleRoll: 20
+			goalieSquatGetup12[core.LShoulderPitch: 0
+			goalieSquatGetup12[core.LShoulderRoll: 0
+			goalieSquatGetup12[core.LElbowYaw: 0
+			goalieSquatGetup12[core.LElbowRoll: 0  # 
+			goalieSquatGetup12[core.RShoulderPitch: 0
+			goalieSquatGetup12[core.RShoulderRoll: 0
+			goalieSquatGetup12[core.RElbowYaw: 0
+			goalieSquatGetup12[core.RElbowRoll: 0  # 
+
+			goalieSquatGetup13
+    frames: 50
+    joints:
+			goalieSquatGetup13[core.RHipPitch: -75.0
+			goalieSquatGetup13[core.LKneePitch: 125.0
+			goalieSquatGetup13[core.RAnkleRoll: 0
+			 #  time = 0.8
+			goalieSquatGetup13[core.LHipPitch: -75.0
+			goalieSquatGetup13[core.LAnklePitch: -10.7
+			goalieSquatGetup13[core.RHipYawPitch: -76.0
+			goalieSquatGetup13[core.LAnkleRoll: 0
+			goalieSquatGetup13[core.LHipYawPitch: -76.0
+			goalieSquatGetup13[core.RAnklePitch: -10.7
+			goalieSquatGetup13[core.LHipRoll: -10.0
+			goalieSquatGetup13[core.RHipRoll: -10.0
+			goalieSquatGetup13[core.RKneePitch: 125.0
+
+			goalieSquatGetup13[core.LShoulderPitch: 0.0
+			goalieSquatGetup13[core.LShoulderRoll: 45 #  35.0  # 55.0
+			goalieSquatGetup13[core.LElbowYaw: 0.0
+			goalieSquatGetup13[core.LElbowRoll: 0
+			goalieSquatGetup13[core.RShoulderPitch: 0.0
+			goalieSquatGetup13[core.RShoulderRoll: 45  #  55.0
+			goalieSquatGetup13[core.RElbowYaw: -0.0
+			goalieSquatGetup13[core.RElbowRoll: 0
+
+			goalieSquatGetup14
+    frames: 50
+    joints: 
+			goalieSquatGetup14[core.HeadYaw: -0.090295100827569 
+			goalieSquatGetup14[core.HeadPitch: -21.970532899397 
+			goalieSquatGetup14[core.LHipYawPitch: -42.27351609407 
+			goalieSquatGetup14[core.LHipRoll: -19.426478678864 
+			goalieSquatGetup14[core.LHipPitch: -18.454856948673 
+			goalieSquatGetup14[core.LKneePitch: 121.55184963949 
+			goalieSquatGetup14[core.LAnklePitch: -68.118487460534 
+			goalieSquatGetup14[core.LAnkleRoll: 2.8980219440797 
+			goalieSquatGetup14[core.RHipYawPitch: -42.27351609407 
+			goalieSquatGetup14[core.RHipRoll: -19.157997602969 
+			goalieSquatGetup14[core.RHipPitch: -19.778042175823 
+			goalieSquatGetup14[core.RKneePitch: 121.82033071538 
+			goalieSquatGetup14[core.RAnklePitch: -68.025794963308 
+			goalieSquatGetup14[core.RAnkleRoll: 2.9028303972554 
+			goalieSquatGetup14[core.LShoulderPitch: -84.197872917768 
+			goalieSquatGetup14[core.LShoulderRoll: 0.1733775218916 
+			goalieSquatGetup14[core.LElbowYaw: -50.188585191091 
+			goalieSquatGetup14[core.LElbowRoll: -54.842034053755 
+			goalieSquatGetup14[core.RShoulderPitch: -106.61507286813 
+			goalieSquatGetup14[core.RShoulderRoll: 13.186158305952 
+			goalieSquatGetup14[core.RElbowYaw: -49.568526957858 
+			goalieSquatGetup14[core.RElbowRoll: -85.872635302255
+
+			goalieSquatGetup15
+    frames: 50
+    joints: 
+			goalieSquatGetup15[core.HeadYaw: 0.5249410188505 
+			goalieSquatGetup15[core.HeadPitch: -25  # -22.146314647876 
+			goalieSquatGetup15[core.LHipYawPitch: -49.920104115196 
+			goalieSquatGetup15[core.LHipRoll: -24.328753331446 
+			goalieSquatGetup15[core.LHipPitch: -24.519381912727 
+			goalieSquatGetup15[core.LKneePitch: 124.27649406168 
+			goalieSquatGetup15[core.LAnklePitch: -70.052114014565 
+			goalieSquatGetup15[core.LAnkleRoll: -5.4516930709641 
+			goalieSquatGetup15[core.RHipYawPitch: -49.920104115196 
+			goalieSquatGetup15[core.RHipRoll: -44.187473701745 
+			goalieSquatGetup15[core.RHipPitch: -14.856112237263 
+			goalieSquatGetup15[core.RKneePitch: 108.81237204488 
+			goalieSquatGetup15[core.RAnklePitch: -47.195459693008 
+			goalieSquatGetup15[core.RAnkleRoll: 20.041714798542 
+			goalieSquatGetup15[core.LShoulderPitch: 0
+			goalieSquatGetup15[core.LShoulderRoll: 0
+			goalieSquatGetup15[core.LElbowYaw: 0
+			goalieSquatGetup15[core.LElbowRoll: 0
+			goalieSquatGetup15[core.RShoulderPitch: 0
+			goalieSquatGetup15[core.RShoulderRoll: 0
+			goalieSquatGetup15[core.RElbowYaw: 0
+			goalieSquatGetup15[core.RElbowRoll: 0
+
+			goalieSquat5
+    frames: 50
+    joints: 
+			goalieSquat5[core.HeadYaw: 0.08548664765188 
+			goalieSquat5[core.HeadPitch: 40 # -24.607286447345 
+			goalieSquat5[core.LHipYawPitch: -69.168383158614 
+			goalieSquat5[core.LHipRoll: -50 # -55
+			goalieSquat5[core.LHipPitch: -89.910834384864 
+			goalieSquat5[core.LKneePitch: 91.404992907317 
+			goalieSquat5[core.LAnklePitch: 42.888752213748 
+			goalieSquat5[core.LAnkleRoll: 20 # 11.071955210644 
+			goalieSquat5[core.RHipYawPitch: -69.168383158614 
+			goalieSquat5[core.RHipRoll: -50 # -55
+			goalieSquat5[core.RHipPitch: -89.56407934108 
+			goalieSquat5[core.RKneePitch: 92.728178134467 
+			goalieSquat5[core.RAnklePitch: 41.39940214447 
+			goalieSquat5[core.RAnkleRoll: 20 # -6.1548200648819 
+			goalieSquat5[core.LShoulderPitch: -140 # -14
+			goalieSquat5[core.LShoulderRoll: -15 # 16.472663752734 
+			goalieSquat5[core.LElbowYaw: -1.8481262460004 
+			goalieSquat5[core.LElbowRoll: -2.0190995413041 
+			goalieSquat5[core.RShoulderPitch: -20 # -14
+			goalieSquat5[core.RShoulderRoll: -30 # 16.057673120688 
+			goalieSquat5[core.RElbowYaw: -0.43705014461078 
+			goalieSquat5[core.RElbowRoll: -2.8149395230157
+
+			goalieSquat51
+    frames: 50
+    joints:
+			goalieSquat51[core.HeadYaw: 0.08548664765188
+			goalieSquat51[core.HeadPitch: -40 # -24.607286447345 
+			goalieSquat51[core.LHipYawPitch: -69.168383158614
+			goalieSquat51[core.LHipRoll: -50 # -55
+			goalieSquat51[core.LHipPitch: -89.910834384864
+			goalieSquat51[core.LKneePitch: 91.404992907317
+			goalieSquat51[core.LAnklePitch: 42.888752213748
+			goalieSquat51[core.LAnkleRoll: 20 # 11.071955210644 
+			goalieSquat51[core.RHipYawPitch: -69.168383158614
+			goalieSquat51[core.RHipRoll: -50 # -55
+			goalieSquat51[core.RHipPitch: -89.56407934108
+			goalieSquat51[core.RKneePitch: 92.728178134467
+			goalieSquat51[core.RAnklePitch: 41.39940214447
+			goalieSquat51[core.RAnkleRoll: 20 # -6.1548200648819 
+			goalieSquat51[core.LShoulderPitch: -110 # -14
+			goalieSquat51[core.LShoulderRoll: -45 # 16.472663752734 
+			goalieSquat51[core.LElbowYaw: -1.8481262460004
+			goalieSquat51[core.LElbowRoll: -2.0190995413041
+			goalieSquat51[core.RShoulderPitch: -20 # -14
+			goalieSquat51[core.RShoulderRoll: -30 # 16.057673120688 
+			goalieSquat51[core.RElbowYaw: -0.43705014461078
+			goalieSquat51[core.RElbowRoll: -2.8149395230157
+
+
+			goalieSquatGetup16
+    frames: 50
+    joints:
+			goalieSquatGetup16[core.RHipPitch: -75.0
+			goalieSquatGetup16[core.LKneePitch: 125.0
+			goalieSquatGetup16[core.RAnkleRoll: 0
+			 #  time = 0.8
+			goalieSquatGetup16[core.LHipPitch: -75.0
+			goalieSquatGetup16[core.LAnklePitch: -10.7
+			goalieSquatGetup16[core.RHipYawPitch: -76.0
+			goalieSquatGetup16[core.LAnkleRoll: 0
+			goalieSquatGetup16[core.LHipYawPitch: -76.0
+			goalieSquatGetup16[core.RAnklePitch: -10.7
+			goalieSquatGetup16[core.LHipRoll: -20.0
+			goalieSquatGetup16[core.RHipRoll: -20.0
+			goalieSquatGetup16[core.RKneePitch: 125.0
+
+			goalieSquatGetup16[core.LShoulderPitch: 0.0
+			goalieSquatGetup16[core.LShoulderRoll: 0 #  35.0  # 55.0
+			goalieSquatGetup16[core.LElbowYaw: 0.0
+			goalieSquatGetup16[core.LElbowRoll: 0
+			goalieSquatGetup16[core.RShoulderPitch: 0.0
+			goalieSquatGetup16[core.RShoulderRoll: 0  #  55.0
+			goalieSquatGetup16[core.RElbowYaw: -0.0
+			goalieSquatGetup16[core.RElbowRoll: 0
+
+			longKickStepFirst
+    frames: 50
+    joints:
+			HeadYaw: 35.769523098438 
+			HeadPitch: -22.146314647876 
+			LHipYawPitch: 0.0024042265878445 
+			LHipRoll: -2.9907212714951 
+			LHipPitch: -28.738184857369 
+			LKneePitch: 49  #  63.806985188477 
+			LAnklePitch: -34.983313683457 
+			LAnkleRoll: 3.4253671895181 
+			RHipYawPitch: 0.0024042265878445 
+			RHipRoll: 0.0024042265878445 
+			RHipPitch: -45.969782246449 
+			RKneePitch: 40  #  55.286310538508 
+			RAnklePitch: -9.3141240654713 
+			RAnkleRoll: -0.5249410188505
+			LShoulderPitch: -116
+			LShoulderRoll: -2
+			LElbowYaw: 25
+			LElbowRoll: -53
+			RShoulderPitch: -116
+			RShoulderRoll: -2
+			RElbowYaw: 25
+			RElbowRoll: -53
+
+			longKickStepFirst2
+    frames: 50
+    joints:
+			HeadYaw: 35.769523098438 
+			HeadPitch: -22.146314647876 
+			LHipYawPitch: 0.0024042265878445 
+			LHipRoll: -2.9907212714951 
+			LHipPitch: -28.738184857369 
+			LKneePitch: 49  #  63.806985188477 
+			LAnklePitch: -34.983313683457 
+			LAnkleRoll: 3.4253671895181 
+			RHipYawPitch: 0.0024042265878445 
+			RHipRoll: 0.0024042265878445 
+			RHipPitch: -45.969782246449 
+			RKneePitch: 40  #  55.286310538508 
+			RAnklePitch: -9.3141240654713 
+			RAnkleRoll: -0.5249410188505 
+			LShoulderPitch: -116
+			LShoulderRoll: 12
+			LElbowYaw: -85
+			LElbowRoll: -0
+			RShoulderPitch: -116
+			RShoulderRoll: 12
+			RElbowYaw: -85
+			RElbowRoll: -0
+
+
+			longKickStep
+    frames: 50
+    joints:
+			HeadYaw: 35.769523098438 
+			HeadPitch: -22.146314647876 
+			LHipYawPitch: 0.0024042265878445 
+			LHipRoll: -2.9907212714951 
+			LHipPitch: -28.738184857369 
+			LKneePitch: 54  #  63.806985188477 
+			LAnklePitch: -34.983313683457 
+			LAnkleRoll: 3.4253671895181
+			RHipYawPitch: 0.0024042265878445 
+			RHipRoll: 0.0024042265878445 
+			RHipPitch: -45.969782246449 
+			RKneePitch: 45  #  55.286310538508 
+			RAnklePitch: -9.3141240654713 
+			RAnkleRoll: -0.5249410188505 
+			LShoulderPitch: -116
+			LShoulderRoll: -2
+			LElbowYaw: 25
+			LElbowRoll: -53
+			RShoulderPitch: -116
+			RShoulderRoll: -2
+			RElbowYaw: 25
+			RElbowRoll: -53
+
+			longKickStepShort
+    frames: 50
+    joints:
+			HeadYaw: 119.09087784002 
+			HeadPitch: -18.103293451714 
+			LHipYawPitch: 0.35396772354674 
+			LHipRoll: -2.1118125290979 
+			LHipPitch: -28.47451223465 
+			LKneePitch: 62.664403823361 
+			LAnklePitch: -36.213799583191 
+			LAnkleRoll: 2.4585675728811 
+			RHipYawPitch: 0.35396772354674 
+			RHipRoll: -1.3159725473864 
+			RHipPitch: -42.014651924526 
+			RKneePitch: 66.009079158024 
+			RAnklePitch: -25.398304315503 
+			RAnkleRoll: 0.88132662936343 
+			LShoulderPitch: -114.60841593304 
+			LShoulderRoll: 7.292606637201 
+			LElbowYaw: 24.695177321585 
+			LElbowRoll: -52.117389631567 
+			RShoulderPitch: -114.61322438621 
+			RShoulderRoll: 7.2095242161369 
+			RElbowYaw: 24.524190365903 
+			RElbowRoll: -51.858511801645 
+
+			longKickStep2
+    frames: 50
+    joints:
+			HeadYaw: 35.769523098438 
+			HeadPitch: -22.146314647876 
+			LHipYawPitch: 0
+			LHipRoll: -15
+			LHipPitch: 5
+			LKneePitch: 20
+			LAnklePitch: -25
+			LAnkleRoll: 20
+			RHipYawPitch: 0.0024042265878445 
+			RHipRoll: 15  #  10  #  11  #  20.0024042265878445 
+			RHipPitch: -12  #  -25.969782246449 
+			RKneePitch: 16  #  45.286310538508 
+			RAnklePitch: -8  #  -19.3141240654713 
+			RAnkleRoll: -12  #  -17  #  -18  #  -20.5249410188505 
+			LShoulderPitch: -116
+			LShoulderRoll: 5  #  12
+			LElbowYaw: -30  #  -85
+			LElbowRoll: -26.5  #  0
+			RShoulderPitch: -116
+			RShoulderRoll: 5  #  12
+			RElbowYaw: -30  #  -85
+			RElbowRoll: -26.5  #  0
+
+
+
+			 #  Bowdoin's long kick
+			longKickShift
+    frames: 50
+    joints:
+			HeadYaw: 0
+			HeadPitch: -0 
+			LHipYawPitch: 0
+			LHipRoll: -0
+			LHipPitch: -15
+			LKneePitch: 20
+			LAnklePitch: -10
+			LAnkleRoll: -0
+			RHipYawPitch: 0
+			RHipRoll: 4
+			RHipPitch: -12
+			RKneePitch: 16
+			RAnklePitch: -8
+			RAnkleRoll: -6  #  -7  #  -6
+			LShoulderPitch: -116
+			LShoulderRoll: 12
+			LElbowYaw: -85
+			LElbowRoll: -0
+			RShoulderPitch: -116
+			RShoulderRoll: 12
+			RElbowYaw: -85
+			RElbowRoll: -0
+
+			longKickShift2
+    frames: 50
+    joints:
+			HeadYaw: 0
+			HeadPitch: -0 
+			LHipYawPitch: 0
+			LHipRoll: -15
+			LHipPitch: -10
+			LKneePitch: 20
+			LAnklePitch: -10
+			LAnkleRoll: 20
+			RHipYawPitch: 0
+			RHipRoll: 11
+			RHipPitch: -12
+			RKneePitch: 16
+			RAnklePitch: -8
+			RAnkleRoll: -18
+			LShoulderPitch: -116
+			LShoulderRoll: 12
+			LElbowYaw: -85
+			LElbowRoll: -0
+			RShoulderPitch: -116
+			RShoulderRoll: 12
+			RElbowYaw: -85
+			RElbowRoll: -0
+
+			longKickShift2Step
+    frames: 50
+    joints:
+			longKickShift2Step[core.HeadYaw: 0
+			longKickShift2Step[core.HeadPitch: -0 
+			longKickShift2Step[core.LHipYawPitch: 0
+			longKickShift2Step[core.LHipRoll: -15
+			longKickShift2Step[core.LHipPitch: 5
+			longKickShift2Step[core.LKneePitch: 20
+			longKickShift2Step[core.LAnklePitch: -25
+			longKickShift2Step[core.LAnkleRoll: 20
+			longKickShift2Step[core.RHipYawPitch: 0
+			longKickShift2Step[core.RHipRoll: 11
+			longKickShift2Step[core.RHipPitch: -12
+			longKickShift2Step[core.RKneePitch: 16
+			longKickShift2Step[core.RAnklePitch: -8
+			longKickShift2Step[core.RAnkleRoll: -18
+			longKickShift2Step[core.LShoulderPitch: -116
+			longKickShift2Step[core.LShoulderRoll: 12
+			longKickShift2Step[core.LElbowYaw: -85
+			longKickShift2Step[core.LElbowRoll: -0
+			longKickShift2Step[core.RShoulderPitch: -116
+			longKickShift2Step[core.RShoulderRoll: 12
+			longKickShift2Step[core.RElbowYaw: -85
+			longKickShift2Step[core.RElbowRoll: -0
+
+			longKickLift
+    frames: 50
+    joints:
+			longKickLift[core.HeadYaw: 0
+			longKickLift[core.HeadPitch: -0 
+			longKickLift[core.LHipYawPitch: 0
+			longKickLift[core.LHipRoll: -15
+			longKickLift[core.LHipPitch: -45
+			longKickLift[core.LKneePitch: 85
+			longKickLift[core.LAnklePitch: -37
+			longKickLift[core.LAnkleRoll: 20
+			longKickLift[core.RHipYawPitch: 0
+			longKickLift[core.RHipRoll: 11
+			longKickLift[core.RHipPitch: -12
+			longKickLift[core.RKneePitch: 16
+			longKickLift[core.RAnklePitch: -8
+			longKickLift[core.RAnkleRoll: -18
+			longKickLift[core.LShoulderPitch: -116
+			longKickLift[core.LShoulderRoll: 12
+			longKickLift[core.LElbowYaw: -85
+			longKickLift[core.LElbowRoll: -0
+			longKickLift[core.RShoulderPitch: -116
+			longKickLift[core.RShoulderRoll: 12
+			longKickLift[core.RElbowYaw: -85
+			longKickLift[core.RElbowRoll: -0
+
+			longKickLiftStep
+    frames: 50
+    joints:
+			HeadYaw: 0
+			HeadPitch: -0 
+			LHipYawPitch: 0
+			LHipRoll: -15
+			LHipPitch: -30  #  -45
+			LKneePitch: 85
+			LAnklePitch: -52  #  -37
+			LAnkleRoll: 20
+			RHipYawPitch: 0
+			RHipRoll: 11
+			RHipPitch: -12
+			RKneePitch: 16
+			RAnklePitch: -8
+			RAnkleRoll: -18
+			LShoulderPitch: -116
+			LShoulderRoll: 12
+			LElbowYaw: -85
+			LElbowRoll: -0
+			RShoulderPitch: -116
+			RShoulderRoll: 12
+			RElbowYaw: -85
+			RElbowRoll: -0
+
+			longKickCock
+    frames: 50
+    joints:
+			HeadYaw: 0
+			HeadPitch: -0 
+			LHipYawPitch: 0
+			LHipRoll: -15
+			LHipPitch: -22
+			LKneePitch: 120
+			LAnklePitch: 0
+			LAnkleRoll: 20
+			RHipYawPitch: 0
+			RHipRoll: 9
+			RHipPitch: -12
+			RKneePitch: 16
+			RAnklePitch: -8
+			RAnkleRoll: -16
+			LShoulderPitch: -20
+			LShoulderRoll: 40
+			LElbowYaw: 0
+			LElbowRoll: 0
+			RShoulderPitch: -100
+			RShoulderRoll: 40
+			RElbowYaw: -0
+			RElbowRoll: -0
+
+			longKickKick
+    frames: 50
+    joints:
+			HeadYaw: 0
+			HeadPitch: -0 
+			LHipYawPitch: 0
+			LHipRoll: -15
+			LHipPitch: -80
+			LKneePitch: 60
+			LAnklePitch: -5
+			LAnkleRoll: 20
+			RHipYawPitch: 0
+			RHipRoll: 9
+			RHipPitch: -22
+			RKneePitch: 30
+			RAnklePitch: -8
+			RAnkleRoll: -16
+			LShoulderPitch: -50
+			LShoulderRoll: 40
+			LElbowYaw: 0
+			LElbowRoll: 0
+			RShoulderPitch: -20
+			RShoulderRoll: 40
+			RElbowYaw: -0
+			RElbowRoll: -0
+
+			longKickShiftback
+    frames: 50
+    joints:
+			HeadYaw: 0
+			HeadPitch: -0 
+			LHipYawPitch: 0
+			LHipRoll: -10
+			LHipPitch: -15
+			LKneePitch: 20
+			LAnklePitch: -8
+			LAnkleRoll: 15
+			RHipYawPitch: 0
+			RHipRoll: 0
+			RHipPitch: -15
+			RKneePitch: 20
+			RAnklePitch: -8
+			RAnkleRoll: 0
+			LShoulderPitch: -83
+			LShoulderRoll: 26
+			LElbowYaw: -42.5
+			LElbowRoll: 0
+			RShoulderPitch: -68
+			RShoulderRoll: 26
+			RElbowYaw: -42.6
+			RElbowRoll: 0
+
+			longKickStandend
+    frames: 50
+    joints:
+			HeadYaw: 0
+			HeadPitch: -0 
+			LHipYawPitch: 0
+			LHipRoll: -0
+			LHipPitch: -15
+			LKneePitch: 20
+			LAnklePitch: -10
+			LAnkleRoll: -0
+			RHipYawPitch: 0
+			RHipRoll: 0
+			RHipPitch: -15
+			RKneePitch: 20
+			RAnklePitch: -10
+			RAnkleRoll: 0
+			LShoulderPitch: -116
+			LShoulderRoll: 12
+			LElbowYaw: -85
+			LElbowRoll: -0
+			RShoulderPitch: -116
+			RShoulderRoll: 12
+			RElbowYaw: -85
+			RElbowRoll: -0
+
+			standHigh
+    frames: 50
+    joints:
+			HeadYaw: 0
+			HeadPitch: -0 
+			LHipYawPitch: 0
+			LHipRoll: -0
+			LHipPitch: -1
+			LKneePitch: -10
+			LAnklePitch: 0
+			LAnkleRoll: 0
+			RHipYawPitch: 0
+			RHipRoll: 0
+			RHipPitch: -1
+			RKneePitch: -10
+			RAnklePitch: 0
+			RAnkleRoll: 0
+			LShoulderPitch: -116
+			LShoulderRoll: 8
+			LElbowYaw: 25
+			LElbowRoll: -53
+			RShoulderPitch: -116
+			RShoulderRoll: 8
+			RElbowYaw: 25
+			RElbowRoll: -53
+
+
+			blockright
+    frames: 50
+    joints:
+			blockright[core.HeadYaw: 0
+			blockright[core.HeadPitch: 0
+			blockright[core.LHipYawPitch: 0
+			blockright[core.LHipRoll: 20
+			blockright[core.LHipPitch: -32
+			blockright[core.LKneePitch: 76
+			blockright[core.LAnklePitch: -40
+			blockright[core.LAnkleRoll: 17
+
+			blockright[core.RHipYawPitch: 0
+			blockright[core.RHipRoll: -34
+			blockright[core.RHipPitch: -49
+			blockright[core.RKneePitch: 125
+			blockright[core.RAnklePitch: -70
+			blockright[core.RAnkleRoll: -5
+
+			blockright[core.LShoulderPitch: -97
+			blockright[core.LShoulderRoll: 7
+			blockright[core.LElbowYaw: -12
+			blockright[core.LElbowRoll: -1
+
+			blockright[core.RShoulderPitch: -91
+			blockright[core.RShoulderRoll: 27
+			blockright[core.RElbowYaw: -119
+			blockright[core.RElbowRoll: -4
+
+			blockleft
+    frames: 50
+    joints:
+			HeadYaw: 0
+			HeadPitch: 0
+			RHipYawPitch: 0
+			RHipRoll: 20
+			RHipPitch: -32
+			RKneePitch: 76
+			RAnklePitch: -40
+			RAnkleRoll: 17
+
+			LHipYawPitch: 0
+			LHipRoll: -34
+			LHipPitch: -49
+			LKneePitch: 125
+			LAnklePitch: -70
+			LAnkleRoll: -5
+
+			RShoulderPitch: -97
+			RShoulderRoll: 7
+			RElbowYaw: -12
+			RElbowRoll: -1
+
+			LShoulderPitch: -91
+			LShoulderRoll: 27
+			LElbowYaw: -119
+			LElbowRoll: -4
+
+			keeperSaveArmForward
+    frames: 50
+    joints:
+			keeperSaveArmForward[core. HeadYaw: 1.84331779282 
+			keeperSaveArmForward[core. HeadPitch: -0.876518176188 
+			keeperSaveArmForward[core. LHipYawPitch: -0.349159270371 
+			keeperSaveArmForward[core. LHipRoll: -44.6514054725 
+			keeperSaveArmForward[core. LHipPitch: -47.54702319 
+			keeperSaveArmForward[core. LKneePitch: 124.188603187 
+			keeperSaveArmForward[core. LAnklePitch: -70.227895763 
+			keeperSaveArmForward[core. LAnkleRoll: -1.67234449752 
+			keeperSaveArmForward[core. RHipYawPitch: -0.349159270371 
+			keeperSaveArmForward[core. RHipRoll: 20.4811828301 
+			keeperSaveArmForward[core. RHipPitch: -15.0318939857 
+			keeperSaveArmForward[core. RKneePitch: 53.0890113618 
+			keeperSaveArmForward[core. RAnklePitch: -31.7265155627 
+			keeperSaveArmForward[core. RAnkleRoll: 25.3152218944 
+			keeperSaveArmForward[core. LShoulderPitch: -57.215114979 
+			keeperSaveArmForward[core. LShoulderRoll: 28.9139802662 
+			keeperSaveArmForward[core. LElbowYaw: -112.415925209 
+			keeperSaveArmForward[core. LElbowRoll: -2.2827858244
+			keeperSaveArmForward[core. RShoulderPitch: -116 
+			keeperSaveArmForward[core. RShoulderRoll: -2 
+			keeperSaveArmForward[core. RElbowYaw: 25 
+			keeperSaveArmForward[core. RElbowRoll: -53 
+
+			keeperSaveArmForward2
+    frames: 50
+    joints:
+			keeperSaveArmForward2[core. HeadYaw: 0.437050144611 
+			keeperSaveArmForward2[core. HeadPitch: -0.70072276733 
+			keeperSaveArmForward2[core. LHipYawPitch: -3.77694434686 
+			keeperSaveArmForward2[core. LHipRoll: -44.5635145982 
+			keeperSaveArmForward2[core. LHipPitch: -47.8985866869 
+			keeperSaveArmForward2[core. LKneePitch: 124.100712313 
+			keeperSaveArmForward2[core. LAnklePitch: -70.3157866373 
+			keeperSaveArmForward2[core. LAnkleRoll: 4.30428959229 
+			keeperSaveArmForward2[core. RHipYawPitch: -3.77694434686 
+			keeperSaveArmForward2[core. RHipRoll: 20.0417147985 
+			keeperSaveArmForward2[core. RHipPitch: -20.4811828301 
+			keeperSaveArmForward2[core. RKneePitch: 71.8099588201 
+			keeperSaveArmForward2[core. RAnklePitch: -43.943456365 
+			keeperSaveArmForward2[core. RAnkleRoll: 17.6686475337 
+			keeperSaveArmForward2[core. LShoulderPitch: -77.6059890479 
+			keeperSaveArmForward2[core. LShoulderRoll: 24.4314910385 
+			keeperSaveArmForward2[core. LElbowYaw: -118.480450174 
+			keeperSaveArmForward2[core. LElbowRoll: -1.14019079891 
+			keeperSaveArmForward2[core. RShoulderPitch: -116 
+			keeperSaveArmForward2[core. RShoulderRoll: -2 
+			keeperSaveArmForward2[core. RElbowYaw: 25 
+			keeperSaveArmForward2[core. RElbowRoll: -53 
+
+			keeperSaveArmOut
+    frames: 50
+    joints:
+			 HeadYaw: 0.173377521892 
+			 HeadPitch: -0.524941018851 
+			 LHipYawPitch: -1.84331779282 
+			 LHipRoll: -38.4989759738 
+			 LHipPitch: -50.7990128576 
+			 LKneePitch: 124.188603187 
+			 LAnklePitch: -70.227895763 
+			 LAnkleRoll: 6.67737051752 
+			 RHipYawPitch: -1.84331779282 
+			 RHipRoll: 18.9870243077 
+			 RHipPitch: -21.7995596041 
+			 RKneePitch: 83.7632269997 
+			 RAnklePitch: -57.9182419729 
+			 RAnkleRoll: 9.67049601561 
+			 LShoulderPitch: -101.248866445 
+			 LShoulderRoll: 71.0141120082 
+			 LElbowYaw: -29.0066795936 
+			 LElbowRoll: -1.84331779282
+			 RShoulderPitch: -116 
+			 RShoulderRoll: -2 
+			 RElbowYaw: 25 
+			 RElbowRoll: -53 
+
+			keeperSaveArmBack
+    frames: 50
+    joints:
+			keeperSaveArmBack[core. HeadYaw: -0.0902951008276 
+			keeperSaveArmBack[core. HeadPitch: 0.0902951008276 
+			keeperSaveArmBack[core. LHipYawPitch: -9.66568756243 
+			keeperSaveArmBack[core. LHipRoll: -45.5303142149 
+			keeperSaveArmBack[core. LHipPitch: -60.6428863951 
+			keeperSaveArmBack[core. LKneePitch: 124.276494062 
+			keeperSaveArmBack[core. LAnklePitch: -70.227895763 
+			keeperSaveArmBack[core. LAnkleRoll: 3.33747631528 
+			keeperSaveArmBack[core. RHipYawPitch: -9.66568756243 
+			keeperSaveArmBack[core. RHipRoll: 20.6569645786 
+			keeperSaveArmBack[core. RHipPitch: -18.1959927791 
+			keeperSaveArmBack[core. RKneePitch: 60.9113811314 
+			keeperSaveArmBack[core. RAnklePitch: -40.5156849489 
+			keeperSaveArmBack[core. RAnkleRoll: 20.7448554528 
+			keeperSaveArmBack[core. LShoulderPitch: -121.463958765 
+			keeperSaveArmBack[core. LShoulderRoll: 26.6287902152 
+			keeperSaveArmBack[core. LElbowYaw: 70.6625416811 
+			keeperSaveArmBack[core. LElbowRoll: -0.437050144611 
+			keeperSaveArmBack[core. RShoulderPitch: -116 
+			keeperSaveArmBack[core. RShoulderRoll: -2 
+			keeperSaveArmBack[core. RElbowYaw: 25 
+			keeperSaveArmBack[core. RElbowRoll: -53 
+
+			keeperSaveArmBack2
+    frames: 50
+    joints:
+			keeperSaveArmBack2[core. HeadYaw: 0.261268396131 
+			keeperSaveArmBack2[core. HeadPitch: -0.61283189309 
+			keeperSaveArmBack2[core. LHipYawPitch: -11.8629730788 
+			keeperSaveArmBack2[core. LHipRoll: -45.2666415922 
+			keeperSaveArmBack2[core. LHipPitch: -62.1370449175 
+			keeperSaveArmBack2[core. LKneePitch: 124.276494062 
+			keeperSaveArmBack2[core. LAnklePitch: -70.227895763 
+			keeperSaveArmBack2[core. LAnkleRoll: 5.09532112083 
+			keeperSaveArmBack2[core. RHipYawPitch: -11.8629730788 
+			keeperSaveArmBack2[core. RHipRoll: 20.5690737044 
+			keeperSaveArmBack2[core. RHipPitch: -20.6569645786 
+			keeperSaveArmBack2[core. RKneePitch: 68.4700509575 
+			keeperSaveArmBack2[core. RAnklePitch: -45.7012875102 
+			keeperSaveArmBack2[core. RAnkleRoll: 16.8776160052 
+			keeperSaveArmBack2[core. LShoulderPitch: -92.5475879328 
+			keeperSaveArmBack2[core. LShoulderRoll: 18.7185295714 
+			keeperSaveArmBack2[core. LElbowYaw: 74.0903199274 
+			keeperSaveArmBack2[core. LElbowRoll: -1.31597254739
+			keeperSaveArmBack2[core. RShoulderPitch: -116 
+			keeperSaveArmBack2[core. RShoulderRoll: -2 
+			keeperSaveArmBack2[core. RElbowYaw: 25 
+			keeperSaveArmBack2[core. RElbowRoll: -53 
+
+			keeperSave1
+    frames: 50
+    joints:
+			HeadYaw: 0.349159270371 
+			HeadPitch: -0.61283189309 
+			LHipYawPitch: -1.14019079891 
+			LHipRoll: -43.3330286985 
+			LHipPitch: -57.0393332305 
+			LKneePitch: 124.100712313 
+			LAnklePitch: -70.227895763 
+			LAnkleRoll: 4.65585308925 
+			RHipYawPitch: -1.14019079891 
+			RHipRoll: 19.7780421758 
+			RHipPitch: -23.9089542462 
+			RKneePitch: 68.5579418317 
+			RAnklePitch: -47.9864775612 
+			RAnkleRoll: 17.4928521248 
+			LShoulderPitch: -82.3521440682 
+			LShoulderRoll: 63.3675308173 
+			LElbowYaw: -13.3619537148 
+			LElbowRoll: -9.05043778237 
+			RShoulderPitch: -116 
+			RShoulderRoll: -2 
+			RElbowYaw: 25 
+			RElbowRoll: -53  
+
+			keeperSave2
+    frames: 50
+    joints:
+			keeperSave2[core. HeadYaw: 0.261268396131 
+			keeperSave2[core. HeadPitch: -0.349159270371 
+			keeperSave2[core. LHipYawPitch: -0.70072276733 
+			keeperSave2[core. LHipRoll: -39.2900075023 
+			keeperSave2[core. LHipPitch: -54.3146888083 
+			keeperSave2[core. LKneePitch: 124.276494062 
+			keeperSave2[core. LAnklePitch: -70.227895763 
+			keeperSave2[core. LAnkleRoll: -4.39698891971 
+			keeperSave2[core. RHipYawPitch: -0.70072276733 
+			keeperSave2[core. RHipRoll: 20.4811828301 
+			keeperSave2[core. RHipPitch: -22.9421409692 
+			keeperSave2[core. RKneePitch: 62.6691986162 
+			keeperSave2[core. RAnklePitch: -41.3945936913 
+			keeperSave2[core. RAnkleRoll: 20.3053874213 
+			keeperSave2[core. LShoulderPitch: -90.613968209 
+			keeperSave2[core. LShoulderRoll: 16.0817760234 
+			keeperSave2[core. LElbowYaw: -24.787876649 
+			keeperSave2[core. LElbowRoll: -1.75542691858 
+			keeperSave2[core. RShoulderPitch: -116 
+			keeperSave2[core. RShoulderRoll: -2 
+			keeperSave2[core. RElbowYaw: 25 
+			keeperSave2[core. RElbowRoll: -53
+
+			keeperSave3
+    frames: 50
+    joints:
+			HeadYaw: 0.437050144611 
+			HeadPitch: 1.05710837784 
+			LHipYawPitch: -2.19489495016 
+			LHipRoll: -28.4793206878 
+			LHipPitch: -59.1487278726 
+			LKneePitch: 124.188603187 
+			LAnklePitch: -70.4036775115 
+			LAnkleRoll: 6.67737051752 
+			RHipYawPitch: -2.19489495016 
+			RHipRoll: 20.4811828301 
+			RHipPitch: -40.0810253705 
+			RKneePitch: 103.187301452 
+			RAnklePitch: -68.2015767118 
+			RAnkleRoll: -6.23790248595 
+			LShoulderPitch: -86.7467287613 
+			LShoulderRoll: 15.9938851492 
+			LElbowYaw: -17.4928521248 
+			LElbowRoll: -3.60116259838 
+			RShoulderPitch: -116 
+			RShoulderRoll: -2 
+			RElbowYaw: 25 
+			RElbowRoll: -53 
+
+			# Legs spread fall
+			goalieSquatFall
+    frames: 50
+    joints:
+			HeadYaw: 0.08548664765188
+			HeadPitch: -24.607286447345 
+			LHipYawPitch: -69.168383158614
+			LHipRoll: -70  # -30 # -55
+			LHipPitch: -89.910834384864
+			LKneePitch: 91.404992907317
+			LAnklePitch: 60 # 42.888752213748
+			LAnkleRoll: 11.071955210644 
+			RHipYawPitch: -69.168383158614
+			RHipRoll: -700 # -30  # -55
+			RHipPitch: -89.56407934108
+			RKneePitch: 92.728178134467
+			RAnklePitch: 60 # 41.39940214447
+			RAnkleRoll: 6.1548200648819 
+			LShoulderPitch: -145 # -90 # -116 # -90 # -14
+			LShoulderRoll: -10  # 90 # 8 # 90 # 16.472663752734
+			LElbowYaw: -1.8481262460004
+			LElbowRoll: -2.0190995413041
+			RShoulderPitch: -145  # -90 # -14
+			RShoulderRoll: -10 # 90 # 16.057673120688
+			RElbowYaw: -0.43705014461078
+			RElbowRoll: -2.8149395230157
+
+			goalieFallSplit
+    frames: 50
+    joints:
+			HeadYaw: 0.08548664765188
+			HeadPitch: -40 # -24.607286447345
+			LHipYawPitch: -69.168383158614
+			LHipRoll: -80 # -55
+			LHipPitch: -45 # -89.910834384864
+			LKneePitch: 45 # 60 # 91.404992907317
+			LAnklePitch: 67 # 42.888752213748
+			LAnkleRoll: 20 # 11.071955210644 
+			RHipYawPitch: -69.168383158614
+			RHipRoll: -80 # -55
+			RHipPitch: -45 # -89.56407934108
+			RKneePitch: 45 # 60 # 92.728178134467
+			RAnklePitch: 67 # 41.39940214447
+			RAnkleRoll: 20 # -6.1548200648819
+			LShoulderPitch: -145 # -90 # 1110 # -14
+			LShoulderRoll: -10 # -45 # 16.472663752734
+			LElbowYaw: -1.8481262460004
+			LElbowRoll: -2.0190995413041
+			RShoulderPitch: -145  # -90 # -14
+			RShoulderRoll: -10 # -30 # 16.057673120688
+			RElbowYaw: -0.43705014461078
+			RElbowRoll: -2.8149395230157
