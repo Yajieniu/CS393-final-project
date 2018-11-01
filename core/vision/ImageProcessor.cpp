@@ -354,10 +354,10 @@ void ImageProcessor::findGoal(int& imageX, int& imageY) {
         // cout << "Goal not detected" << endl;
         return;
     }
-    auto blueBlobs = filterBlobs(detected_blobs, c_BLUE, 1000);
+    auto blueBlobs = filterBlobs(detected_blobs, c_BLUE, 1700);
     sort(blueBlobs.begin(), blueBlobs.end(), BlobCompare);
     if(blueBlobs.size() > 0) {
-        // cout << "Goal detected at: " << blueBlobs[0].avgX << "\t" << blueBlobs[0].yf << endl;
+        cout << "Goal detected at: " << blueBlobs[0].avgX << "\t" << blueBlobs[0].yf <<"\t" << blueBlobs[0].lpCount<< endl;
         double rectArea = (blueBlobs[0].dx) * (blueBlobs[0].dy);
         double density = (blueBlobs[0].lpCount / rectArea);
         if (density > 0.5) {

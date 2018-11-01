@@ -21,7 +21,7 @@ import time
 import random
 
 THETA_THRESHOLD = 0.05
-RIGHT_FOOT_OFFSET = -0.25
+RIGHT_FOOT_OFFSET = -0.4
 
 DELAY = 0.05
 BALL_MIN_PHASE1 = 250
@@ -59,212 +59,243 @@ left_offset = 0.
 pressed_count = 0
 mode = 'attacker'
 
+dribble_kick_counter = 0
+
+
+# Keeper
+CENTER_MIN_THRESHOLD = 200
+CENTER_MAX_THRESHOLD = 200
+V_THRESHOLD = 35
+X_THRESHOLD = 600
+
+running_vx = 0.0
+running_vy = 0.0
+unseen_count = 0
+
+goalie_walk_count = 0
+
 class Controller(object):
-    def __init__(self, p, i, d, T=10):
-        self.Kp = p
-        self.Ki = i
-        self.Kd = d
+	def __init__(self, p, i, d, T=10):
+		self.Kp = p
+		self.Ki = i
+		self.Kd = d
 
-        self.last_error = 0.
-        self.pterm = 0.
-        self.iterm = 0.
-        self.dterm = 0.
-        self.i = 0
+		self.last_error = 0.
+		self.pterm = 0.
+		self.iterm = 0.
+		self.dterm = 0.
+		self.i = 0
 
-        self.T = T
+		self.T = T
 
-    def __call__(self, error):
-        self.pterm = error
-        self.iterm += error
-        self.dterm = (error - self.last_error) / DELAY
+	def __call__(self, error):
+		self.pterm = error
+		self.iterm += error
+		self.dterm = (error - self.last_error) / DELAY
 
-        # print ("\n\n\tp=%.8f\t"%(self.pterm * self.Kp), "", "d=%.8f"%(self.dterm * self.Kd))
+		# print ("\n\n\tp=%.8f\t"%(self.pterm * self.Kp), "", "d=%.8f"%(self.dterm * self.Kd))
 
-        self.i += 1
-        if self.i >= self.T:
-            self.clear()
+		self.i += 1
+		if self.i >= self.T:
+			self.clear()
 
-        self.last_error = error
+		self.last_error = error
 
-        return self.pterm * self.Kp + self.iterm * self.Ki + self.dterm * self.Kd
+		return self.pterm * self.Kp + self.iterm * self.Ki + self.dterm * self.Kd
 
-    def clear(self):
-        self.pterm = 0.0
-        self.iterm = 0.0
-        self.dterm = 0.0
-        self.last_error = 0.0
-        self.i = 0
+	def clear(self):
+		self.pterm = 0.0
+		self.iterm = 0.0
+		self.dterm = 0.0
+		self.last_error = 0.0
+		self.i = 0
+
+class Stand(Node):
+    def run(self):
+        commands.stand()
+        commands.setHeadPanTilt(pan=0, tilt=0, time=0.5, isChange=True)
+        if self.getTime() > 3.0:
+            memory.speech.say("stand up")
+            self.finish()
 
 class AttackerFollowBall(Node):
 	def run(self):
 		global play_mode
-        global kick_waiting
-        if not kick_mode and play_mode == 4: # Kick
-            frames = self.getFrames()
-            memory.walk_request.noWalk()
-            memory.kick_request.setFwdKick()
-            play_mode = 6
-            kick_waiting = 3.0
-            if self.getFrames() - frames > 150 and not memory.kick_request.kick_running_:
-                self.finish()
-                # play_mode = 1
-        elif play_mode != 6:
-            commands.setWalkVelocity(vx, vy, vtheta)
+		global kick_waiting
+		if not kick_mode and play_mode == 4: # Kick
+			frames = self.getFrames()
+			memory.walk_request.noWalk()
+			memory.kick_request.setFwdKick()
+			play_mode = 6
+			kick_waiting = 3.0
+			if self.getFrames() - frames > 150 and not memory.kick_request.kick_running_:
+				self.finish()
+				# play_mode = 1
+		elif play_mode != 6:
+			commands.setWalkVelocity(vx, vy, vtheta)
 
 
 class AttackerFindBall(Node):
-    def __init__(self):
-        super(FindBall, self).__init__()
-        # self.vtheta_controller = Controller(p=1.0, i=0.0, d=0.0)
-        self.controller = Controller(p=P, i=I, d=D)
+	def __init__(self):
+		super(AttackerFindBall, self).__init__()
+		# self.vtheta_controller = Controller(p=1.0, i=0.0, d=0.0)
+		self.controller = Controller(p=P, i=I, d=D)
 
-    def run(self):
-        global vx
-        global vy
-        global vtheta
-        global goal_side
-        global ball_side
-        global dribble
-        global left_offset
-        global play_mode
-        global kick_mode
-        global kick_waiting
-        global FACTOR
+	def run(self):
+		global vx
+		global vy
+		global vtheta
+		global goal_side
+		global ball_side
+		global dribble
+		global play_mode
+		global kick_mode
+		global kick_waiting
+		global FACTOR
+		global dribble_kick_counter
 
-        vx0, vy0, vtheta0 = vx, vy, vtheta
+		vx0, vy0, vtheta0 = vx, vy, vtheta
 
-        ball = mem_objects.world_objects[core.WO_BALL]
-        goal = mem_objects.world_objects[core.WO_UNKNOWN_GOAL]
+		ball = mem_objects.world_objects[core.WO_BALL]
+		goal = mem_objects.world_objects[core.WO_UNKNOWN_GOAL]
 
-        ball_theta = ball.visionBearing
-        ball_x = ball.visionDistance
+		ball_theta = ball.visionBearing
+		ball_x = ball.visionDistance
 
-        goal_theta = goal.visionBearing
-        goal_x = goal.visionDistance
+		goal_theta = goal.visionBearing
+		goal_x = mem_objects.world_objects[memory.robot_state.WO_SELF].loc.x
 
-        # Goal seen earlier code
-        if goal.seen:
-            goal_side = goal_theta / abs(goal_theta)
-            if goal.fromTopCamera and goal_x < GOAL_MIN:
-                kick_mode = True
-        
-        print("\n\n\n**********goal distance: ", goal_x, "\n\n\n")
+		print ("\n\n\n\n\tkick %f !!\n\n\n\n" % ball_theta)
 
-        if ball.seen:
-            ball_side = ball_theta / abs(ball_theta)
+		# Goal seen earlier code
+		if goal.seen:
+			goal_side = goal_theta / abs(goal_theta)
+			if goal.fromTopCamera and dribble_kick_counter > 3:
+				kick_mode = True
+		
+		print("\n\n\n**********goal distance/dribble_kick_counter: ", dribble_kick_counter, "\n\n\n")
 
-        # Changing speed
-        if play_mode == 1:
-            FACTOR = 0.2
-            if not ball.seen:
-                print ('\n\n\n\nBall not seen.\n\n\n\n')
-                vx = 0.0
-                vy = 0.0
-                vtheta = ball_side* 0.5
-            elif ball.fromTopCamera or ball_x > BALL_MIN_PHASE1:
-                print ('\n\n\n\nBall seen far away.\n\n\n\n')
-                vx = self.controller( (ball_x - BALL_MIN_PHASE1) * SCALE)
-                vtheta = ball_theta
-            else:
-                play_mode = 2
+		if ball.seen:
+			ball_side = ball_theta / abs(ball_theta)
 
-        elif play_mode == 2:
-            if not ball.seen or (ball.fromTopCamera or ball_x > 2*BALL_MIN_PHASE1):
-                play_mode = 1
+		# Changing speed
+		if play_mode == 1:
+			FACTOR = 0.2
+			if not ball.seen:
+				print ('\n\n\n\nBall not seen.\n\n\n\n')
+				vx = 0.0
+				vy = 0.0
+				vtheta = ball_side* 0.5
+			elif ball.fromTopCamera or ball_x > BALL_MIN_PHASE1:
+				print ('\n\n\n\nBall seen far away.\n\n\n\n')
+				vx = self.controller( (ball_x - BALL_MIN_PHASE1) * SCALE + 0.1)
+				vtheta = ball_theta
+			else:
+				play_mode = 2
 
-            vx = 0.
-            if goal.seen:
-                print ('\n\n\n\nGoal visible.')
-                # vx = 0.2
-                # vy = -ball_theta*0.5
-                # vtheta = (ball_theta-goal_theta)
-                if False:#abs(ball_theta) > 5*VY_MIN:
-                    print (' ball\n\n\n\n')
-                    vy = ball_theta
-                    vtheta = 0
-                else:
-                    print (' goal\n\n\n\n')
-                    vy = -goal_theta
-                    vtheta = -0.5*vy
-            else:
-                print ('\n\n\n\nGoal NOT visible. goal side: ', goal_side, "\n\n\n\n")
-                vy = -goal_side* 0.5
-                vtheta = -0.5*vy
+		elif play_mode == 2:
+			if not ball.seen or (ball.fromTopCamera or ball_x > 1.5*BALL_MIN_PHASE1):
+				play_mode = 1
 
-            if abs(vy) < VY_MIN and abs(vtheta) < VTHETA_MIN:
-                if kick_mode:
-                    play_mode = 3
-                else:
-                    play_mode = 5
-                    dribble = 1.
+			vx = 0.
+			if goal.seen:
+				print ('\n\n\n\nGoal visible.')
+				# vx = 0.2
+				# vy = -ball_theta*0.5
+				# vtheta = (ball_theta-goal_theta)
+				if False:#abs(ball_theta) > 5*VY_MIN:
+					print (' ball\n\n\n\n')
+					vy = ball_theta
+					vtheta = 0
+				else:
+					print (' goal\n\n\n\n')
+					vy = -goal_theta
+					vtheta = -0.5*vy
+			else:
+				print ('\n\n\n\nGoal NOT visible. goal side: ', goal_side, "\n\n\n\n")
+				vy = -goal_side* 0.5
+				vtheta = -0.5*vy
 
-        elif play_mode == 3:
-            if not ball.seen or (ball.fromTopCamera or ball_x > 2*BALL_MIN_PHASE1):
-            # if not ball.seen or (ball.fromTopCamera or ball_x > 1.5*BALL_MIN_PHASE2):
-                play_mode = 1
-            # Stop and transfer to kick
-            FACTOR = 1.
-            print ('\n\n\nPreparing for kick.\n\n\n\n')
-            print ('\n\tball distance: %.3f\n'%ball_x)
-            # vx = self.controller( (ball_x - BALL_MIN_PHASE2) * SCALE) + VX_OFFSET
-            vx = 0.2
-            vy = 0
-            vtheta = 0
-            if ball_x >= BALL_MIN_PHASE2:
-                vx = 0.35
-            if abs(ball_theta - RIGHT_FOOT_OFFSET) >= 0.7:
-                vy = ball_theta - RIGHT_FOOT_OFFSET
+			if abs(vy) < VY_MIN and abs(vtheta) < VTHETA_MIN:
+				if kick_mode:
+					play_mode = 3
+				else:
+					play_mode = 5
+					dribble_kick_counter += 1
+					dribble = 1.5
 
-            if ball_x < BALL_MIN_PHASE2 and abs(vy) < 0.7:
-                play_mode = 4
-                left_offset = 0.5
+		elif play_mode == 3:
+			if not ball.seen or (ball.fromTopCamera or ball_x > 2*BALL_MIN_PHASE1):
+				play_mode = 1
+			# Stop and transfer to kick
+			FACTOR = 1.
+			print ('\n\n\nPreparing for kick.\n\n\n\n')
+			print ('\n\tball distance: %.3f\n'%ball_x)
+			# vx = self.controller( (ball_x - BALL_MIN_PHASE2) * SCALE) + VX_OFFSET
+			vx = 0.05
+			vy = 0
+			vtheta = 0
+			if ball_x >= BALL_MIN_PHASE2:
+				vx = 0.32
+			if abs(ball_theta - RIGHT_FOOT_OFFSET) >= 0.7:
+				vy = (ball_theta - RIGHT_FOOT_OFFSET)
+			elif ball_x < BALL_MIN_PHASE2:
+				play_mode = 4
 
-        elif play_mode == 4:
-            print ("\n\n\n\n\tkick!!\n\n\n\n")
-            vx = 0
-            vy = 0
-            vtheta = 0
-            kick_mode = False
-            if ball.seen and not (ball_x < BALL_MIN_PHASE2 and abs(vy) < 0.7):
-                play_mode = 3
-                kick_mode = True
-            else:
-                # sleep(0.5)
+		elif play_mode == 4:
+			print ("\n\n\n\n\tkick %f !!\n\n\n\n" % ball_theta)
+			vx = 0
+			vy = 0
+			vtheta = 0
+			kick_mode = False
+			if ball.seen and not (ball_x < BALL_MIN_PHASE2 and abs(vy) < 0.7):
+				play_mode = 3
+				kick_mode = True
+			else:
+				pass
+				# sleep(0.5)
+
+		elif play_mode == 5:
+			if dribble > 0:
+				print ("\n\n\n\ndribble\n\n\n\n")
+				dribble -= DELAY
+				vx = 0.5
+				if ball.seen and goal.seen:
+					vtheta = ball_theta
+				else:
+					vy = 0
+					vtheta = 0
+			else:
+				play_mode = 1
+		else:
+			if kick_waiting > 0:
+				print ('\n\nWainting fo kick to finish\n\n');
+				kick_waiting -= DELAY
+			else:
+				play_mode = 1
 
 
-        elif play_mode == 5:
-            if dribble > 0:
-                print ("\n\n\n\ndribble\n\n\n\n")
-                dribble -= DELAY
-                vx = 0.75
-                if ball.seen and goal.seen:
-                    vtheta = ball_theta
-                else:
-                    vy = 0
-                    vtheta = 0
-            else:
-                play_mode = 1
-        else:
-            if kick_waiting > 0:
-                print ('\n\nWainting fo kick to finish\n\n');
-                kick_waiting -= DELAY
-            else:
-                play_mode = 1
+		print ("\n\n\t\t vx=%.3f, vy=%.3f, vtheta=%.3f" % (vx, vy, vtheta))
 
+		# Moving average        
+		vx = vx0 + FACTOR*(vx-vx0);
+		vy = vy0 + FACTOR*(vy-vy0);
+		vtheta = vtheta0 + FACTOR*(vtheta-vtheta0);
 
-        print ("\n\n\t\t vx=%.3f, vy=%.3f, vtheta=%.3f" % (vx, vy, vtheta))
+		# Just a check to stop the robot when values close to 0. Not very important.
+		# vx *= (abs(vx) > VX_MIN)
+		# vy *=  (abs(vy) > VY_MIN)
+		# vtheta *=  (abs(vtheta) > VTHETA_MIN)
 
-        # Moving average        
-        vx = vx0 + FACTOR*(vx-vx0);
-        vy = vy0 + FACTOR*(vy-vy0);
-        vtheta = vtheta0 + FACTOR*(vtheta-vtheta0);
+		self.finish()
 
-        # Just a check to stop the robot when values close to 0. Not very important.
-        # vx *= (abs(vx) > VX_MIN)
-        # vy *=  (abs(vy) > VY_MIN)
-        # vtheta *=  (abs(vtheta) > VTHETA_MIN)
+def clear_global_variables():
+	global dribble_kick_counter
+	dribble_kick_counter = 0
 
-        self.finish()
+	global goalie_walk_count
+	goalie_walk_count = 0
+
 
 
 class SwitchMode(Node):
@@ -275,8 +306,9 @@ class SwitchMode(Node):
 		if button:
 			pressed_count += 1
 
-		if pressed_count >= 1:
+		if pressed_count >= 2:
 			pressed_count = 0
+			clear_global_variables()
 
 			if mode == 'attacker':
 				choice = 'goalie'
@@ -284,6 +316,7 @@ class SwitchMode(Node):
 			else:
 				choice = 'attacker'
 				mode = 'attacker'
+				dribble_kick_counter = 0
 
 		else:
 			choice = mode
@@ -291,15 +324,64 @@ class SwitchMode(Node):
 		self.postSignal(choice)
 
 
+class WalkLeft(Node):
+	def run(self):
+		commands.setWalkVelocity(0.1, 0.5, 0.2);
+
+class WalkRight(Node):
+	def run(self):
+		commands.setWalkVelocity(0.1, -0.5, -0.15);
+
+class TakeRest(Node):
+	def run(self):
+		commands.setWalkVelocity(0, 0, 0);
+
+class RaiseLeft(Node):
+	def run(self):
+		print("\n\n\n***************************************\
+			************************************************\
+			*************\
+			Raising left arm.\n\n\n\n")
+		pose.RaiseLeftArm()
+
+
+class RaiseRight(Node):
+	def run(self):
+		print("\n\n\n***************************************\
+			************************************************\
+			*************\
+			Raising right arm.\n\n\n\n")
+		pose.RaiseRightArm()
+
+
+class RaiseBoth(Node):
+	def run(self):
+		print("\n\n\n***************************************\
+			************************************************\
+			*************\
+			Raising both arms.\n\n\n\n")		
+		pose.RaiseBothArms()
+
+class NotSeen(Node):
+	head_bearing = 0
+	head_move_side = 1
+	def run(self):
+		if self.head_bearing < -1:
+			self.head_move_side = 1
+		elif self.head_bearing > 1:
+			self.head_move_side = -1
+		self.head_bearing += self.head_move_side*0.1
+		commands.setHeadPan(self.head_bearing, 0.05)
+		if self.getTime() > 0.1:
+			self.finish()
 
 
 
 class Goalie(Node):
-	count = 0
-
 	def run(self):
 
 		global running_vx, running_vy, unseen_count
+		global goalie_walk_count
 		# get predicted location and velocity
 		ball = mem_objects.world_objects[core.WO_BALL]
 
@@ -318,14 +400,14 @@ class Goalie(Node):
 		if not ball.seen:
 			unseen_count += 1
 			choice = "nomove"
-		elif True: #v < V_THRESHOLD:
+		elif v < V_THRESHOLD:
 			commands.setHeadPan(ball.bearing, 0.1)
-			if ball.bearing < -0.3 and self.count > -5:
+			if ball.bearing < -0.2 and goalie_walk_count > -5:
 				choice = "walk_right"
-				self.count -= 1
-			elif ball.bearing > 0.3 and self.count < 5:
+				goalie_walk_count -= 1
+			elif ball.bearing > 0.2 and goalie_walk_count < 5:
 				choice = "walk_left"
-				self.count += 1
+				goalie_walk_count += 1
 			else:
 				choice = 'nomove'
 		else:
@@ -357,51 +439,49 @@ class Goalie(Node):
 
 
 class Playing(LoopingStateMachine):
-    def setup(self):
-        global vx
-        global vy
-        global vtheta
-        global goal_side
-        global ball_side
-        global dribble
-        global left_offset
-        global play_mode
-        global FACTOR
+	def setup(self):
+		global vx
+		global vy
+		global vtheta
+		global goal_side
+		global ball_side
+		global dribble
+		global left_offset
+		global play_mode
+		global FACTOR
 
 
 
 		# Switcher setup
-        switcher = SwitchMode()
+		switcher = SwitchMode()
 
-        findball = AttackerFindBall()
-        followball = AttackerFollowBall()
-        stand = Stand()
+		findball = AttackerFindBall()
+		followball = AttackerFollowBall()
+		stand = Stand()
 
-        goalie = Goalie()
+		goalie = Goalie()
 		sit = pose.SittingPose()
-		wait = Wait
 
-        self.add_transition(stand, C, switcher)
-        self.add_transition(switcher, S('attacker'), findball)
-        self.add_transition(switcher, S('goalie'), goalie)
+		self.add_transition(stand, C, switcher)
+		self.add_transition(switcher, S('attacker'), findball)
+		self.add_transition(switcher, S('goalie'), goalie)
 
-        # Attacker setup
+		# Attacker setup
 
-        vx = 0.
-        vy = 0.
-        vtheta = 0.
+		vx = 0.
+		vy = 0.
+		vtheta = 0.
 
-        goal_side = 1
-        ball_side = 1
-        play_mode = 1
-        dribble = 0.
+		goal_side = 1
+		ball_side = 1
+		play_mode = 1
+		dribble = 0.
 
-        left_offset = 0.
-       
-        self.add_transition(findball, C, followball, T(DELAY), switcher)
+		left_offset = 0.
+		self.add_transition(findball, C, followball, T(DELAY), switcher)
 
 
-        # Goalie setup
+		# Goalie setup
 
 		arms = {
 			"left": pose.RaiseLeftArm(time=1.),

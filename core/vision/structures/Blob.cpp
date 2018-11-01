@@ -8,6 +8,10 @@ bool BlobCompare(Blob a, Blob b) {
     return a.dx * a.dy > b.dx * b.dy;
 }
 
+bool BlobCompareGoal(Blob a, Blob b) {
+    return a.lpCount > b.lpCount;
+}
+
 vector<Blob> filterBlobs(vector<Blob> &blobs, Color color, int size=0) {
     vector<Blob> filtered;
     for(int i = 0; i < blobs.size(); ++i) {

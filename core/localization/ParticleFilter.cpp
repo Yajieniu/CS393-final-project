@@ -39,6 +39,7 @@ ParticleFilter::ParticleFilter(MemoryCache& cache, TextLogger*& tlogger)
  */
 void ParticleFilter::init(Point2D loc, float orientation) {
   mean_.translation.x = 2000;
+  mean_.translation.y = 0;
   mean_.rotation = M_PI/2;
 }
 
@@ -169,10 +170,10 @@ Particle& ParticleFilter::resampling(Particle& newP, std::vector<Particle>& part
     assert(randNumber <= weights[numOfParticles-1]);
     
     // resampled particle should be close to particles[i-1]
-    i = std::upper_bound(weights, weights + numOfParticles, randNumber) - weights;
-    // while(randNumber > weights[i]) {
-    //   i++;
-    // }
+    // i = std::upper_bound(weights, weights + numOfParticles, randNumber) - weights;
+    while(randNumber > weights[i]) {
+      i++;
+    }
   }
   else {  
     // version 2, Systematic resampling
