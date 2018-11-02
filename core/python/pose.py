@@ -269,7 +269,7 @@ class SittingPose(Task):
 class BlockRight(Task):
   def run(self):
     self.setSubtask(PoseSequence(
-      cfgpose.Assign6_block_right, 0.4,
+      cfgpose.Assign6_block_right, 0.8,
       cfgpose.Assign6_block_right, 2, 
       cfgpose.Assign6_block_right_return, 0.2, 
       cfgpose.sittingPoseNoArms, 0.2,
@@ -279,7 +279,7 @@ class BlockRight(Task):
 class BlockLeft(Task):
   def run(self):
     self.setSubtask(PoseSequence(
-      cfgpose.Assign6_block_left, 0.4,
+      cfgpose.Assign6_block_left, 0.8,
       cfgpose.Assign6_block_left, 2, 
       cfgpose.Assign6_block_left_return, 0.2, 
       cfgpose.sittingPoseNoArms, 0.2,
@@ -289,8 +289,8 @@ class BlockLeft(Task):
 class BlockCenter(Task):
   def run(self):
     self.setSubtask(PoseSequence(
-      cfgpose.Assign6_block_center, 0.4,
-      cfgpose.Assign6_block_center, 2, 
+      cfgpose.Assign6_block_center, 0.8,
+      cfgpose.Assign6_block_center, 1, 
       cfgpose.sittingPoseNoArms, 0.3,
       cfgpose.standingPose, 0.3
     ))

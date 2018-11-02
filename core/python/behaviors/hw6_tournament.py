@@ -31,7 +31,7 @@ GOAL_MIN = 1500
 VX_MIN = 0.1
 VX_MAX = 1
 VY_MIN = 0.1
-VTHETA_MIN = 0.1
+VTHETA_MIN = 0.15
 VTHETA_MAX = 0.25
 
 FACTOR = 0.001
@@ -40,7 +40,7 @@ SCALE = 0.005
 VX_OFFSET = 0.1
 
 P = 1#2e-3/SCALE
-I = 1e-4/SCALE
+I = 5e-5/SCALE
 D = 2e-4/SCALE
 
 vx = 0.
@@ -66,7 +66,7 @@ dribble_kick_counter = 0
 CENTER_MIN_THRESHOLD = 200
 CENTER_MAX_THRESHOLD = 200
 V_THRESHOLD = 35
-X_THRESHOLD = 600
+X_THRESHOLD = 300
 
 running_vx = 0.0
 running_vy = 0.0
@@ -170,7 +170,7 @@ class AttackerFindBall(Node):
 		# Goal seen earlier code
 		if goal.seen:
 			goal_side = goal_theta / abs(goal_theta)
-			if goal.fromTopCamera and dribble_kick_counter > 3:
+			if goal.fromTopCamera and dribble_kick_counter > 2:
 				kick_mode = True
 		
 		print("\n\n\n**********goal distance/dribble_kick_counter: ", dribble_kick_counter, "\n\n\n")
@@ -232,7 +232,7 @@ class AttackerFindBall(Node):
 			print ('\n\n\nPreparing for kick.\n\n\n\n')
 			print ('\n\tball distance: %.3f\n'%ball_x)
 			# vx = self.controller( (ball_x - BALL_MIN_PHASE2) * SCALE) + VX_OFFSET
-			vx = 0.05
+			vx = 0.03
 			vy = 0
 			vtheta = 0
 			if ball_x >= BALL_MIN_PHASE2:
@@ -331,6 +331,10 @@ class WalkLeft(Node):
 class WalkRight(Node):
 	def run(self):
 		commands.setWalkVelocity(0.1, -0.5, -0.15);
+
+class WalkFront(Node):
+	def run(self):
+		commands.setWalkVelocity(0.5, 0, 0);
 
 class TakeRest(Node):
 	def run(self):
@@ -485,8 +489,8 @@ class Playing(LoopingStateMachine):
 		# Goalie setup
 
 		arms = {
-			"left": pose.BlockLeft(time=3.),
-			"right": pose.BlockRight(time=3.),
+			"left": pose.BlockCenter(time=3.),
+			"right": pose.BlockCenter(time=3.),
 			"center": pose.BlockCenter(time=3.),
 			"unseen": NotSeen(),
 			"nomove": TakeRest(),
@@ -501,11 +505,11 @@ class Playing(LoopingStateMachine):
 		for direction in arms:
 			arm = arms[direction]
 			if direction in ["left", "right", "center"]:
-				self.add_transition(goalie, S(direction), arm, T(3), switcher)
+				self.add_transition(goalie, S(direction), arm, T(3.4), nodes['take_rest'], T(0.5), switcher)
 			else:
 				self.add_transition(goalie, S(direction), arm, T(0.1), switcher)
 
 		for signal, node in nodes.iteritems():
-			self.add_transition(goalie, S(signal), node, T(0.1), switcher)
+			self.add_transition(goalie, S(signal), node, T(0.5), nodes['take_rest'], T(1), switcher)
 
 
