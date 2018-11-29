@@ -282,8 +282,19 @@ void ImageProcessor::processFrame(){
   if(camera_ == Camera::BOTTOM) return;
 
   detectGoal();
+
+  // detectRobot();
+
   beacon_detector_->findBeacons(detected_blobs);
 }
+
+// void detectRobot() {
+//     WorldObject* robot = &vblocks_.world_object->objects_[WO_ROBOT];
+
+//     if (robot->seen)
+        
+
+// }
 
 void ImageProcessor::detectBall() {
     WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];
@@ -318,6 +329,8 @@ void ImageProcessor::detectBall() {
     else
         ball->fromTopCamera = true;
 }
+
+// void ImageProcessor
 
 void ImageProcessor::findBall(int& imageX, int& imageY) {
 }

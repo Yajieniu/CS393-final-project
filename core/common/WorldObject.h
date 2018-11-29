@@ -145,6 +145,11 @@ ENUM(WorldObjectType,   // Types of objects
 
   NUM_WORLD_OBJS,
 
+  WO_ROBOT_1,
+  WO_ROBOT_2,
+  WO_ROBOT_3,
+  WO_ROBOT_4,
+
   WO_INVALID
 );
 
@@ -184,6 +189,9 @@ const int NUM_UNKNOWN_L = 2;
 const int NUM_UNKNOWN_T = 2;
 const int NUM_UNKNOWN_LINES = 4;
 const int NUM_UNKNOWN_POSTS = 3;
+
+const int ROBOTS_OFFSET = WO_ROBOT_1;
+const int NUM_ROBOTS = WO_ROBOT_4 - WO_ROBOT_1 + 1;
 
 #define WO_PROPERTY(name) \
   inline bool name() const { return name(type); } \
@@ -413,6 +421,11 @@ DECLARE_INTERNAL_SCHEMA(class WorldObject {
 
     // NEW Occluded beacon parameter
     SCHEMA_FIELD(bool occluded);
+
+
+    // Robot detection
+    SCHEMA_FIELD(int imageHeight);
+    SCHEMA_FIELD(int imageWidth);
 
     // // NEW Ball Kalman Filter
     // SCHEMA_FIELD(float worldX);
