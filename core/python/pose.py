@@ -187,6 +187,85 @@ class Squat(Task):
       Stand()
     ])
 
+totalContTime = 0.4
+
+class RaiseRightArm(Task):
+  def __init__(self, time = totalContTime):
+    super(RaiseRightArm, self).__init__(time=time)
+    # self.setSubtask(PoseSequence(
+    #   cfgpose.raiseRightArmPose, 0.2,
+    #   # cfgpose.raiseRightArmPose, 0.6,
+    #   cfgpose.ourSittingPose, 0.2
+    # ))
+
+  def run(self):
+    self.setSubtask(PoseSequence(
+      cfgpose.raiseRightArmPose, 0.2,
+      # cfgpose.raiseRightArmPose, 0.6,
+      cfgpose.ourSittingPose, 0.2
+    ))
+
+    # super(RaiseRightArm, self).run()
+    print("\n\n\n\n*********rasing right arm***********, time is", self.getTime(), " \n\n\n")
+
+    # if self.getTime() > totalContTime:
+    #   self.finish()
+
+class RaiseLeftArm(Task):
+  def __init__(self, time = totalContTime):
+    super(RaiseLeftArm, self).__init__(time=time)
+    # self.setSubtask(PoseSequence(
+    #   cfgpose.raiseLeftArmPose, 0.2,
+    #   # cfgpose.raiseLeftArmPose, 0.6,
+    #   cfgpose.ourSittingPose, 0.2
+    #   ))
+    
+  def run(self):
+    self.setSubtask(PoseSequence(
+      cfgpose.raiseLeftArmPose, 0.2,
+      # cfgpose.raiseLeftArmPose, 0.6,
+      cfgpose.ourSittingPose, 0.2
+    ))
+
+    # super(RaiseLeftArm, self).run()
+    print("\n\n\n\n*********rasing left arm***********, time is", self.getTime(), "\n\n\n")
+
+
+class RaiseBothArms(Task):
+  def __init__(self, time = totalContTime):
+    super(RaiseBothArms, self).__init__(time=time)
+    # self.setSubtask(PoseSequence(
+    #   cfgpose.raiseBothArmsPose, 0.2,
+    #   # cfgpose.raiseBothArmsPose, 0.6,
+    #   cfgpose.ourSittingPose, 0.2
+    # ))
+
+  def run(self):
+    self.setSubtask(PoseSequence(
+      cfgpose.raiseBothArmsPose, 0.2,
+      # cfgpose.raiseBothArmsPose, 0.6,      
+      cfgpose.ourSittingPose, 0.2
+    ))
+
+    # super(RaiseBothArms, self).run()
+    print("\n\n\n\n*********rasing both arms***********, time is", self.getTime(), "\n\n\n")
+
+    # if self.getTime() > totalContTime:
+    #   self.finish()
+
+class SittingPose(Task):
+  def __init__(self, time = 0.2):
+    super(SittingPose, self).__init__(time=time)
+    self.setSubtask(PoseSequence(
+      cfgpose.ourSittingPose, 0.1
+      ))
+
+  def run(self):
+    self.setSubtask(PoseSequence(
+      cfgpose.ourSittingPose, 0.1
+    ))
+
+
 class BlockRight(Task):
   def __init__(self, time = 3.0):
     super(BlockRight, self).__init__(time=time)

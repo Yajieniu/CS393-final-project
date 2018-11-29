@@ -937,18 +937,127 @@ sittingPoseNoArms = dict()
 
 sittingPoseNoArms[core.HeadYaw] = 0.0
 sittingPoseNoArms[core.HeadPitch] = -1.0 * 10.0
+sittingPoseNoArms[core.LShoulderRoll] = 0
 sittingPoseNoArms[core.LHipYawPitch] = -5
 sittingPoseNoArms[core.LHipPitch] = -46.5
 sittingPoseNoArms[core.LHipRoll] = -1.0 * 0
 sittingPoseNoArms[core.LKneePitch] = 125  #  lkneepitch 120  # 110  # 120
 sittingPoseNoArms[core.LAnklePitch] = -70
 sittingPoseNoArms[core.LAnkleRoll] = -1.0 * 0
+sittingPoseNoArms[core.RShoulderRoll] = 0
 sittingPoseNoArms[core.RHipYawPitch] = -5
 sittingPoseNoArms[core.RHipPitch] = -46.5
 sittingPoseNoArms[core.RHipRoll] = 0
 sittingPoseNoArms[core.RKneePitch] = 125  #  rkneepitch 120  # 110  # 120
 sittingPoseNoArms[core.RAnklePitch] = -70
 sittingPoseNoArms[core.RAnkleRoll] = 0
+
+
+ourSittingPose = dict()
+
+ourSittingPose[core.HeadYaw] = 0.09
+ourSittingPose[core.HeadPitch] = -1.0*22
+ourSittingPose[core.LShoulderPitch] = -90
+ourSittingPose[core.LShoulderRoll] = 10
+ourSittingPose[core.LElbowYaw] = 0
+ourSittingPose[core.LElbowRoll] = 0
+ourSittingPose[core.LHipYawPitch] = -5
+ourSittingPose[core.LHipPitch] = -46.5
+ourSittingPose[core.LHipRoll] = -1.0 * 0
+ourSittingPose[core.LKneePitch] = 123
+ourSittingPose[core.LAnklePitch] = -70
+ourSittingPose[core.LAnkleRoll] = -1.0 * 0
+ourSittingPose[core.RHipYawPitch] = -5
+ourSittingPose[core.RHipPitch] = -46.5
+ourSittingPose[core.RHipRoll] = 0
+ourSittingPose[core.RKneePitch] = 123
+ourSittingPose[core.RAnklePitch] = -70
+ourSittingPose[core.RAnkleRoll] = 0
+ourSittingPose[core.RShoulderPitch] = -90
+ourSittingPose[core.RShoulderRoll] = 10
+ourSittingPose[core.RElbowYaw] = 0
+ourSittingPose[core.RElbowRoll] = 0
+
+
+
+raiseRightArmPose = dict()
+
+raiseRightArmPose[core.HeadYaw] = 0.0
+raiseRightArmPose[core.HeadPitch] = 0
+raiseRightArmPose[core.LShoulderPitch] = -90
+raiseRightArmPose[core.LShoulderRoll] = 10
+raiseRightArmPose[core.LElbowYaw] = 0
+raiseRightArmPose[core.LElbowRoll] = 0
+raiseRightArmPose[core.LHipYawPitch] = -5
+raiseRightArmPose[core.LHipPitch] = -46.5
+raiseRightArmPose[core.LHipRoll] = -1.0 * 0
+raiseRightArmPose[core.LKneePitch] = 125
+raiseRightArmPose[core.LAnklePitch] = -70
+raiseRightArmPose[core.LAnkleRoll] = -1.0 * 0
+raiseRightArmPose[core.RHipYawPitch] = -5
+raiseRightArmPose[core.RHipPitch] = -46.5
+raiseRightArmPose[core.RHipRoll] = 0
+raiseRightArmPose[core.RKneePitch] = 125
+raiseRightArmPose[core.RAnklePitch] = -70
+raiseRightArmPose[core.RAnkleRoll] = 0
+raiseRightArmPose[core.RShoulderPitch] = -90
+raiseRightArmPose[core.RShoulderRoll] = 44
+raiseRightArmPose[core.RElbowYaw] = 0
+raiseRightArmPose[core.RElbowRoll] = 0
+
+
+
+
+raiseLeftArmPose = dict()
+
+raiseLeftArmPose[core.HeadYaw] = 0.0
+raiseLeftArmPose[core.HeadPitch] = 0
+raiseLeftArmPose[core.LShoulderPitch] = -90
+raiseLeftArmPose[core.LShoulderRoll] = 63
+raiseLeftArmPose[core.LElbowYaw] = 0
+raiseLeftArmPose[core.LElbowRoll] = 0
+raiseLeftArmPose[core.LHipYawPitch] = -5
+raiseLeftArmPose[core.LHipPitch] = -46.5
+raiseLeftArmPose[core.LHipRoll] = -1.0 * 0
+raiseLeftArmPose[core.LKneePitch] = 125
+raiseLeftArmPose[core.LAnklePitch] = -70
+raiseLeftArmPose[core.LAnkleRoll] = -1.0 * 0
+raiseLeftArmPose[core.RHipYawPitch] = -5
+raiseLeftArmPose[core.RHipPitch] = -46.5
+raiseLeftArmPose[core.RHipRoll] = 0
+raiseLeftArmPose[core.RKneePitch] = 125
+raiseLeftArmPose[core.RAnklePitch] = -70
+raiseLeftArmPose[core.RAnkleRoll] = 0
+raiseLeftArmPose[core.RShoulderPitch] = -90
+raiseLeftArmPose[core.RShoulderRoll] = 10
+raiseLeftArmPose[core.RElbowYaw] = 0
+raiseLeftArmPose[core.RElbowRoll] = 0
+
+
+raiseBothArmsPose = dict()
+
+raiseBothArmsPose[core.HeadYaw] = 0.0
+raiseBothArmsPose[core.HeadPitch] = 0
+raiseBothArmsPose[core.LShoulderPitch] = -30
+raiseBothArmsPose[core.LShoulderRoll] = 0
+raiseBothArmsPose[core.LElbowYaw] = 0
+raiseBothArmsPose[core.LElbowRoll] = 0
+raiseBothArmsPose[core.LHipYawPitch] = -5
+raiseBothArmsPose[core.LHipPitch] = -46.5
+raiseBothArmsPose[core.LHipRoll] = -1.0 * 0
+raiseBothArmsPose[core.LKneePitch] = 125
+raiseBothArmsPose[core.LAnklePitch] = -70
+raiseBothArmsPose[core.LAnkleRoll] = -1.0 * 0
+raiseBothArmsPose[core.RHipYawPitch] = -5
+raiseBothArmsPose[core.RHipPitch] = -46.5
+raiseBothArmsPose[core.RHipRoll] = 0
+raiseBothArmsPose[core.RKneePitch] = 125
+raiseBothArmsPose[core.RAnklePitch] = -70
+raiseBothArmsPose[core.RAnkleRoll] = 0
+raiseBothArmsPose[core.RShoulderPitch] = -30
+raiseBothArmsPose[core.RShoulderRoll] = 0
+raiseBothArmsPose[core.RElbowYaw] = 0
+raiseBothArmsPose[core.RElbowRoll] = 0
 
 
 standingPose = dict()

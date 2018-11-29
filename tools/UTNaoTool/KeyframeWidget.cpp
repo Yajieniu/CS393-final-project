@@ -115,9 +115,10 @@ KeyframeWidget::KeyframeWidget(QWidget* parent) : ConfigWidget(parent) {
 void KeyframeWidget::loadConfig(const ToolConfig& config) {
   kfconfig_ = config.kfConfig;
   switch(kfconfig_.base) {
+    std::cout << "\n\n\n\n\n load Config \n\n\n\n" << std::endl;
+    case SupportBase::LeftFoot: rdoLeftFoot->setChecked(true); break;
     case SupportBase::TorsoBase: rdoTorso->setChecked(true); break;
     case SupportBase::SensorFoot: rdoSensor->setChecked(true); break;
-    case SupportBase::LeftFoot: rdoLeftFoot->setChecked(true); break;
     case SupportBase::RightFoot: rdoRightFoot->setChecked(true); break;
   }
   emit updatedSupportBase(kfconfig_.base);
@@ -279,7 +280,7 @@ void KeyframeWidget::deactivateCurrent() {
 
 void KeyframeWidget::supportBaseUpdated(bool) {
   if(loading_) return;
-  auto base = SupportBase::TorsoBase;
+  auto base = SupportBase::LeftFoot;
   if(rdoTorso->isChecked()) base = SupportBase::TorsoBase;
   else if(rdoLeftFoot->isChecked()) base = SupportBase::LeftFoot;
   else if(rdoRightFoot->isChecked()) base = SupportBase::RightFoot;

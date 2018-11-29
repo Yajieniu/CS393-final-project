@@ -138,26 +138,28 @@ void GLDrawer::drawField() {
 }
 
 void GLDrawer::drawBall(){
-  if (gtcache_.world_object == NULL) return;
+  if (bcache_.world_object == NULL) return;
 
-  if (gtcache_.robot_state != NULL && gtcache_.behavior != NULL && gtcache_.robot_state->WO_SELF == KEEPER){
-    // draw keeper ball
-    WorldObject* self = &(gtcache_.world_object->objects_[gtcache_.robot_state->WO_SELF]);
-    Point2D absBall = gtcache_.behavior->keeperRelBallPos.relativeToGlobal(self->loc, self->orientation);
-    Point2D absBallVel = gtcache_.behavior->keeperRelBallVel.relativeToGlobal(Point2D(0,0), self->orientation);
+  // if (bcache_.robot_state != NULL && bcache_.behavior != NULL && bcache_.robot_state->WO_SELF == KEEPER){
+  //   // draw keeper ball
+  //   WorldObject* self = &(bcache_.world_object->objects_[bcache_.robot_state->WO_SELF]);
+  //   Point2D absBall = bcache_.behavior->keeperRelBallPos.relativeToGlobal(self->loc, self->orientation);
+  //   Point2D absBallVel = bcache_.behavior->keeperRelBallVel.relativeToGlobal(Point2D(0,0), self->orientation);
 
-    objectsGL.drawBallColor(absBall,1.0,Colors::Pink);
-    objectsGL.drawBallVelColor(absBall, absBallVel, 1.0, Colors::Pink);
-  }
+  //   objectsGL.drawBallColor(absBall,1.0,Colors::Pink);
+  //   objectsGL.drawBallVelColor(absBall, absBallVel, 1.0, Colors::Pink);
+  // }
 
-  WorldObject* ball = &(gtcache_.world_object->objects_[WO_BALL]);
-  objectsGL.drawBall(ball->loc,1.0);
+  WorldObject* ball = &(bcache_.world_object->objects_[WO_BALL]);
+  WorldObject* self = &(gtcache_.world_object->objects_[gtcache_.robot_state->WO_SELF]);
+
+  objectsGL.drawBall(ball->loc + self->loc, 1.0);
 
   if (display_[SHOW_BALL_VEL])
-    objectsGL.drawBallVel(ball->loc, ball->absVel, 1.0);
+    objectsGL.drawBallVel(ball->loc + self->loc, ball->absVel, 1.0);
   if (display_[SHOW_BALL_UNCERT]) {
     basicGL.colorRGB(Colors::Orange);
-    localizationGL.drawUncertaintyEllipse(ball->loc,ball->sd);
+    localizationGL.drawUncertaintyEllipse(ball->loc + self->loc,ball->sd);
   }
 }
 
@@ -298,13 +300,33 @@ void GLDrawer::drawTruthRobot(){
 }
 
 void GLDrawer::drawTruthBall(){
-  if (gtcache_.sim_truth == NULL){
-    return;
+  // if (gtcache_.sim_truth == NULL){
+  //   return;
+  // }
+
+  // Point2D pos(gtcache_.sim_truth->ball_pos_.translation.x, gtcache_.sim_truth->ball_pos_.translation.y);
+
+  // objectsGL.drawBallColor(pos,1.0,Colors::Green);
+  if (gtcache_.world_object == NULL) return;
+
+  // if (gtcache_.robot_state != NULL && gtcache_.behavior != NULL && gtcache_.robot_state->WO_SELF == KEEPER){
+  //   // draw keeper ball
+  //   WorldObject* self = &(gtcache_.world_object->objects_[gtcache_.robot_state->WO_SELF]);
+  //   Point2D absBall = gtcache_.behavior->keeperRelBallPos.relativeToGlobal(self->loc, self->orientation);
+  //   Point2D absBallVel = gtcache_.behavior->keeperRelBallVel.relativeToGlobal(Point2D(0,0), self->orientation);
+
+  //   objectsGL.drawBallColor(absBall,1.0,Colors::Pink);
+  //   objectsGL.drawBallVelColor(absBall, absBallVel, 1.0, Colors::Pink);
+  // }
+
+  WorldObject* ball = &(gtcache_.world_object->objects_[WO_BALL]);
+  objectsGL.drawBallColor(ball->loc,1.0, Colors::Green);
+
+  if (display_[SHOW_BALL_VEL])
+    objectsGL.drawBallVel(ball->loc, ball->absVel, 1.0);
+  if (display_[SHOW_BALL_UNCERT]) {
+    localizationGL.drawUncertaintyEllipse(ball->loc,ball->sd);
   }
-
-  Point2D pos(gtcache_.sim_truth->ball_pos_.translation.x, gtcache_.sim_truth->ball_pos_.translation.y);
-
-  objectsGL.drawBallColor(pos,1.0,Colors::Green);
 
 }
 

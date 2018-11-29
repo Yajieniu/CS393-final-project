@@ -23,18 +23,18 @@ cd glog-0.3.4
 # pycaffe
 sudo apt-get install -y libboost-python-dev
 sudo apt-get install python-pip
-pip install 'tornado<5.0.0'
-pip install --ignore-installed 'protobuf>=2.5.0'
-pip install --upgrade numpy
+sudo pip install 'tornado<5.0.0'
+sudo pip install --ignore-installed 'protobuf>=2.5.0'
+sudo pip install --upgrade numpy
 sudo apt-get install -y python-skimage
 
 cd $NAO_HOME/lib/caffe/python
 for req in $(cat requirements.txt)
 do 
    if [ $req == "ipython" ]; then
-       pip install ipython==3.0.0
+       sudo pip install ipython==3.0.0
    else
-       pip install $req
+       sudo pip install $req
    fi
 done
 cd $NAO_HOME/install

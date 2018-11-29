@@ -74,8 +74,8 @@ void Classifier::classifyImage(const FocusArea& area, unsigned char* colorTable)
     tlog(20, "Classifying with no raw image");
   }
   colorTable_ = colorTable;
-  int vstep = 1 << 1;
-  int hstep = 1 << 2;
+  int vstep = 1 << 0;
+  int hstep = 1 << 0;
   for (int y = area.y1; y <= area.y2; y += vstep) {
     for(int x = area.x1; x <= area.x2; x += hstep) {
       auto c = ColorTableMethods::xy2color(img_, colorTable, x, y, iparams_.width);

@@ -48,13 +48,13 @@ def setStiffness(cfg=cfgstiff.One, time=0.3):
 
 def setHeadPanTilt(pan=0, tilt=-21, time=2.0, isChange=False):
     """Set robot's head pan (left-right) and tilt (up-down)."""
-    setHeadTilt(tilt)
+    setHeadTilt(tilt, time)
     setHeadPan(pan, time, isChange)
 
 
-def setHeadTilt(tilt=-22):
+def setHeadTilt(tilt=-22, target_time=2.0):
     """Set head tilt (up-down)."""
-    joint_commands.setHeadTilt(core.DEG_T_RAD * tilt, 200.0, False)
+    joint_commands.setHeadTilt(core.DEG_T_RAD * tilt, target_time * 1000.0, False)
 
 
 def setHeadPan(target_pos, target_time=2.0, isChange=None):

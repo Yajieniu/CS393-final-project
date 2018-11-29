@@ -2,6 +2,7 @@
 
 #include <common/RobotInfo.h>
 #include <vision/structures/VisionParams.h>
+#include <vision/structures/Blob.h>
 #include <vision/CameraMatrix.h>
 #include <vision/VisionBlocks.h>
 #include <common/Profiling.h>

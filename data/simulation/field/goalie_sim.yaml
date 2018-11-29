@@ -1,0 +1,84 @@
+---
+game_state: PLAYING
+blue_goals: 0
+red_goals: 0
+roles:
+  {}
+states:
+  {}
+objects:
+  gtconfig:
+    placements_:
+      0:
+        x: 250
+        y: 0
+        orientation: 0
+        height: 0
+      1:
+        x: -1250
+        y: 0
+        orientation: 0
+        height: 0
+  bconfig:
+    placements_:
+      0:
+        x: 1313.97
+        y: -11.5133
+        orientation: 0
+        height: 0
+      1:
+        x: 1093.19
+        y: -69.2892
+        orientation: -7
+        height: 0
+      2:
+        x: 480.146
+        y: -1075
+        orientation: 0
+        height: 0
+      3:
+        x: 215.139
+        y: -949
+        orientation: 0
+        height: 0
+      4:
+        x: 209.628
+        y: 1021
+        orientation: 0
+        height: 0
+      5:
+        x: 1283.01
+        y: 1137
+        orientation: -168
+        height: 0
+      6:
+        x: 823.958
+        y: -1450
+        orientation: 0
+        height: 0
+      7:
+        x: 587.077
+        y: -997
+        orientation: 0
+        height: 0
+      8:
+        x: 898.343
+        y: -236
+        orientation: 0
+        height: 0
+      9:
+        x: 932.975
+        y: -901
+        orientation: 0
+        height: 0
+      10:
+        x: 83.3883
+        y: -424
+        orientation: 0
+        height: 0
+      11:
+        x: 97.2588
+        y: -20.8391
+        orientation: -127
+        height: 0
+...

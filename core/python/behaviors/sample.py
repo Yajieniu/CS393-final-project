@@ -11,6 +11,8 @@ import cfgstiff
 from task import Task
 from state_machine import Node, C, T, StateMachine
 
+import pose
+
 
 class Ready(Task):
     def run(self):
@@ -30,7 +32,12 @@ class Playing(StateMachine):
 
     class Walk(Node):
         def run(self):
-            commands.setWalkVelocity(0.5, 0, 0)
+            # commands.setWalkVelocity(0.5, 0, 0)
+            # raiseRight = pose.RaiseRight()
+            block = pose.BlockRight()
+            block.run()
+            # stand.run()
+
 
     class Off(Node):
         def run(self):
@@ -44,4 +51,5 @@ class Playing(StateMachine):
         walk = self.Walk()
         sit = pose.Sit()
         off = self.Off()
-        self.trans(stand, C, walk, T(5.0), sit, C, off)
+        raise_right = pose.RaiseRightArm()
+        self.trans(sit, C, raise_right, T(5.0), sit, C, off)
