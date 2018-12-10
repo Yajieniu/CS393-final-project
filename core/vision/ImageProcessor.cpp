@@ -165,6 +165,7 @@ ImageProcessor::ImageProcessor(VisionBlocks& vblocks, const ImageParams& iparams
   enableCalibration_ = false;
   color_segmenter_ = std::make_unique<Classifier>(vblocks_, vparams_, iparams_, camera_);
   beacon_detector_ = std::make_unique<BeaconDetector>(DETECTOR_PASS_ARGS);
+  robot_detector_ = std::make_unique<RobotDetector>(DETECTOR_PASS_ARGS);
   calibration_ = std::make_unique<RobotCalibration>();
 }
 
@@ -176,6 +177,8 @@ void ImageProcessor::init(TextLogger* tl){
   vparams_.init();
   color_segmenter_->init(tl);
   beacon_detector_->init(tl);
+  robot_detector_->init(tl);
+
 }
 
 unsigned char* ImageProcessor::getImg() {
@@ -290,13 +293,6 @@ void ImageProcessor::processFrame(){
   robot_detector_->findRobots(detected_blobs);
 }
 
-// void detectRobot() {
-//     WorldObject* robot = &vblocks_.world_object->objects_[WO_ROBOT];
-
-//     if (robot->seen)
-        
-
-// }
 
 void ImageProcessor::detectBall() {
     WorldObject* ball = &vblocks_.world_object->objects_[WO_BALL];

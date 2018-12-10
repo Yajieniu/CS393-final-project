@@ -1,13 +1,13 @@
 // pick white blobs and turn
+#include <vision/RobotDetector.h>
 #include <vision/BeaconDetector.h>
 #include <memory/TextLogger.h>
 #include <vision/Logging.h>
 
-void RobotDetector::filterRoblobs(vector<Blob> &blobs, int size = 0) {
+vector<Blob> RobotDetector::filterRoblobs(vector<Blob> &blobs, int size = 0) {
 	vector<Blob> filtered;
-	int size = blobs.size();
 
-	for (int i = 0; i < size; ++i) {
+	for (int i = 0; i < blobs.size(); ++i) {
 		if((blobs[i].color != c_WHITE) || (blobs[i].color != c_ROBOT_WHITE))
             continue;
         if(blobs[i].lpCount < size)
@@ -26,14 +26,17 @@ unsigned char* RobotDetector::getSegImg(){
 
 void RobotDetector::filterWallAndLine(Blob &whiteBlob) {
 	
-	uint16_t xi, xf, xd, yi, yf, yd;
+	uint16_t xi, xf, dx, yi, yf, dy;
+    uint16_t width = (uint16_t) iparams_.width;
+    uint16_t height = (uint16_t) iparams_.height;
+
 	
 	xi = whiteBlob.xi;
 	xf = whiteBlob.xf;
-	xd = whiteBlob.xd;
+	dx = whiteBlob.dx;
 	yi = whiteBlob.yi;
 	yf = whiteBlob.yf;
-	yd = whiteBlob.yd;
+	dy = whiteBlob.dy;
 
 	unsigned char* originalImg = getSegImg();
 	unsigned char cuttedImg[whiteBlob.dx * whiteBlob.dy] = {};
@@ -52,24 +55,24 @@ void RobotDetector::filterWallAndLine(Blob &whiteBlob) {
 		for (int x = xi; x <= xf; ++x) {
 			auto color = originalImg[y * width + x];
 			if((color == c_WHITE) || (color == c_ROBOT_WHITE)) {
-				cuttedImg[cutted_y * xd + (x - xi)] = 1;
+				cuttedImg[cutted_y * dx + (x - xi)] = 1;
 				rows_length[cutted_y] += 1;
 			}
 		}
 
 		// filter out wall and vertical lines
-		if (rows_length[cutted_y] > width/2) ||  (rows_length[cutted_y] < width/16) {
+		if ((rows_length[cutted_y] > width/2) ||  (rows_length[cutted_y] < width/16)) {
 			rows_length[cutted_y] = 0;
 		}
 
 		for (int x = xi; x <= xf; ++x) {
-			if (cuttedImg[cutted_y * xd + (x - xi)] = 1;) {
+			if (cuttedImg[cutted_y * dx + (x - xi)] == 1) {
 				if (rows_length[cutted_y]) {
 					col_height[cutted_y] += 1;
 					white_pixel_sum += 1;
 				}
 				else {
-					cuttedImg[cutted_y * xd + (x - xi)] = 0;
+					cuttedImg[cutted_y * dx + (x - xi)] = 0;
 				}	
 			}
 		}
@@ -105,17 +108,19 @@ void RobotDetector::filterWallAndLine(Blob &whiteBlob) {
 		}
 	}
 
-	xd = xf - xi;
-	yd = yf - yi;
+	dx = xf - xi;
+	dy = yf - yi;
 
 	double sum1 = 0; 
 	double sum2 = 0;
+	uint16_t avgY;
+	uint16_t avgX;
 
 	// update average Y
 	for (int y = yi; y <= yf; ++y) {
 		sum1 += rows_length[y-yi];
 		if (sum1 >= white_pixel_sum/2) {
-			uint16_t avgY = y;
+			avgY = y;
 			break;
 		}
 	}
@@ -124,17 +129,17 @@ void RobotDetector::filterWallAndLine(Blob &whiteBlob) {
 	for (int x = xi; x <= xf; ++x) {
 		sum2 += col_height[x-xi];
 		if (sum2 >= white_pixel_sum/2) {
-			uint16_t avgX = x;
+			avgX = x;
 			break;
 		}
 	}	
 
 	whiteBlob.xi = xi;
 	whiteBlob.xf = xf;
-	whiteBlob.xd = xf - xi + 1;
+	whiteBlob.dx = xf - xi + 1;
 	whiteBlob.yi = yi;
 	whiteBlob.yf = yf;
-	whiteBlob.yd = yf - yi + 1;
+	whiteBlob.dy = yf - yi + 1;
 
 	whiteBlob.avgX = avgX;
 	whiteBlob.avgY = avgY;
@@ -142,15 +147,14 @@ void RobotDetector::filterWallAndLine(Blob &whiteBlob) {
 
 }
 
-void RobotDetector::pickSIFTArea(Blob &blob) {
-	int height = iparams_.height * 0.3;
-    int width = iparams_.width * 0.2;
+void RobotDetector::pickSURFArea(Blob &blob) {
+	uint16_t height = (uint16_t) iparams_.height * 0.3;
+    uint16_t width = (uint16_t) iparams_.width * 0.2;
 
-    uint16_t x_start = max(blob.avgX - width, blob.xi);
-    uint16_t x_end = min(x_start + width, blob.xf);
-    uint16_t y_start = max(blob.avgY - height, blob.yf);
-    uint16_t y_end = min(y_start, blob.yf);
-
+    uint16_t x_start = max( (uint16_t) (blob.avgX - width), blob.xi);
+    uint16_t x_end = min( (uint16_t) (x_start + width), blob.xf);
+    uint16_t y_start = max( (uint16_t) (blob.avgY - height), blob.yf);
+    uint16_t y_end = min( (uint16_t) (y_start + height), blob.yf);
 
 }
 
@@ -160,7 +164,7 @@ void RobotDetector::findRobots(vector<Blob> &blobs) {
 	int width = iparams_.width;
 
 	// pick white blobs
-	vector<Blob> whiteBlobs = filterRoblobs(blobs, c_WHITE, 100);
+	vector<Blob> whiteBlobs = filterRoblobs(blobs, 100);
 
 	// for each white blob
 	for (int i = 0; i < whiteBlobs.size(); ++i) {

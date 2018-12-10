@@ -18,6 +18,7 @@
 class BallDetector;
 class Classifier;
 class BeaconDetector;
+class RobotDetector;
 
 struct RLE {
     int lcol;
@@ -67,6 +68,7 @@ class ImageProcessor {
     void init(TextLogger*);
     void SetColorTable(unsigned char*);
     std::unique_ptr<BeaconDetector> beacon_detector_;
+    std::unique_ptr<RobotDetector> robot_detector_;
     std::unique_ptr<Classifier> color_segmenter_;
     unsigned char* getImg();
     unsigned char* getSegImg();
