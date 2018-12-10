@@ -1,6 +1,7 @@
 #include <vision/ImageProcessor.h>
 #include <vision/Classifier.h>
 #include <vision/BeaconDetector.h>
+#include <vision/RobotDetector.h>
 #include <vision/Logging.h>
 #include <iostream>
 #include <cmath>
@@ -286,6 +287,7 @@ void ImageProcessor::processFrame(){
   // detectRobot();
 
   beacon_detector_->findBeacons(detected_blobs);
+  robot_detector_->findRobots(detected_blobs);
 }
 
 // void detectRobot() {
