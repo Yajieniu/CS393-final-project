@@ -76,6 +76,7 @@ void VisionWindow::updateBigImage() {
     if (cbxOverlay->isChecked()) {
       drawGoal(bigImage);
       drawBall(bigImage);
+      drawRobot(bigImage);
       drawBallCands(bigImage);
       drawBeacons(bigImage);
     }
@@ -103,6 +104,7 @@ void VisionWindow::redrawImages(ImageWidget* rawImage, ImageWidget* segImage, Im
   if (cbxOverlay->isChecked()) {
     drawGoal(rawImage);
     drawBall(rawImage);
+    drawRobot(rawImage);
     drawBallCands(rawImage);
     drawBeacons(rawImage);
 
@@ -203,6 +205,8 @@ void VisionWindow::drawSegmentedImage(ImageWidget *image) {
     drawHorizonLine(image);
 }
 
+
+
 void VisionWindow::drawBall(ImageWidget* image) {
   if(!config_.all) return;
   if(!config_.ball) return;
@@ -228,6 +232,65 @@ void VisionWindow::drawBall(ImageWidget* image) {
     painter.drawEllipse(ball->imageCenterX - radius, ball->imageCenterY - radius, radius * 2, radius * 2);
   }
 }
+
+void VisionWindow::drawRobot(ImageWidget* image) {
+
+  if(!config_.all) return;
+  QPainter painter(image->getImage());
+  painter.setPen(QPen(QColor(0, 255, 127), 3));
+  painter.drawLine(30, 30, 60, 60);
+
+  painter.drawText(QPointF(20, 20), "can draw robot");
+  if(IS_RUNNING_CORE) {
+    ImageProcessor* processor = getImageProcessor(image);
+
+    std::vector<RobotCandidate*> robot_candidates = processor->getRobotCandidates();
+    if(robot_candidates.size()==0) {
+      painter.drawText(QPointF(20, 50), "no robots found");
+      painter.drawLine(130, 130, 140, 160);
+      return;
+    }
+
+    painter.drawText(QPointF(20, 80), "found robots");
+    RobotCandidate* best;
+    for (int i = 0; i < robot_candidates.size(); ++i) {
+      best = robot_candidates[i];
+  
+      // draw box
+      painter.drawLine(best->xi, best->yi, best->xf, best->yi);
+      painter.drawLine(best->xi, best->yi, best->xi, best->yf);
+      painter.drawLine(best->xi, best->yf, best->xf, best->yf);
+      painter.drawLine(best->xf, best->yi, best->xf, best->yf);
+
+      // draw center
+      int r = 4;
+      painter.drawEllipse(
+        (int)best->avgX - r - 1,
+        (int)best->avgY - r - 1, 2 * r + 2, 2 * r + 2);
+ 
+    }
+  }
+  else if (world_object_block_ != NULL) {
+    // WorldObject* ball = &world_object_block_->objects_[WO_BALL];
+    // if(!ball->seen) return;
+    // if( (ball->fromTopCamera && _widgetAssignments[image] == Camera::BOTTOM) ||
+    //     (!ball->fromTopCamera && _widgetAssignments[image] == Camera::TOP) ) return;
+    // int radius = ball->radius;
+    // painter.drawEllipse(ball->imageCenterX - radius, ball->imageCenterY - radius, radius * 2, radius * 2);
+    ImageProcessor* processor = getImageProcessor(image);
+
+    RobotCandidate* best = processor->getBestRobotCandidate();
+    if(!best) return;
+
+    painter.drawLine(190, 190, 200, 220);
+
+    painter.drawLine(best->xi, best->yi, best->xf, best->yi);
+    painter.drawLine(best->xi, best->yi, best->xi, best->yf);
+    painter.drawLine(best->xi, best->yf, best->xf, best->yf);
+    painter.drawLine(best->xf, best->yi, best->xf, best->yf);
+  }
+}
+
 
 void VisionWindow::drawGoal(ImageWidget* image) {
   if(!config_.all) return;

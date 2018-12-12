@@ -117,6 +117,7 @@ class VisionWindow : public ConfigWindow, public Ui_UTVisionWindow {
 
     void update(MemoryFrame* memory);
     void drawBallCands(ImageWidget* image);
+    void drawRobot(ImageWidget* image);
     void drawBall(ImageWidget* image);
     void drawGoal(ImageWidget* image);
     void drawTransformedPoints(ImageWidget *image);

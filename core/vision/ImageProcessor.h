@@ -10,8 +10,10 @@
 #include <common/RobotInfo.h>
 #include <common/RobotCalibration.h>
 #include <vision/structures/BallCandidate.h>
+#include <vision/structures/RobotCandidate.h>
 #include <math/Pose3D.h>
 #include <vision/structures/VisionParams.h>
+#include <vision/enums/Colors.h>
 #include <unordered_map>
 #include <vector>
 
@@ -26,7 +28,7 @@ struct RLE {
     int parent;
     int curr;
     int npixels;
-    int color;
+    Color color;
     int rank;
 	int xi;
 	int xf;
@@ -35,7 +37,7 @@ struct RLE {
 	int xsum;
 	int ysum;
 
-    RLE(int y, int l, int r, int idx, int c, int ystep) {
+    RLE(int y, int l, int r, int idx, Color c, int ystep) {
         lcol = l;
         rcol = r;
         parent = idx;
@@ -82,7 +84,9 @@ class ImageProcessor {
     void enableCalibration(bool value);
     void updateTransform();
     std::vector<BallCandidate*> getBallCandidates();
+    std::vector<RobotCandidate*> getRobotCandidates();
     BallCandidate* getBestBallCandidate();
+    RobotCandidate* getBestRobotCandidate();
     bool isImageLoaded();
     int getParent(int idx); 
     void mergeBlobs(int idx1, int idx2); 
@@ -123,6 +127,9 @@ class ImageProcessor {
 
     // Ball detection
     vector<BallCandidate*> ball_candidates;
+
+    // Robot detection
+    vector<RobotCandidate*> robot_candidates;
 };
 
 #endif

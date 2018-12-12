@@ -9,7 +9,9 @@
 struct RobotCandidate {
 
   uint16_t xi, xf, yi, yf;
+  uint16_t xmin, xmax, ymin, ymax;
   uint16_t avgX, avgY;
+  float groundDistance;
   
   
   

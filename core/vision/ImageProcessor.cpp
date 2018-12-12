@@ -10,11 +10,19 @@ vector<RLE*> ImageProcessor::getRLERow(int y, int width, int &start_idx) {
     // handle NULL case
     int xstep = 1 << iparams_.defaultHorizontalStepScale;
     int ystep = 1 << iparams_.defaultVerticalStepScale;
-    auto prev_color = getSegImg()[y * width];
+    Color prev_color = static_cast<Color>(getSegImg()[y * width]);
     auto prev_idx = 0;
     vector<RLE*> encoding;
+
+    // for robot detection, combine robot white and white
+    prev_color = (prev_color == c_WHITE) ? c_ROBOT_WHITE : prev_color;
+
     for(int x = 0; x < width; x += xstep) {
-        auto c = getSegImg()[y * width + x];
+
+        // for robot detection
+        Color c = static_cast<Color>(getSegImg()[y * width + x]);
+        c = (c == c_WHITE) ? c_ROBOT_WHITE : c;
+
         if(c == prev_color)
             continue;
         else {
@@ -285,12 +293,16 @@ void ImageProcessor::processFrame(){
   detectBall();
   if(camera_ == Camera::BOTTOM) return;
 
+
   detectGoal();
+  
+  getRobotCandidates();
+  
+
 
   // detectRobot();
 
   beacon_detector_->findBeacons(detected_blobs);
-  robot_detector_->findRobots(detected_blobs);
 }
 
 
@@ -509,6 +521,29 @@ BallCandidate* ImageProcessor::getBestBallCandidate() {
     if(ball_candidates.size() == 0)
         return NULL;
     return ball_candidates[0];
+}
+
+std::vector<RobotCandidate*> ImageProcessor::getRobotCandidates() {
+    for(int i = 0; i < robot_candidates.size(); ++i) {
+        delete(robot_candidates[i]);
+    }
+    robot_candidates.clear();
+
+    if(camera_ == Camera::BOTTOM) 
+        return robot_candidates;
+
+    robot_candidates = robot_detector_->findRobots(detected_blobs, robot_candidates);
+
+    return robot_candidates;
+}
+
+RobotCandidate* ImageProcessor::getBestRobotCandidate() {
+    
+    auto blueBlobs = filterBlobs(detected_blobs, c_ROBOT_WHITE, 100);
+
+    if(robot_candidates.size() == 0)
+        return NULL;
+    return robot_candidates[0];
 }
 
 void ImageProcessor::enableCalibration(bool value) {
