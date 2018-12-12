@@ -1,7 +1,10 @@
 // pick white blobs and turn
 #include <vision/RobotDetector.h>
 #include <vision/BeaconDetector.h>
+#include <vision/ImageProcessor.h>
 #include <memory/TextLogger.h>
+#include <common/ColorConversion.h>
+#include <memory/ImageBlock.h>
 #include <vision/Logging.h>
 #include <stdio.h>
 #include <iostream>
@@ -193,24 +196,60 @@ uint16_t RobotDetector::updateCenterY(unsigned char* col_height) {
 	return index;
 }
 
-void RobotDetector::pickSURFArea(Blob &blob) {
+float RobotDetector::SURFTest(Blob &blob, unsigned char* rawImage) {
 	
     //-- Step 1: Detect the keypoints using SURF Detector
   	double minHessian = 400;
 
-  	cv::SurfFeatureDetector detector1(minHessian);
-  	// cv::Ptr<cv::SiftFeatureDetector> detector = cv::SiftFeatureDetector::create();
-  	
+  	cv::SurfFeatureDetector detector(minHessian);
 
-  	// Ptr<SurfFeatureDetector> detector = SurfFeatureDetector::create(minHessian);
+  	std::vector<KeyPoint> keypoints1, keypoints2;
+    Mat descriptors1, descriptors2;
 
-  	std::vector<KeyPoint> keypoints_1, keypoints_2;
+	string path = "~/home/yajieniu/nao/trunk/core/image1.png";
+    cv::Mat cvImageBank = cv::imread(path, IMREAD_GRAYSCALE);
+    // may need to turn gray
+    cv::Mat cvImageCurrent = color::rawToMat((const) rawImage, iparams);
+    cv::Mat cvImageCurrentGray = cv::cvtcolor(cvImageCurrent, cvImageCurrentGray,
+    		CV_BGR2GRAY);
+
+	cv::Mat img1 = cvImageBank;
+	cv::Mat img2 = cvImageCurrentGray;
+	    
+    detector->detectAndCompute( img1, noArray(), keypoints1, descriptors1 );
+    detector->detectAndCompute( img2, noArray(), keypoints2, descriptors2 );
+
+	  //-- Step 2: Matching descriptor vectors using FLANN matcher
+	FlannBasedMatcher matcher;
+    std::vector< DMatch > matches;
+    matcher.match( descriptors_1, descriptors_2, matches );
+    double max_dist = 0; double min_dist = 100;
+
+    //-- Quick calculation of max and min distances between keypoints
+    for( int i = 0; i < descriptors_1.rows; i++ )
+    { 
+    	double dist = matches[i].distance;
+        if( dist < min_dist ) min_dist = dist;
+        if( dist > max_dist ) max_dist = dist;
+    }
+
+    //compute good_matches
+    std::vector< DMatch > good_matches;
+    for( int i = 0; i < descriptors_1.rows; i++ )
+    { if( matches[i].distance <= max(2*min_dist, 0.02) )
+      { good_matches.push_back( matches[i]); }
+    }
+
+
 
 }
 
 
 std::vector<RobotCandidate*> RobotDetector::findRobots(vector<Blob> &blobs, 
-	std::vector<RobotCandidate*> robot_candidates) {
+	std::vector<RobotCandidate*> robot_candidates, unsigned char* rawImage,
+	 const ImageParams& iparams_) {
+
+	iparams = iparams_;
 
 	uint16_t x_threshold = 100;//(uint16_t) (iparams_.height /10 * 3);
     uint16_t y_threshold = 100;//(uint16_t) (iparams_.width / 10 * 2);

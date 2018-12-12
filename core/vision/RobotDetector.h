@@ -14,14 +14,16 @@ class RobotDetector : public ObjectDetector {
   void init(TextLogger* tl){ textlogger = tl; }
   unsigned char* getSegImg();
   std::vector<RobotCandidate*> findRobots(vector<Blob> &blobs, 
-	std::vector<RobotCandidate*> robot_candidates);
+	std::vector<RobotCandidate*> robot_candidates, unsigned char* rawImage,
+	const ImageParams& iparams_);
   uint16_t updateCenterY(unsigned char col_height[]);
   vector<Blob> filterRoblobs(vector<Blob> &blobs, int size);
   void filterWallAndLine(Blob &whiteBlob);
-  void pickSURFArea(Blob &blob);
+  float SURFTest(Blob &blob, unsigned char* rawImage);
 
  private:
   TextLogger* textlogger;
+  const ImageParams& iparams;
 
   // vec/tor<RobotCandidate*> robot_candidates;
 

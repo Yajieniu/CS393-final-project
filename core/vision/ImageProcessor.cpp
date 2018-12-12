@@ -532,7 +532,8 @@ std::vector<RobotCandidate*> ImageProcessor::getRobotCandidates() {
     if(camera_ == Camera::BOTTOM) 
         return robot_candidates;
 
-    robot_candidates = robot_detector_->findRobots(detected_blobs, robot_candidates);
+    robot_candidates = robot_detector_->findRobots(detected_blobs, robot_candidates, 
+         iparams_);
 
     return robot_candidates;
 }
